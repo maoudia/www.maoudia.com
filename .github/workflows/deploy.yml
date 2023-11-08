@@ -46,13 +46,12 @@ jobs:
           hugo ${{ vars.HUGO_ARGS }}
           cd scripts/
           ./sw.sh
-
-
+      
       - name: Upload Hugo Algolia Index
         uses: aoudiamoncef/hugo-algolia-uploader@main
         with:
           app_id: ${{ secrets.HUGOXPARAMSXALGOLIA_APPID }}
-          admin_key: ${{ secrets.HUGOXPARAMSXALGOLIA_APIKEY }}
+          admin_key: ${{ secrets.HUGO_ALGOLIA_ADMIN_APIKEY }}
           index_name: ${{ secrets.HUGOXPARAMSXALGOLIA_INDEXNAME }}
           index_languages: en,fr
 

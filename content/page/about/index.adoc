@@ -415,6 +415,7 @@ Technologies I have used* at work and/or side projects.
 
 image:https://github-readme-stats.vercel.app/api/pin/?username=aoudiamoncef&repo=apollo-client-maven-plugin[Apollo client maven plugin project, 400, 140, link = "https://github.com/aoudiamoncef/apollo-client-maven-plugin"]
 image:https://github-readme-stats.vercel.app/api/pin/?username=aoudiamoncef&repo=maoudia.com[maoudia.com project, 400, 120, link = "https://github.com/maoudia/www.maoudia.com"]
+image:https://github-readme-stats.vercel.app/api/pin/?username=aoudiamoncef&repo=maoudia.com[SSH-Enabled Ubuntu Docker Image project, 400, 120, link = "https://github.com/aoudiamoncef/ubuntu-sshd"]
 
 == Github stats 📊 
 

@@ -379,7 +379,7 @@ Les technologies que j'ai utilisées* au travail et/ou dans le cadre de projets 
 
 image:https://github-readme-stats.vercel.app/api/pin/?username=aoudiamoncef&repo=apollo-client-maven-plugin[projet Apollo client maven plugin, 400, 140, link = "https://github.com/aoudiamoncef/apollo-client-maven-plugin"]
 image:https://github-readme-stats.vercel.app/api/pin/?username=aoudiamoncef&repo=maoudia.com[projet maoudia.com, 400, 120, link = "https://github.com/maoudia/www.maoudia.com"]
-
+image:https://github-readme-stats.vercel.app/api/pin/?username=aoudiamoncef&repo=maoudia.com[projet SSH-Enabled Ubuntu Docker Image, 400, 120, link = "https://github.com/aoudiamoncef/ubuntu-sshd"]
 == Statistiques Github 📊 
 
 image:https://github-readme-stats.vercel.app/api?username=aoudiamoncef&show_icons=true&theme=flag-india&hide_title=true&count_private=true&locale=fr[visualisation statistiques Github, 495, 165]
