@@ -78,14 +78,14 @@ The application will read the address documents, add the product and save the en
 
 === Requirements
 
-* Java 1.8+
-* Maven 3+
-* Docker Compose
-* MongoDB Database Tools
+* link:https://adoptium.net/[`OpenJDK 21.0.x`]
+* link:https://maven.apache.org/[`Maven 3.9.x`]
+* link:https://docs.docker.com/compose/[`Docker Compose 2.23.x`]
+* link:https://www.mongodb.com/try/download/database-tools[`MongoDB Database Tools 100.9.x`]
 
 === Generation
 
-We generate the project skeleton from https://start.spring.io/#!type=maven-project&language=java&platformVersion=2.7.0&packaging=jar&jvmVersion=1.8&groupId=com.maoudia&artifactId=bulk-update-with-spring-data-mongodb&name=Bulk%20Update%20with%20Spring%20Data%20MongoDB%20Reactive&description=Bulk%20Update%20with%20Spring%20data%20MongoDB%20reactive&packageName=com.maoudia.tutorial&dependencies=data-mongodb-reactive,webflux,testcontainers[`Spring Initializr`, window=\"_blank\"].
+We generate the project skeleton from https://start.spring.io/#!type=maven-project&language=java&platformVersion=3.1.5&packaging=jar&jvmVersion=21&groupId=com.maoudia&artifactId=bulk-update-with-spring-data-mongodb&name=Bulk%20Update%20with%20Spring%20Data%20MongoDB%20Reactive&description=Bulk%20Update%20with%20Spring%20data%20MongoDB%20reactive&packageName=com.maoudia.tutorial&dependencies=data-mongodb-reactive,webflux,testcontainers[`Spring Initializr`, window=\"_blank\"].
 
 === Structure
 
@@ -133,7 +133,7 @@ We use `docker-compose` to create the needed containers for this tutorial.
 services:
   mongodb: // <1>
     container_name: maoudia-mongodb
-    image: mongo:5.0.8
+    image: mongo:7.0.2
     environment:
       - MONGO_INITDB_DATABASE=test
       - MONGO_INITDB_ROOT_USERNAME=admin
@@ -147,7 +147,7 @@ services:
 
   mongo-express: // <2>
     container_name: maoudia-mongo-express
-    image: mongo-express:0.54.0
+    image: mongo-express:1.0.0
     depends_on:
       - mongodb
     networks:
@@ -156,6 +156,8 @@ services:
       - ME_CONFIG_MONGODB_SERVER=maoudia-mongodb
       - ME_CONFIG_MONGODB_ADMINUSERNAME=admin
       - ME_CONFIG_MONGODB_ADMINPASSWORD=password
+      - ME_CONFIG_BASICAUTH_USERNAME=admin
+      - ME_CONFIG_BASICAUTH_PASSWORD=password
     ports:
       - 1515:8081
     volumes:
@@ -223,7 +225,7 @@ Import address collection :
 mongoimport --uri "mongodb://admin:password@localhost:15015" --authenticationDatabase=admin --db test --collection address ./data/mongodb/address.ndjson
 ----
 
-Ou :
+Or:
 
 We use *MongoExpress* which is available at http://localhost:1515[`http://localhost:1515`].
 

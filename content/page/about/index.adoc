@@ -414,7 +414,7 @@ Technologies I have used* at work and/or side projects.
 == My projects 👨‍💻
 
 image:https://github-readme-stats.vercel.app/api/pin/?username=aoudiamoncef&repo=apollo-client-maven-plugin[Apollo client maven plugin project, 400, 140, link = "https://github.com/aoudiamoncef/apollo-client-maven-plugin"]
-image:https://github-readme-stats.vercel.app/api/pin/?username=aoudiamoncef&repo=maoudia.com[maoudia.com project, 400, 120, link = "https://github.com/aoudiamoncef/maoudia.com"]
+image:https://github-readme-stats.vercel.app/api/pin/?username=aoudiamoncef&repo=maoudia.com[maoudia.com project, 400, 120, link = "https://github.com/maoudia/www.maoudia.com"]
 
 == Github stats 📊 
 
@@ -424,5 +424,5 @@ image:https://github-readme-streak-stats.herokuapp.com/?user=aoudiamoncef[Github
 
 [NOTE]
 ====
-If you have an idea for a blog post, please submit it by opening an link:https://github.com/aoudiamoncef/maoudia.com/issues[issue].
+If you have an idea for a blog post, please submit it by opening an link:https://github.com/maoudia/www.maoudia.com/issues[issue].
 ====

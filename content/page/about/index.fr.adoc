@@ -378,7 +378,7 @@ Les technologies que j'ai utilisées* au travail et/ou dans le cadre de projets 
 == Mes projets 👨‍💻
 
 image:https://github-readme-stats.vercel.app/api/pin/?username=aoudiamoncef&repo=apollo-client-maven-plugin[projet Apollo client maven plugin, 400, 140, link = "https://github.com/aoudiamoncef/apollo-client-maven-plugin"]
-image:https://github-readme-stats.vercel.app/api/pin/?username=aoudiamoncef&repo=maoudia.com[projet maoudia.com, 400, 120, link = "https://github.com/aoudiamoncef/maoudia.com"]
+image:https://github-readme-stats.vercel.app/api/pin/?username=aoudiamoncef&repo=maoudia.com[projet maoudia.com, 400, 120, link = "https://github.com/maoudia/www.maoudia.com"]
 
 == Statistiques Github 📊 
 
@@ -387,5 +387,5 @@ image:https://github-readme-stats.vercel.app/api?username=aoudiamoncef&show_icon
 
 [NOTE]
 ====
-Si vous avez une idée d'article de blog, veuillez la soumettre en ouvrant un link:https://github.com/aoudiamoncef/maoudia.com/issues[ticket].
+Si vous avez une idée d'article de blog, veuillez la soumettre en ouvrant un link:https://github.com/maoudia/www.maoudia.com/issues[ticket].
 ====
