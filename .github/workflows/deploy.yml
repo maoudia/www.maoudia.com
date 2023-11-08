@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -20,12 +21,12 @@ jobs:
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v2
         with:
-          hugo-version: ${{ secrets.HUGO_VERSION }}
+          hugo-version: ${{ vars.HUGO_VERSION }}
           extended: true
         env:
           HUGO_GOOGLEANALYTICS: ${{ secrets.HUGO_GOOGLE}} 
           HUGOxPARAMSxALGOLIA_APPID: ${{ secrets.HUGOXPARAMSXALGOLIA_APPID }} 
-          HUGOxPARAMSxALGOLIA_APIKEY: ${{ secrets.ALGOLIA_SEARCH_API_KEY }}
+          HUGOxPARAMSxALGOLIA_APIKEY: ${{ secrets.HUGOXPARAMSXALGOLIA_APIKEY }}
           HUGOxPARAMSxALGOLIA_INDEXNAME: ${{ secrets.HUGOXPARAMSXALGOLIA_INDEXNAME }}
 
       - name: Setup Ruby

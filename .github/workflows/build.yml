@@ -3,10 +3,14 @@ name: Build staging
 on:
   push:
     branches:
-      - '**'
-  pull_request:
-    branches:
       - main
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review]
+  workflow_dispatch:
+
+env:
+  COMMIT_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+  BRANCH: ${{ github.event_name == 'pull_request' && format('refs/heads/{0}', github.event.pull_request.head.ref) || github.ref }}
 
 jobs:
   build:
@@ -23,12 +27,12 @@ jobs:
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v2
         with:
-          hugo-version: ${{ secrets.HUGO_VERSION }}
+          hugo-version: ${{ vars.HUGO_VERSION }}
           extended: true
         env:
           HUGO_GOOGLEANALYTICS: ${{ secrets.HUGO_GOOGLE }} 
           HUGOxPARAMSxALGOLIA_APPID: ${{ secrets.HUGOXPARAMSXALGOLIA_APPID }} 
-          HUGOxPARAMSxALGOLIA_APIKEY: ${{ secrets.ALGOLIA_SEARCH_API_KEY }}
+          HUGOxPARAMSxALGOLIA_APIKEY: ${{ secrets.HUGOXPARAMSXALGOLIA_APIKEY }}
           HUGOxPARAMSxALGOLIA_INDEXNAME: ${{ secrets.HUGOXPARAMSXALGOLIA_INDEXNAME }}
 
       - name: Setup Ruby
