@@ -3,17 +3,21 @@ name: Build staging
 on:
   push:
     branches:
-      - '**'
-  pull_request:
-    branches:
       - main
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review]
+  workflow_dispatch:
+
+env:
+  COMMIT_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+  BRANCH: ${{ github.event_name == 'pull_request' && format('refs/heads/{0}', github.event.pull_request.head.ref) || github.ref }}
 
 jobs:
   build:
     environment: staging
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     env:
-      NODE_ENV: ${{ secrets.NODE_ENV}} 
+      NODE_ENV: ${{ vars.NODE_ENV }} 
     steps:
       - uses: actions/checkout@v2
         with:
@@ -23,37 +27,36 @@ jobs:
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v2
         with:
-          hugo-version: ${{ secrets.HUGO_VERSION }}
+          hugo-version: ${{ vars.HUGO_VERSION }}
           extended: true
         env:
-          HUGO_GOOGLEANALYTICS: ${{ secrets.GOOGLE_ANALYTICS_PROPERTY_ID}} 
-          HUGO_BASEURL: ${{ secrets.HUGO_BASE_URL}} 
-          HUGOxPARAMSxALGOLIA_APPID: ${{ secrets.ALGOLIA_APP_ID }} 
-          HUGOxPARAMSxALGOLIA_APIKEY: ${{ secrets.ALGOLIA_SEARCH_API_KEY }}
-          HUGOxPARAMSxALGOLIA_INDEXNAME: ${{ secrets.ALGOLIA_INDEX_NAME }}
+          HUGO_GOOGLEANALYTICS: ${{ secrets.HUGO_GOOGLE }} 
+          HUGOxPARAMSxALGOLIA_APPID: ${{ secrets.HUGOXPARAMSXALGOLIA_APPID }} 
+          HUGOxPARAMSxALGOLIA_APIKEY: ${{ secrets.HUGOXPARAMSXALGOLIA_APIKEY }}
+          HUGOxPARAMSxALGOLIA_INDEXNAME: ${{ secrets.HUGOXPARAMSXALGOLIA_INDEXNAME }}
 
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
-         ruby-version: ${{ secrets.RUBY_VERSION}} 
+         ruby-version: ${{ vars.RUBY_VERSION }} 
       - run: gem install asciidoctor asciidoctor-html5s asciidoctor-rouge
 
       - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: ${{ secrets.NODE_VERSION}}
+          node-version: ${{ vars.NODE_VERSION }}
       - run: npm install
 
       - name: Run Hugo
         run: |
-          hugo --minify --buildDrafts --buildExpired --buildFuture --path-warnings --i18n-warnings --templateMetrics --templateMetricsHints --verbose --verboseLog
+          hugo ${{ vars.HUGO_ARGS }}
           cd scripts/
           ./sw.sh
       
       - name: Upload Hugo Algolia Index
         uses: aoudiamoncef/hugo-algolia-uploader@main
         with:
-          app_id: ${{ secrets.ALGOLIA_APP_ID }}
-          admin_key: ${{ secrets.ALGOLIA_ADMIN_API_KEY }}
-          index_name: ${{ secrets.ALGOLIA_INDEX_NAME }}
+          app_id: ${{ secrets.HUGOXPARAMSXALGOLIA_APPID }}
+          admin_key: ${{ secrets.HUGO_ALGOLIA_ADMIN_APIKEY }}
+          index_name: ${{ secrets.HUGOXPARAMSXALGOLIA_INDEXNAME }}
           index_languages: en,fr

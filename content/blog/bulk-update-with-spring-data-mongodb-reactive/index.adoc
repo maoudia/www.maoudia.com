@@ -78,14 +78,14 @@ The application will read the address documents, add the product and save the en
 
 === Requirements
 
-* Java 1.8+
-* Maven 3+
-* Docker Compose
-* MongoDB Database Tools
+* link:https://adoptium.net/[`OpenJDK 21.0.x`]
+* link:https://maven.apache.org/[`Maven 3.9.x`]
+* link:https://docs.docker.com/compose/[`Docker Compose 2.23.x`]
+* link:https://www.mongodb.com/try/download/database-tools[`MongoDB Database Tools 100.9.x`]
 
 === Generation
 
-We generate the project skeleton from https://start.spring.io/#!type=maven-project&language=java&platformVersion=2.7.0&packaging=jar&jvmVersion=1.8&groupId=com.maoudia&artifactId=bulk-update-with-spring-data-mongodb&name=Bulk%20Update%20with%20Spring%20Data%20MongoDB%20Reactive&description=Bulk%20Update%20with%20Spring%20data%20MongoDB%20reactive&packageName=com.maoudia.tutorial&dependencies=data-mongodb-reactive,webflux,testcontainers[`Spring Initializr`, window=\"_blank\"].
+We generate the project skeleton from https://start.spring.io/#!type=maven-project&language=java&platformVersion=3.1.5&packaging=jar&jvmVersion=21&groupId=com.maoudia&artifactId=bulk-update-with-spring-data-mongodb&name=Bulk%20Update%20with%20Spring%20Data%20MongoDB%20Reactive&description=Bulk%20Update%20with%20Spring%20data%20MongoDB%20reactive&packageName=com.maoudia.tutorial&dependencies=data-mongodb-reactive,webflux,testcontainers[`Spring Initializr`, window=\"_blank\"].
 
 === Structure
 
@@ -133,7 +133,7 @@ We use `docker-compose` to create the needed containers for this tutorial.
 services:
   mongodb: // <1>
     container_name: maoudia-mongodb
-    image: mongo:5.0.8
+    image: mongo:7.0.2
     environment:
       - MONGO_INITDB_DATABASE=test
       - MONGO_INITDB_ROOT_USERNAME=admin
@@ -147,7 +147,7 @@ services:
 
   mongo-express: // <2>
     container_name: maoudia-mongo-express
-    image: mongo-express:0.54.0
+    image: mongo-express:1.0.0
     depends_on:
       - mongodb
     networks:
@@ -156,6 +156,8 @@ services:
       - ME_CONFIG_MONGODB_SERVER=maoudia-mongodb
       - ME_CONFIG_MONGODB_ADMINUSERNAME=admin
       - ME_CONFIG_MONGODB_ADMINPASSWORD=password
+      - ME_CONFIG_BASICAUTH_USERNAME=admin
+      - ME_CONFIG_BASICAUTH_PASSWORD=password
     ports:
       - 1515:8081
     volumes:
@@ -223,7 +225,7 @@ Import address collection :
 mongoimport --uri "mongodb://admin:password@localhost:15015" --authenticationDatabase=admin --db test --collection address ./data/mongodb/address.ndjson
 ----
 
-Ou :
+Or:
 
 We use *MongoExpress* which is available at http://localhost:1515[`http://localhost:1515`].
 
@@ -491,33 +493,25 @@ Output :
 [source,console,indent=0,linenums=true]
 ----
 ...
-2022-06-10 00:36:45.152  INFO 7036 --- [           main] com.maoudia.tutorial.Application         : Started Application in 2.755 seconds (JVM running for 3.251)
-2022-06-10 00:36:45.227  INFO 7036 --- [           main] com.maoudia.tutorial.Application         : ------------------< Staring Collection Enriching Command >-------------------
-2022-06-10 00:36:45.297  INFO 7036 --- [           main] org.mongodb.driver.cluster               : No server chosen by com.mongodb.reactivestreams.client.internal.ClientSessionHelper$$Lambda$543/543409470@4647881c from cluster description ClusterDescription{type=UNKNOWN, connectionMode=SINGLE, serverDescriptions=[ServerDescription{address=localhost:15015, type=UNKNOWN, state=CONNECTING}]}. Waiting for 30000 ms before timing out
-2022-06-10 00:36:46.527  INFO 7036 --- [localhost:15015] org.mongodb.driver.connection            : Opened connection [connectionId{localValue:1, serverValue:39}] to localhost:15015
-2022-06-10 00:36:46.527  INFO 7036 --- [localhost:15015] org.mongodb.driver.connection            : Opened connection [connectionId{localValue:2, serverValue:40}] to localhost:15015
-2022-06-10 00:36:46.527  INFO 7036 --- [localhost:15015] org.mongodb.driver.cluster               : Monitor thread successfully connected to server with description ServerDescription{address=localhost:15015, type=STANDALONE, state=CONNECTED, ok=true, minWireVersion=0, maxWireVersion=13, maxDocumentSize=16777216, logicalSessionTimeoutMinutes=30, roundTripTimeNanos=61576400}
-2022-06-10 00:36:46.692  INFO 7036 --- [ntLoopGroup-2-3] org.mongodb.driver.connection            : Opened connection [connectionId{localValue:3, serverValue:41}] to localhost:15015
-2022-06-10 00:36:48.355  INFO 7036 --- [ntLoopGroup-2-3] com.maoudia.tutorial.Application         : Bulk write result with 100 modified document(s)
-2022-06-10 00:36:48.482  INFO 7036 --- [ntLoopGroup-2-4] org.mongodb.driver.connection            : Opened connection [connectionId{localValue:4, serverValue:42}] to localhost:15015
-2022-06-10 00:36:48.562  INFO 7036 --- [ntLoopGroup-2-3] com.maoudia.tutorial.Application         : Bulk write result with 100 modified document(s)
-2022-06-10 00:36:48.742  INFO 7036 --- [ntLoopGroup-2-3] com.maoudia.tutorial.Application         : Bulk write result with 100 modified document(s)
-2022-06-10 00:36:48.982  INFO 7036 --- [ntLoopGroup-2-3] com.maoudia.tutorial.Application         : Bulk write result with 100 modified document(s)
-2022-06-10 00:36:49.222  INFO 7036 --- [ntLoopGroup-2-3] com.maoudia.tutorial.Application         : Bulk write result with 100 modified document(s)
-2022-06-10 00:36:49.488  INFO 7036 --- [ntLoopGroup-2-4] com.maoudia.tutorial.Application         : Bulk write result with 100 modified document(s)
-2022-06-10 00:36:49.701  INFO 7036 --- [ntLoopGroup-2-3] com.maoudia.tutorial.Application         : Bulk write result with 100 modified document(s)
-2022-06-10 00:36:49.852  INFO 7036 --- [ntLoopGroup-2-3] com.maoudia.tutorial.Application         : Bulk write result with 100 modified document(s)
-2022-06-10 00:36:50.031  INFO 7036 --- [ntLoopGroup-2-3] com.maoudia.tutorial.Application         : Bulk write result with 100 modified document(s)
-2022-06-10 00:36:50.105  INFO 7036 --- [ntLoopGroup-2-3] com.maoudia.tutorial.Application         : Bulk write result with 100 modified document(s)
-2022-06-10 00:36:50.106  INFO 7036 --- [ntLoopGroup-2-3] com.maoudia.tutorial.Application         : ------------------< Collection Enriching Command Finished >------------------
+2023-11-10T02:02:58.673+01:00  INFO 84802 --- [           main] com.maoudia.tutorial.Application         : Started Application in 0.831 seconds (process running for 0.992)
+2023-11-10T02:02:58.725+01:00  INFO 84802 --- [           main] com.maoudia.tutorial.Application         : ------------------< Staring Collection Enriching Command >-------------------
+2023-11-10T02:02:59.186+01:00  INFO 84802 --- [ntLoopGroup-2-4] com.maoudia.tutorial.Application         : Bulk write result with 100 modified document(s)
+2023-11-10T02:02:59.244+01:00  INFO 84802 --- [ntLoopGroup-2-5] com.maoudia.tutorial.Application         : Bulk write result with 100 modified document(s)
+2023-11-10T02:02:59.290+01:00  INFO 84802 --- [ntLoopGroup-2-5] com.maoudia.tutorial.Application         : Bulk write result with 100 modified document(s)
+2023-11-10T02:02:59.357+01:00  INFO 84802 --- [ntLoopGroup-2-3] com.maoudia.tutorial.Application         : Bulk write result with 100 modified document(s)
+2023-11-10T02:02:59.438+01:00  INFO 84802 --- [ntLoopGroup-2-3] com.maoudia.tutorial.Application         : Bulk write result with 100 modified document(s)
+2023-11-10T02:02:59.503+01:00  INFO 84802 --- [ntLoopGroup-2-5] com.maoudia.tutorial.Application         : Bulk write result with 100 modified document(s)
+2023-11-10T02:02:59.578+01:00  INFO 84802 --- [ntLoopGroup-2-5] com.maoudia.tutorial.Application         : Bulk write result with 100 modified document(s)
+2023-11-10T02:02:59.632+01:00  INFO 84802 --- [ntLoopGroup-2-5] com.maoudia.tutorial.Application         : Bulk write result with 100 modified document(s)
+2023-11-10T02:02:59.727+01:00  INFO 84802 --- [ntLoopGroup-2-3] com.maoudia.tutorial.Application         : Bulk write result with 100 modified document(s)
+2023-11-10T02:02:59.776+01:00  INFO 84802 --- [ntLoopGroup-2-5] com.maoudia.tutorial.Application         : Bulk write result with 100 modified document(s)
+2023-11-10T02:02:59.776+01:00  INFO 84802 --- [ntLoopGroup-2-5] com.maoudia.tutorial.Application         : ------------------< Collection Enriching Command Finished >------------------
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
 [INFO] ------------------------------------------------------------------------
-[INFO] Total time:  17.315 s
-[INFO] Finished at: 2022-06-10T00:36:54+02:00
+[INFO] Total time:  7.282 s
+[INFO] Finished at: 2023-11-10T02:03:03+01:00
 [INFO] ------------------------------------------------------------------------
-
-Process finished with exit code 0
 ----
 
 === VisuelVM report
@@ -613,17 +607,17 @@ Test results :
 [source,console,indent=0,linenums=true]
 ----
 ...
-[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 20.563 s - in com.maoudia.tutorial.CollectionServiceTest
-[INFO]
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.098 s - in com.maoudia.tutorial.CollectionServiceTest
+[INFO] 
 [INFO] Results:
-[INFO]
+[INFO] 
 [INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
-[INFO]
+[INFO] 
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
 [INFO] ------------------------------------------------------------------------
-[INFO] Total time:  32.100 s
-[INFO] Finished at: 2022-06-10T01:02:17+02:00
+[INFO] Total time:  11.539 s
+[INFO] Finished at: 2023-11-10T02:06:45+01:00
 [INFO] ------------------------------------------------------------------------
 ----
 

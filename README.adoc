@@ -26,7 +26,7 @@ NOTE: To manually upload `index.json` content to https://www.algolia.com/[Algoli
 
 [source,shell]
 ----
-git clone https://github.com/aoudiamoncef/maoudia.com.git
+git clone https://github.com/maoudia/www.maoudia.com.git
 git submodule update --init --recursive
 ----
 
