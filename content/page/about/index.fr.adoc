@@ -12,7 +12,7 @@ slug = "about"
     site = "@AoudiaMoncef"
     creator = "@AoudiaMoncef"
     title = "Moncef AOUDIA"
-    description = "Ingénieur 1x, passionné/mainteneur d'open-source, amoureux de simulations automobiles et vols."
+    description = "Ingénieur, passionné/mainteneur de logiciels open source, amateur de projets domestiques et passionné de simulateurs de course et de vol."
     image = "https://www.maoudia.com/images/banners/banner-1200x600.png"
 +++
 
@@ -31,12 +31,15 @@ slug = "about"
 :apicurio: image:{badges}/apicurio.svg[apicurio]
 :apollographql: image:{badges}/apollographql.svg[apollographql]
 :arduino: image:{badges}/arduino.svg[arduino]
+:argo: image:{badges}/argo.svg[argo]
 :asciidoc: image:{badges}/asciidoc.svg[asciidoc]
 :asciidoctor: image:{badges}/asciidoctor.svg[asciidoctor]
+:asciinema: image:{badges}/asciinema.svg[asciinema]
 :bamboo: image:{badges}/bamboo.svg[bamboo]
 :bash: image:{badges}/bash.svg[bash]
 :beats: image:{badges}/beats.svg[beats]
 :bitbucket: image:{badges}/bitbucket.svg[bitbucket]
+:biolinkBadge: image:{badges}/biolink-large.svg[biolinkbadge, link = "https://bio.link/aoudiamoncef"]
 :bootstrap: image:{badges}/bootstrap.svg[bootstrap]
 :brave: image:{badges}/brave.svg[brave]
 :calibre: image:{badges}/calibre.svg[calibre]
@@ -44,6 +47,7 @@ slug = "about"
 :chrome: image:{badges}/chrome.svg[googlechrome]
 :circleci: image:{badges}/circleci.svg[circleci]
 :cloudflare: image:{badges}/cloudflare.svg[cloudflare]
+:cloudflarepages: image:{badges}/cloudflarepages.svg[cloudflarepages]
 :clubhouseBadge: image:{badges}/clubhouse-badge.svg[clubhouse, link = "https://www.clubhouse.com/@aoudiamoncef"] 
 :codacy: image:{badges}/codacy.svg[codacy]
 :confluence: image:{badges}/confluence.svg[confluence]
@@ -85,6 +89,7 @@ slug = "about"
 :hashnodeBadge: image:{badges}/hashnode-large.svg[hashnodebadge, link = "https://aoudiamoncef.hashnode.dev"]
 :heidisql: image:{badges}/heidisql.svg[heidisql]
 :hibernate: image:{badges}/hibernate.svg[hibernate]
+:homeassistant: image:{badges}/homeassistant.svg[homeassistant]
 :html5: image:{badges}/html5.svg[html5]
 :hugo: image:{badges}/hugo.svg[hugo] 
 :hyper: image:{badges}/hyper.svg[hyper]
@@ -96,11 +101,14 @@ slug = "about"
 :jenkins: image:{badges}/jenkins.svg[jenkins]
 :jira: image:{badges}/jira.svg[jira]
 :junit5: image:{badges}/junit.svg[junit5]
+:k3s: image:{badges}/k3s.svg[k3s]
 :keepassxc: image:{badges}/junit.svg[keepassxc]
 :keycloak: image:{badges}/keycloak.svg[keycloak]
 :kibana: image:{badges}/kibana.svg[kibana]
+:kodi: image:{badges}/kodi.svg[kodi]
 :kong: image:{badges}/kong.svg[kong]
 :kotlin: image:{badges}/kotlin.svg[kotlin]
+:kubernetes: image:{badges}/kubernetes.svg[kubernetes]
 :latex: image:{badges}/latex.svg[latex] 
 :linkedin: image:{badges}/linkedin.svg[linkedin] 
 :linkedinBadge: image:{badges}/linkedin-large.svg[linkedinbadge, link = "https://www.linkedin.com/in/%F0%9F%91%A8%E2%80%8D%F0%9F%92%BB-moncef-aoudia-7723b311b"] 
@@ -124,6 +132,7 @@ slug = "about"
 :myki: image:{badges}/myki.svg[myki]
 :mysql: image:{badges}/mysql.svg[mysql]
 :netlify: image:{badges}/netlify.svg[netlify]
+:nextcloud: image:{badges}/nextcloud.svg[nextcloud]
 :npm: image:{badges}/npm.svg[npm]
 :numpy: image:{badges}/numpy.svg[numpy]
 :ohmyzsh: image:{badges}/ohmyzsh.svg[ohmyzsh]
@@ -131,20 +140,25 @@ slug = "about"
 :opensourceinitiative: image:{badges}/oss.svg[opensourceinitiative]
 :overleaf: image:{badges}/overleaf.svg[overleaf]
 :pandas: image:{badges}/pandas.svg[pandas]
+:pihole: image:{badges}/pihole.svg[pihole]
+:plex: image:{badges}/plex.svg[plex]
 :pocket: image:{badges}/pocket.svg[pocket]
 :pocketBadge: image:{badges}/pocket-large.svg[pocketbadge, link = "https://getpocket.com/@701dbpd1T08b8g7f59Ab790A73g1T0G2725K38yf75eym1w2di86eN27V2dIJ51a"]
 :postgresql: image:{badges}/postgresql.svg[postgresql]
 :postman: image:{badges}/postman.svg[postman]
+:proxmox: image:{badges}/proxmox.svg[proxmox]
 :python: image:{badges}/python.svg[python]
 :quarkus: image:{badges}/quarkus.svg[quarkus]
 :quora: image:{badges}/quora.svg[quora]
 :quoraBadge: image:{badges}/quora-large.svg[quora, link = "https://www.quora.com/profile/Moncef-AOUDIA"]
 :rainbow: image:{badges}/rainbow.svg[rainbow]
+:rancher: image:{badges}/rancher.svg[rancher]
 :reactivex: image:{badges}/reactivex.svg[reactivex]
 :reactor: image:{badges}/reactor.svg[reactor] 
 :reddit: image:{badges}/reddit.svg[reddit]
 :redditBadge: image:{badges}/reddit-large.svg[redditbadge, link = "https://www.reddit.com/user/aoudiamoncef"]
-:redis: image:{badges}/redis.svg[redis] 
+:redis: image:{badges}/redis.svg[redis]
+:rocksdb: image:{badges}/rocksdb.svg[rocksdb]
 :rss: image:{badges}/rss.svg[rss]
 :rssBadge: image:{badges}/rss-large.svg[rssbadge, link = "https://www.maoudia.com/index.xml"]
 :rust: image:{badges}/rust.svg[rust]
@@ -152,6 +166,7 @@ slug = "about"
 :scala: image:{badges}/scala.svg[scala]
 :slack: image:{badges}/slack.svg[slack]
 :slides: image:{badges}/slides.svg[slides]
+:snyk: image:{badges}/snyk.svg[snyk]
 :slidesBadge: image:{badges}/slides-large.svg[slidesbadge, link = "https://slides.com/aoudiamoncef"]
 :solidity: image:{badges}/solidity.svg[solidity] 
 :sonarlint: image:{badges}/sonarlint.svg[sonarlint]
@@ -167,14 +182,20 @@ slug = "about"
 :sql: image:{badges}/sql.svg[sql]
 :stackoverflow: image:{badges}/stackoverflow.svg[stackoverflow]
 :stackoverflowBadge: image:{badges}/stackoverflow-large.svg[stackoverflowbadge, link = "https://stackoverflow.com/users/8126192/moncef-aoudia"]
-:syncthing: image:{badges}/syncthing.svg[syncthing] 
+:supabase: image:{badges}/supabase.svg[supabase]
+:syncthing: image:{badges}/syncthing.svg[syncthing]
+:synology: image:{badges}/synology.svg[synology]
 :thymeleaf: image:{badges}/thymeleaf.svg[thymeleaf]
+:traefikproxy: image:{badges}/traefikproxy.svg[traefikproxy]
 :travisci: image:{badges}/travisci.svg[travisci]
+:truenas: image:{badges}/truenas.svg[truenas]
 :twitter: image:{badges}/twitter.svg[twitter]
 :twitterBadge: image:{badges}/twitter-large.svg[twitterbadge, link= "https://twitter.com/aoudiamoncef"] 
 :typescript: image:{badges}/typescript.svg[typescript]
+:ubiquiti: image:{badges}/ubiquiti.svg[ubiquiti]
 :ublockorigin: image:{badges}/ublockorigin.svg[ublockorigin]
 :ubuntu: image:{badges}/ubuntu.svg[ubuntu]
+:uptimekuma: image:{badges}/uptimekuma.svg[uptimekuma]
 :vagrant: image:{badges}/vagrant.svg[vagrant]
 :visualstudiocode: image:{badges}/visualstudiocode.svg[visualstudiocode]
 :visualvm: image:{badges}/visualvm.svg[visualvm]
@@ -186,7 +207,8 @@ slug = "about"
 :yammer: image:{badges}/yammer.svg[yammer]
 :zulip: image:{badges}/zulip.svg[zulip]
 
-Ingénieur 1x, passionné/mainteneur d'open-source, amoureux de simulations automobiles et vols.
+[.lead]
+Ingénieur, passionné/mainteneur de logiciels open source, amateur de projets domestiques et passionné de simulateurs de course et de vol..
 
 <!--more-->
 
@@ -211,6 +233,7 @@ Ingénieur 1x, passionné/mainteneur d'open-source, amoureux de simulations auto
 {quoraBadge}
 {maoudia}
 {rssBadge}
+{biolinkBadge}
 
 == Mon univers 🔮
 
@@ -263,6 +286,7 @@ Les technologies que j'ai utilisées* au travail et/ou dans le cadre de projets 
 {mysql}
 {postgresql}
 {redis}
+{rocksdb}
 ====
 
 .Frameworks et bibliothèques
@@ -298,6 +322,8 @@ Les technologies que j'ai utilisées* au travail et/ou dans le cadre de projets 
 {ansible}
 {apachemaven}
 {asciidoctor}
+{asciinema}
+{argo}
 {bash}
 {beats}
 {calibre}
@@ -308,11 +334,16 @@ Les technologies que j'ai utilisées* au travail et/ou dans le cadre de projets 
 {filezilla}
 {focustodo}
 {joplin}
+{k3s}
+{kodi}
+{kubernetes}
 {gatling}
 {git}
 {gitkraken}
 {gradle}
 {heidisql}
+{nextcloud}
+{homeassistant}
 {hyper}
 {kibana}
 {keepassxc}
@@ -320,13 +351,61 @@ Les technologies que j'ai utilisées* au travail et/ou dans le cadre de projets 
 {mremoteng}
 {npm}
 {ohmyzsh}
+{pihole}
+{plex}
 {pocket}
+{portainer}
 {postman}
+{proxmox}
+{rancher}
 {sonarlint}
+{supabase}
 {syncthing}
+{synology}
+{traefikproxy}
+{truenas}
+{ubiquiti}
+{uptimekuma}
 {vagrant}
 {visualvm}
 {windowsterminal}
+====
+
+.Services
+[%collapsible]
+[.badge]
+====
+{algolia}
+{analytics}
+{apicurio}
+{bamboo}
+{bitbucket}
+{circleci}
+{cloudflare}
+{cloudflarepages}
+{codacy}
+{confluence}
+{consul}
+{dependabot}
+{diagramsnet}
+{github}
+{githubactions}
+{gitlab}
+{gitpod}
+{googlecloud}
+{grafana}
+{jenkins}
+{jira}
+{keycloak}
+{kong}
+{microcks}
+{netlify}
+{overleaf}
+{sonarqube}
+{sonatype}
+{snyk}
+{travisci}
+{winds}
 ====
 
 .Communication 
@@ -378,8 +457,11 @@ Les technologies que j'ai utilisées* au travail et/ou dans le cadre de projets 
 == Mes projets 👨‍💻
 
 image:https://github-readme-stats.vercel.app/api/pin/?username=aoudiamoncef&repo=apollo-client-maven-plugin[projet Apollo client maven plugin, 400, 140, link = "https://github.com/aoudiamoncef/apollo-client-maven-plugin"]
-image:https://github-readme-stats.vercel.app/api/pin/?username=aoudiamoncef&repo=maoudia.com[projet maoudia.com, 400, 120, link = "https://github.com/maoudia/www.maoudia.com"]
-image:https://github-readme-stats.vercel.app/api/pin/?username=aoudiamoncef&repo=maoudia.com[projet SSH-Enabled Ubuntu Docker Image, 400, 120, link = "https://github.com/aoudiamoncef/ubuntu-sshd"]
+
+image:https://github-readme-stats.vercel.app/api/pin/?username=aoudiamoncef&repo=ubuntu-sshd[projet SSH-Enabled Ubuntu Docker Image, 400, 120, link = "https://github.com/aoudiamoncef/ubuntu-sshd"]
+
+image:https://github-readme-stats.vercel.app/api/pin/?username=maoudia&repo=www.maoudia.com[projet maoudia.com, 400, 120, link = "https://github.com/maoudia/www.maoudia.com"]
+
 == Statistiques Github 📊 
 
 image:https://github-readme-stats.vercel.app/api?username=aoudiamoncef&show_icons=true&theme=flag-india&hide_title=true&count_private=true&locale=fr[visualisation statistiques Github, 495, 165]
