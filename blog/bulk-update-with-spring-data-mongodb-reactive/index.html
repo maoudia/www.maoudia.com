@@ -1,251 +1,22 @@
-<!doctype html><html class=no-js lang=en>
-<head>
-<meta charset=utf-8>
-<meta name=viewport content="width=device-width,initial-scale=1">
-<meta name=siteBaseUrl content="https://www.maoudia.com/">
-<meta name=author content="Moncef AOUDIA">
-<meta name=description content="Moncef AOUDIA's website">
-<meta name=keywords content="blog,personal,programming,java,graphql,springboot,quarkus,reactor,camel,apollo,opensource,multilingual">
-<link href=https://github.com/aoudiamoncef rel=me>
-<link rel=webmention href=https://webmention.io/www.maoudia.com/webmention>
-<link rel=pingback href=https://webmention.io/www.maoudia.com/xmlrpc>
-<meta name=generator content="Hugo 0.88.1">
-<noscript>
-<meta http-equiv=refresh content="0; url=https://www.maoudia.com/blog/bulk-update-with-spring-data-mongodb-reactive/">
-</noscript>
-<title>
-Bulk Update With Spring Data MongoDB Reactive | Moncef AOUDIA
-</title>
-<meta name=description content="We will implement a solution to enrich and update efficiently a large amount of data using Spring Data MongoDB Reactive.">
-<meta itemprop=name content="Bulk Update With Spring Data MongoDB Reactive">
-<meta itemprop=description content="We will implement a solution to enrich and update efficiently a large amount of data using Spring Data MongoDB Reactive.">
-<meta name=twitter:card content="summary_large_image">
-<meta name=twitter:site content="@AoudiaMoncef">
-<meta name=twitter:title content="Bulk Update With Spring Data MongoDB Reactive">
-<meta name=twitter:image content="https://www.maoudia.com/blog/bulk-update-with-spring-data-mongodb-reactive/featured-image-en.png">
-<meta name=twitter:image:src content="https://www.maoudia.com/blog/bulk-update-with-spring-data-mongodb-reactive/featured-image-en.png">
-<meta name=twitter:creator content="@AoudiaMoncef">
-<meta property="og:title" content="Bulk Update With Spring Data MongoDB Reactive">
-<meta property="og:description" content="We will implement a solution to enrich and update efficiently a large amount of data using Spring Data MongoDB Reactive.">
-<meta property="og:type" content="article">
-<meta property="og:url" content="https://www.maoudia.com/blog/bulk-update-with-spring-data-mongodb-reactive/">
-<meta property="og:image" content="https://www.maoudia.com/blog/bulk-update-with-spring-data-mongodb-reactive/featured-image-en.png">
-<meta property="og:image:secure_url" content="https://www.maoudia.com/blog/bulk-update-with-spring-data-mongodb-reactive/featured-image-en.png">
-<meta property="og:image:type" content="image/png">
-<meta property="og:image:width" content>
-<meta property="og:image:height" content><meta property="article:section" content="blog">
-<meta property="article:published_time" content="2022-06-20T00:00:00+02:00">
-<meta property="article:modified_time" content="2022-06-22T23:15:35+02:00">
-<meta property="og:locale" content="en">
-<meta property="og:locale:alternate" content="fr">
-<meta property="og:site_name" content="Moncef AOUDIA">
-<head>
-<link rel=apple-touch-icon sizes=180x180 href=/images/favicons/apple-touch-icon-180x180.webp>
-<link rel=icon type=image/png sizes=32x32 href=/images/favicons/favicon-32x32.webp>
-<link rel=icon type=image/png sizes=16x16 href=/images/favicons/favicon-16x16.webp>
-<link rel=manifest href=/manifest.json crossorigin=use-credentials>
-<link rel=mask-icon href=/images/favicons/safari-pinned-tab.svg color=#5bbad5>
-<meta name=apple-mobile-web-app-title content="https://www.maoudia.com">
-<meta name=application-name content="https://www.maoudia.com">
-<meta name=msapplication-TileColor content="#00a300">
-<meta name=theme-color media="(prefers-color-scheme: light)" content="white">
-<meta name=theme-color media="(prefers-color-scheme: dark)" content="black">
-</head>
-<link rel=preload as=script href=https://www.maoudia.com/js/modernizr-simple.min.js>
-<script src=/js/modernizr-simple.min.js></script>
-<link href=https://www.maoudia.com/index.xml rel=alternate type=application/rss+xml title="Moncef AOUDIA">
-<link href=https://www.maoudia.com/blog/index.xml rel=feed type=application/rss+xml title="Moncef AOUDIA Blog">
-<link rel=canonical href=https://www.maoudia.com/blog/bulk-update-with-spring-data-mongodb-reactive/>
-<link rel=preload as=script href=https://www.maoudia.com/js/theme.min.js crossorigin=anonymous>
-<link rel=stylesheet href=https://www.maoudia.com/css/theme.min.css>
-<link rel=stylesheet href=https://www.maoudia.com/css/main.min.css integrity>
-</head>
-<body class=bilberry-hugo-theme>
-<nav class=permanentTopNav>
-<div class=container>
-<ul class=topnav>
-<li><a href=https://www.maoudia.com/uses/>Uses</a></li>
-<li><a href=https://www.maoudia.com/about/>About</a></li>
-</ul>
-<div id=search-box class=search>
-<i class="fas fa-search"></i>
-<input id=search type=text placeholder="Search ...">
-</div>
-</div>
-</nav>
-<header>
-<div class=container>
-<div class=logo>
-<a href=https://www.maoudia.com/ class=logo>
-<img src=/images/logo.png width=512 height=512 alt="Moncef AOUDIA logo">
-<span class=overlay><i class="fa fa-home"></i></span>
-</a>
-</div>
-<div class=titles>
-<h3 class=title>
-<a href=/about/>
-Moncef AOUDIA
-</a>
-</h3>
-<span class=subtitle>Software developer - OSS enthusiast</span>
-</div>
-<div class=languages>
-<a href=https://www.maoudia.com/ class=active>en</a>
-<span> | </span>
-<a href=https://www.maoudia.com/fr/>fr</a>
-</div>
-<div class="toggler permanentTopNav">
-<i class="fa fa-bars" aria-hidden=true></i>
-</div>
-</div>
-</header>
-<div class="main container">
-<div class="article-wrapper u-cf single">
-<article class="default article">
-<div class="featured-image webfeedsFeaturedVisual">
-<a href=https://www.maoudia.com/blog/bulk-update-with-spring-data-mongodb-reactive/ alt="article with featured image">
-<img src=/blog/bulk-update-with-spring-data-mongodb-reactive/featured-image-en.png width=1200 height=600 alt="featured image">
-</a>
-</div>
-<div class=content>
-<h1 class=article-title>
-<a href=https://www.maoudia.com/blog/bulk-update-with-spring-data-mongodb-reactive/>
-Bulk Update With Spring Data MongoDB Reactive
-</a>
-</h1>
-<div class=meta>
-<span>Published on </span>
+<!doctype html><html class=no-js lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=siteBaseUrl content="https://www.maoudia.com/"><meta name=author content="Moncef AOUDIA"><meta name=description content="Moncef AOUDIA's website"><meta name=keywords content="blog,personal,programming,java,graphql,springboot,quarkus,reactor,camel,apollo,opensource,multilingual"><link href=https://github.com/aoudiamoncef rel=me><link rel=webmention href=https://webmention.io/www.maoudia.com/webmention><link rel=pingback href=https://webmention.io/www.maoudia.com/xmlrpc><meta name=generator content="Hugo 0.100.2"><noscript><meta http-equiv=refresh content="0; url=https://www.maoudia.com/blog/bulk-update-with-spring-data-mongodb-reactive/"></noscript><title>Bulk Update With Spring Data MongoDB Reactive | Moncef AOUDIA</title><meta name=description content="We will implement a solution to enrich and update efficiently a large amount of data using Spring Data MongoDB Reactive."><meta itemprop=name content="Bulk Update With Spring Data MongoDB Reactive"><meta itemprop=description content="We will implement a solution to enrich and update efficiently a large amount of data using Spring Data MongoDB Reactive."><meta name=twitter:card content="summary_large_image"><meta name=twitter:site content="@AoudiaMoncef"><meta name=twitter:title content="Bulk Update With Spring Data MongoDB Reactive"><meta name=twitter:image content="https://www.maoudia.com/blog/bulk-update-with-spring-data-mongodb-reactive/featured-image-en.png"><meta name=twitter:image:src content="https://www.maoudia.com/blog/bulk-update-with-spring-data-mongodb-reactive/featured-image-en.png"><meta name=twitter:creator content="@AoudiaMoncef"><meta property="og:title" content="Bulk Update With Spring Data MongoDB Reactive"><meta property="og:description" content="We will implement a solution to enrich and update efficiently a large amount of data using Spring Data MongoDB Reactive."><meta property="og:type" content="article"><meta property="og:url" content="https://www.maoudia.com/blog/bulk-update-with-spring-data-mongodb-reactive/"><meta property="og:image" content="https://www.maoudia.com/blog/bulk-update-with-spring-data-mongodb-reactive/featured-image-en.png"><meta property="og:image:secure_url" content="https://www.maoudia.com/blog/bulk-update-with-spring-data-mongodb-reactive/featured-image-en.png"><meta property="og:image:type" content="image/png"><meta property="og:image:width" content><meta property="og:image:height" content><meta property="article:section" content="blog"><meta property="article:published_time" content="2022-06-20T00:00:00+02:00"><meta property="article:modified_time" content="2023-11-10T02:11:21+01:00"><meta property="og:locale" content="en"><meta property="og:locale:alternate" content="fr"><meta property="og:site_name" content="Moncef AOUDIA"><head><link rel=apple-touch-icon sizes=180x180 href=/images/favicons/apple-touch-icon-180x180.webp><link rel=icon type=image/png sizes=32x32 href=/images/favicons/favicon-32x32.webp><link rel=icon type=image/png sizes=16x16 href=/images/favicons/favicon-16x16.webp><link rel=manifest href=/manifest.json crossorigin=use-credentials><link rel=mask-icon href=/images/favicons/safari-pinned-tab.svg color=#5bbad5><meta name=apple-mobile-web-app-title content="https://www.maoudia.com"><meta name=application-name content="https://www.maoudia.com"><meta name=msapplication-TileColor content="#00a300"><meta name=theme-color media="(prefers-color-scheme: light)" content="white"><meta name=theme-color media="(prefers-color-scheme: dark)" content="black"></head><link rel=preload as=script href=https://www.maoudia.com/js/modernizr-simple.min.js><script src=/js/modernizr-simple.min.js></script>
+<link href=https://www.maoudia.com/index.xml rel=alternate type=application/rss+xml title="Moncef AOUDIA"><link href=https://www.maoudia.com/blog/index.xml rel=feed type=application/rss+xml title="Moncef AOUDIA Blog"><link rel=canonical href=https://www.maoudia.com/blog/bulk-update-with-spring-data-mongodb-reactive/><link rel=preload as=script href=https://www.maoudia.com/js/theme.min.js crossorigin=anonymous><link rel=stylesheet href=https://www.maoudia.com/css/theme.min.css><link rel=stylesheet href=https://www.maoudia.com/css/main.min.css integrity></head><body class=bilberry-hugo-theme><nav class=permanentTopNav><div class=container><ul class=topnav><li><a href=https://www.maoudia.com/uses/>Uses</a></li><li><a href=https://www.maoudia.com/about/>About</a></li></ul><div id=search-box class=search><i class="fas fa-search"></i>
+<input id=search type=text placeholder="Search ..."></div></div></nav><header><div class=container><div class=logo><a href=https://www.maoudia.com/ class=logo><img src=/images/logo.png width=512 height=512 alt="Moncef AOUDIA logo">
+<span class=overlay><i class="fa fa-home"></i></span></a></div><div class=titles><h3 class=title><a href=/about/>Moncef AOUDIA</a></h3><span class=subtitle>Software developer - OSS enthusiast</span></div><div class=languages><a href=https://www.maoudia.com/ class=active>en</a>
+<span>|</span>
+<a href=https://www.maoudia.com/fr/>fr</a></div><div class="toggler permanentTopNav"><i class="fa fa-bars" aria-hidden=true></i></div></div></header><div class="main container"><div class="article-wrapper u-cf single"><article class="default article"><div class="featured-image webfeedsFeaturedVisual"><a href=https://www.maoudia.com/blog/bulk-update-with-spring-data-mongodb-reactive/ alt="article with featured image"><img src=/blog/bulk-update-with-spring-data-mongodb-reactive/featured-image-en.png width=1200 height=600 alt="featured image"></a></div><div class=content><h1 class=article-title><a href=https://www.maoudia.com/blog/bulk-update-with-spring-data-mongodb-reactive/>Bulk Update With Spring Data MongoDB Reactive</a></h1><div class=meta><span>Published on</span>
 <span class=date>2022-06-20</span>
-<span> | </span>
-<span>Updated on </span>
-<span class=date>2022-06-22</span>
-<span> | </span>
+<span>|</span>
+<span>Updated on</span>
+<span class=date>2023-11-10</span>
+<span>|</span>
 <span class=readingTime>10 mins read</span>
-<span> | </span>
-<span class=categories>
-<a href=https://www.maoudia.com/categories/tutorial/>Tutorial</a>
-<a href=https://www.maoudia.com/categories/reactive-programming/>Reactive Programming</a>
-</span>
-</div>
-<div class=paragraph>
-<p>In order to update documents in a MongoDB collection, we often use update requests, if the volume of data is too large,
-it could lead to performance issues and overconsumption of hardware resources.</p>
-</div>
-<div class=paragraph>
-<p>We will implement a solution to enrich and update efficiently a large amount of data
-using Spring Data MongoDB Reactive.</p>
-</div>
-<div id=toc class=toc>
-<div id=toctitle class=title>Table of contents</div>
-<ul class=sectlevel1>
-<li><a href=#_eip_content_enricher>1. EIP content enricher</a>
-<ul class=sectlevel2>
-<li><a href=#_integration_flow>1.1. Integration flow</a></li>
-</ul>
-</li>
-<li><a href=#_project_setup>2. Project setup</a>
-<ul class=sectlevel2>
-<li><a href=#_requirements>2.1. Requirements</a></li>
-<li><a href=#_generation>2.2. Generation</a></li>
-<li><a href=#_structure>2.3. Structure</a></li>
-<li><a href=#_containers>2.4. Containers</a></li>
-<li><a href=#_data_initialization>2.5. Data initialization</a></li>
-</ul>
-</li>
-<li><a href=#_application>3. Application</a>
-<ul class=sectlevel2>
-<li><a href=#_configuration>3.1. Configuration</a></li>
-<li><a href=#_implementation>3.2. Implementation</a></li>
-<li><a href=#_demo>3.3. Demo</a></li>
-<li><a href=#_visuelvm_report>3.4. VisuelVM report</a></li>
-</ul>
-</li>
-<li><a href=#_integration_tests>4. Integration tests</a></li>
-<li><a href=#_conclusion>5. Conclusion</a></li>
-<li><a href=#_resources>6. Resources</a></li>
-</ul>
-</div>
-<div class=paragraph>
-<p>Before continuing the reading, if you are not familiar with Spring reactive stack and MongoDB,
-I suggest you to check the <strong>resources</strong> section.</p>
-</div>
-<div class=sect1>
-<h2 id=_eip_content_enricher>1. EIP content enricher</h2>
-<div class=sectionbody>
-<div class=imageblock>
-<div class="content schema">
-<img src=/images/blog/bulk-update-with-spring-data-mongodb-reactive/content-enricher.svg alt="eip content enricher">
-</div>
-</div>
-<div class=paragraph>
-<p>Enterprise Integration Pattern <em>Content Enricher</em> appends information to an existing message from an external source.
-It uses information inside the incoming message to perform the enrichment operation.</p>
-</div>
-<div class=paragraph>
-<p>We will implement a simplified version of the EIP :</p>
-</div>
-<div class="olist arabic">
-<ol class=arabic>
-<li>
-<p>Input message : represented by a MongoDB document.</p>
-</li>
-<li>
-<p>Enricher : our application.</p>
-</li>
-<li>
-<p>Resource : call to a RESTful API.</p>
-</li>
-<li>
-<p>Output message : we will keep only the enriched document.</p>
-</li>
-</ol>
-</div>
-<div class=sect2>
-<h3 id=_integration_flow>1.1. Integration flow</h3>
-<div class=imageblock>
-<div class="content schema">
-<img src=/images/blog/bulk-update-with-spring-data-mongodb-reactive/integration-flow.svg alt="integration flow schema">
-</div>
-</div>
-<div class=paragraph>
-<p>The application will read the address documents, add the product and save the enriched documents to the MongoDB database.</p>
-</div>
-</div>
-</div>
-</div>
-<div class=sect1>
-<h2 id=_project_setup>2. Project setup</h2>
-<div class=sectionbody>
-<div class=sect2>
-<h3 id=_requirements>2.1. Requirements</h3>
-<div class=ulist>
-<ul>
-<li>
-<p>Java 1.8+</p>
-</li>
-<li>
-<p>Maven 3+</p>
-</li>
-<li>
-<p>Docker Compose</p>
-</li>
-<li>
-<p>MongoDB Database Tools</p>
-</li>
-</ul>
-</div>
-</div>
-<div class=sect2>
-<h3 id=_generation>2.2. Generation</h3>
-<div class=paragraph>
-<p>We generate the project skeleton from <a href="https://start.spring.io/#!type=maven-project&language=java&platformVersion=2.7.0&packaging=jar&jvmVersion=1.8&groupId=com.maoudia&artifactId=bulk-update-with-spring-data-mongodb&name=Bulk%20Update%20with%20Spring%20Data%20MongoDB%20Reactive&description=Bulk%20Update%20with%20Spring%20data%20MongoDB%20reactive&packageName=com.maoudia.tutorial&dependencies=data-mongodb-reactive,webflux,testcontainers" target=\ _blank\""><code>Spring Initializr</code></a>.</p>
-</div>
-</div>
-<div class=sect2>
-<h3 id=_structure>2.3. Structure</h3>
-<div class=listingblock>
-<div class=content>
-<pre class="rouge highlight"><code data-lang=shell><table class=linenotable><tbody><tr><td class="linenos gl"><pre class=lineno> 1
+<span>|</span>
+<span class=categories><a href=https://www.maoudia.com/categories/tutorial/>Tutorial</a>
+<a href=https://www.maoudia.com/categories/reactive-programming/>Reactive Programming</a></span></div><div class=paragraph><p>In order to update documents in a MongoDB collection, we often use update requests, if the volume of data is too large,
+it could lead to performance issues and overconsumption of hardware resources.</p></div><div class=paragraph><p>We will implement a solution to enrich and update efficiently a large amount of data
+using Spring Data MongoDB Reactive.</p></div><div id=toc class=toc><div id=toctitle class=title>Table of contents</div><ul class=sectlevel1><li><a href=#_eip_content_enricher>1. EIP content enricher</a><ul class=sectlevel2><li><a href=#_integration_flow>1.1. Integration flow</a></li></ul></li><li><a href=#_project_setup>2. Project setup</a><ul class=sectlevel2><li><a href=#_requirements>2.1. Requirements</a></li><li><a href=#_generation>2.2. Generation</a></li><li><a href=#_structure>2.3. Structure</a></li><li><a href=#_containers>2.4. Containers</a></li><li><a href=#_data_initialization>2.5. Data initialization</a></li></ul></li><li><a href=#_application>3. Application</a><ul class=sectlevel2><li><a href=#_configuration>3.1. Configuration</a></li><li><a href=#_implementation>3.2. Implementation</a></li><li><a href=#_demo>3.3. Demo</a></li><li><a href=#_visuelvm_report>3.4. VisuelVM report</a></li></ul></li><li><a href=#_integration_tests>4. Integration tests</a></li><li><a href=#_conclusion>5. Conclusion</a></li><li><a href=#_resources>6. Resources</a></li></ul></div><div class=paragraph><p>Before continuing the reading, if you are not familiar with Spring reactive stack and MongoDB,
+I suggest you to check the <strong>resources</strong> section.</p></div><div class=sect1><h2 id=_eip_content_enricher>1. EIP content enricher</h2><div class=sectionbody><div class=imageblock><div class="content schema"><img src=/images/blog/bulk-update-with-spring-data-mongodb-reactive/content-enricher.svg alt="eip content enricher"></div></div><div class=paragraph><p>Enterprise Integration Pattern <em>Content Enricher</em> appends information to an existing message from an external source.
+It uses information inside the incoming message to perform the enrichment operation.</p></div><div class=paragraph><p>We will implement a simplified version of the EIP :</p></div><div class="olist arabic"><ol class=arabic><li><p>Input message : represented by a MongoDB document.</p></li><li><p>Enricher : our application.</p></li><li><p>Resource : call to a RESTful API.</p></li><li><p>Output message : we will keep only the enriched document.</p></li></ol></div><div class=sect2><h3 id=_integration_flow>1.1. Integration flow</h3><div class=imageblock><div class="content schema"><img src=/images/blog/bulk-update-with-spring-data-mongodb-reactive/integration-flow.svg alt="integration flow schema"></div></div><div class=paragraph><p>The application will read the address documents, add the product and save the enriched documents to the MongoDB database.</p></div></div></div></div><div class=sect1><h2 id=_project_setup>2. Project setup</h2><div class=sectionbody><div class=sect2><h3 id=_requirements>2.1. Requirements</h3><div class=ulist><ul><li><p><a href=https://adoptium.net/><code>OpenJDK 21.0.x</code></a></p></li><li><p><a href=https://maven.apache.org/><code>Maven 3.9.x</code></a></p></li><li><p><a href=https://docs.docker.com/compose/><code>Docker Compose 2.23.x</code></a></p></li><li><p><a href=https://www.mongodb.com/try/download/database-tools><code>MongoDB Database Tools 100.9.x</code></a></p></li></ul></div></div><div class=sect2><h3 id=_generation>2.2. Generation</h3><div class=paragraph><p>We generate the project skeleton from <a href="https://start.spring.io/#!type=maven-project&language=java&platformVersion=3.1.5&packaging=jar&jvmVersion=21&groupId=com.maoudia&artifactId=bulk-update-with-spring-data-mongodb&name=Bulk%20Update%20with%20Spring%20Data%20MongoDB%20Reactive&description=Bulk%20Update%20with%20Spring%20data%20MongoDB%20reactive&packageName=com.maoudia.tutorial&dependencies=data-mongodb-reactive,webflux,testcontainers" target=\ _blank\""><code>Spring Initializr</code></a>.</p></div></div><div class=sect2><h3 id=_structure>2.3. Structure</h3><div class=listingblock><div class=content><pre class="rouge highlight"><code data-lang=shell><table class=linenotable><tbody><tr><td class="linenos gl"><pre class=lineno> 1
  2
  3
  4
@@ -301,22 +72,7 @@ It uses information inside the incoming message to perform the enrichment operat
            └───maoudia
               └───tutorial
                    CollectionServiceTest.java
-</pre></td></tr></tbody></table></code></pre>
-</div>
-</div>
-</div>
-<div class=sect2>
-<h3 id=_containers>2.4. Containers</h3>
-<div class=paragraph>
-<p>Download <a href=https://github.com/maoudia/code.maoudia.com/tree/main/bulk-update-with-spring-data-mongodb-reactive/data><code>data</code></a> directory to the root of the project.</p>
-</div>
-<div class=paragraph>
-<p>We use <code>docker-compose</code> to create the needed containers for this tutorial.</p>
-</div>
-<div class=listingblock>
-<div class=title>docker-compose.yml</div>
-<div class=content>
-<pre class="rouge highlight"><code data-lang=yml><table class=linenotable><tbody><tr><td class="linenos gl"><pre class=lineno> 1
+</pre></td></tr></tbody></table></code></pre></div></div></div><div class=sect2><h3 id=_containers>2.4. Containers</h3><div class=paragraph><p>Download <a href=https://github.com/maoudia/code.maoudia.com/tree/main/bulk-update-with-spring-data-mongodb-reactive/data><code>data</code></a> directory to the root of the project.</p></div><div class=paragraph><p>We use <code>docker-compose</code> to create the needed containers for this tutorial.</p></div><div class=listingblock><div class=title>docker-compose.yml</div><div class=content><pre class="rouge highlight"><code data-lang=yml><table class=linenotable><tbody><tr><td class="linenos gl"><pre class=lineno> 1
  2
  3
  4
@@ -358,10 +114,12 @@ It uses information inside the incoming message to perform the enrichment operat
 40
 41
 42
+43
+44
 </pre></td><td class=code><pre><span class=na>services</span><span class=pi>:</span>
   <span class=na>mongodb</span><span class=pi>:</span> <i class=conum data-value=1></i><b>(1)</b>
     <span class=na>container_name</span><span class=pi>:</span> <span class=s>maoudia-mongodb</span>
-    <span class=na>image</span><span class=pi>:</span> <span class=s>mongo:5.0.8</span>
+    <span class=na>image</span><span class=pi>:</span> <span class=s>mongo:7.0.2</span>
     <span class=na>environment</span><span class=pi>:</span>
       <span class=pi>-</span> <span class=s>MONGO_INITDB_DATABASE=test</span>
       <span class=pi>-</span> <span class=s>MONGO_INITDB_ROOT_USERNAME=admin</span>
@@ -375,7 +133,7 @@ It uses information inside the incoming message to perform the enrichment operat
 
   <span class=na>mongo-express</span><span class=pi>:</span> <i class=conum data-value=2></i><b>(2)</b>
     <span class=na>container_name</span><span class=pi>:</span> <span class=s>maoudia-mongo-express</span>
-    <span class=na>image</span><span class=pi>:</span> <span class=s>mongo-express:0.54.0</span>
+    <span class=na>image</span><span class=pi>:</span> <span class=s>mongo-express:1.0.0</span>
     <span class=na>depends_on</span><span class=pi>:</span>
       <span class=pi>-</span> <span class=s>mongodb</span>
     <span class=na>networks</span><span class=pi>:</span>
@@ -384,6 +142,8 @@ It uses information inside the incoming message to perform the enrichment operat
       <span class=pi>-</span> <span class=s>ME_CONFIG_MONGODB_SERVER=maoudia-mongodb</span>
       <span class=pi>-</span> <span class=s>ME_CONFIG_MONGODB_ADMINUSERNAME=admin</span>
       <span class=pi>-</span> <span class=s>ME_CONFIG_MONGODB_ADMINPASSWORD=password</span>
+      <span class=pi>-</span> <span class=s>ME_CONFIG_BASICAUTH_USERNAME=admin</span>
+      <span class=pi>-</span> <span class=s>ME_CONFIG_BASICAUTH_PASSWORD=password</span>
     <span class=na>ports</span><span class=pi>:</span>
       <span class=pi>-</span> <span class=s>1515:8081</span>
     <span class=na>volumes</span><span class=pi>:</span>
@@ -400,45 +160,9 @@ It uses information inside the incoming message to perform the enrichment operat
 <span class=na>networks</span><span class=pi>:</span>
   <span class=na>mongodb-network</span><span class=pi>:</span>
     <span class=na>driver</span><span class=pi>:</span> <span class=s>bridge</span>
-</pre></td></tr></tbody></table></code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tbody><tr>
-<td><i class=conum data-value=1></i><b>1</b></td>
-<td>MongoDB initialized with the <code>test</code> database.</td>
-</tr>
-<tr>
-<td><i class=conum data-value=2></i><b>2</b></td>
-<td>MongoExpress is a MongoDB administration interface.</td>
-</tr>
-<tr>
-<td><i class=conum data-value=3></i><b>3</b></td>
-<td>Product API which is configured from <code>db.json</code> file.</td>
-</tr>
-</tbody></table>
-</div>
-<div class=paragraph>
-<p>We start up the services :</p>
-</div>
-<div class=listingblock>
-<div class=content>
-<pre class="rouge highlight"><code data-lang=shell><table class=linenotable><tbody><tr><td class="linenos gl"><pre class=lineno>1
+</pre></td></tr></tbody></table></code></pre></div></div><div class="colist arabic"><table><tbody><tr><td><i class=conum data-value=1></i><b>1</b></td><td>MongoDB initialized with the <code>test</code> database.</td></tr><tr><td><i class=conum data-value=2></i><b>2</b></td><td>MongoExpress is a MongoDB administration interface.</td></tr><tr><td><i class=conum data-value=3></i><b>3</b></td><td>Product API which is configured from <code>db.json</code> file.</td></tr></tbody></table></div><div class=paragraph><p>We start up the services :</p></div><div class=listingblock><div class=content><pre class="rouge highlight"><code data-lang=shell><table class=linenotable><tbody><tr><td class="linenos gl"><pre class=lineno>1
 </pre></td><td class=code><pre>docker-compose up <span class=nt>-d</span>
-</pre></td></tr></tbody></table></code></pre>
-</div>
-</div>
-</div>
-<div class=sect2>
-<h3 id=_data_initialization>2.5. Data initialization</h3>
-<div class=paragraph>
-<p>We use a JSON document from the French address database.</p>
-</div>
-<div class=listingblock>
-<div class=title>Address</div>
-<div class=content>
-<pre class="rouge highlight"><code data-lang=json><table class=linenotable><tbody><tr><td class="linenos gl"><pre class=lineno> 1
+</pre></td></tr></tbody></table></code></pre></div></div></div><div class=sect2><h3 id=_data_initialization>2.5. Data initialization</h3><div class=paragraph><p>We use a JSON document from the French address database.</p></div><div class=listingblock><div class=title>Address</div><div class=content><pre class="rouge highlight"><code data-lang=json><table class=linenotable><tbody><tr><td class="linenos gl"><pre class=lineno> 1
  2
  3
  4
@@ -480,32 +204,9 @@ It uses information inside the incoming message to perform the enrichment operat
   </span><span class=nl>&#34;context&#34;</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;59, Nord, Hauts-de-France&#34;</span><span class=p>,</span><span class=w>
   </span><span class=nl>&#34;importance&#34;</span><span class=p>:</span><span class=w> </span><span class=mf>0.56333</span><span class=w>
 </span><span class=p>}</span>
-</pre></td></tr></tbody></table></code></pre>
-</div>
-</div>
-<div class=paragraph>
-<p>Import address collection :</p>
-</div>
-<div class=listingblock>
-<div class=content>
-<pre class="rouge highlight"><code data-lang=shell><table class=linenotable><tbody><tr><td class="linenos gl"><pre class=lineno>1
+</pre></td></tr></tbody></table></code></pre></div></div><div class=paragraph><p>Import address collection :</p></div><div class=listingblock><div class=content><pre class="rouge highlight"><code data-lang=shell><table class=linenotable><tbody><tr><td class="linenos gl"><pre class=lineno>1
 </pre></td><td class=code><pre>mongoimport <span class=nt>--uri</span> <span class=s2>&#34;mongodb://admin:password@localhost:15015&#34;</span> <span class=nt>--authenticationDatabase</span><span class=o>=</span>admin <span class=nt>--db</span> <span class=nb>test</span> <span class=nt>--collection</span> address ./data/mongodb/address.ndjson
-</pre></td></tr></tbody></table></code></pre>
-</div>
-</div>
-<div class=paragraph>
-<p>Ou :</p>
-</div>
-<div class=paragraph>
-<p>We use <strong>MongoExpress</strong> which is available at <a href=http://localhost:1515><code>http://localhost:1515</code></a>.</p>
-</div>
-<div class=paragraph>
-<p>Product represents a satellite internet offer.</p>
-</div>
-<div class=listingblock>
-<div class=title>Product</div>
-<div class=content>
-<pre class="rouge highlight"><code data-lang=json><table class=linenotable><tbody><tr><td class="linenos gl"><pre class=lineno>1
+</pre></td></tr></tbody></table></code></pre></div></div><div class=paragraph><p>Or:</p></div><div class=paragraph><p>We use <strong>MongoExpress</strong> which is available at <a href=http://localhost:1515><code>http://localhost:1515</code></a>.</p></div><div class=paragraph><p>Product represents a satellite internet offer.</p></div><div class=listingblock><div class=title>Product</div><div class=content><pre class="rouge highlight"><code data-lang=json><table class=linenotable><tbody><tr><td class="linenos gl"><pre class=lineno>1
 2
 3
 4
@@ -519,27 +220,7 @@ It uses information inside the incoming message to perform the enrichment operat
   </span><span class=nl>&#34;provider&#34;</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;STARLINK&#34;</span><span class=p>,</span><span class=w>
   </span><span class=nl>&#34;type&#34;</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;SATELLITE&#34;</span><span class=w>
 </span><span class=p>}</span>
-</pre></td></tr></tbody></table></code></pre>
-</div>
-</div>
-<div class=paragraph>
-<p>Product API is available at <a href=http://localhost:1519><code>http://localhost:1519</code></a>.</p>
-</div>
-</div>
-</div>
-</div>
-<div class=sect1>
-<h2 id=_application>3. Application</h2>
-<div class=sectionbody>
-<div class=sect2>
-<h3 id=_configuration>3.1. Configuration</h3>
-<div class=paragraph>
-<p>We change file extension from <code>application.properties</code> to <code>application.yml</code>.</p>
-</div>
-<div class=listingblock>
-<div class=title>application.yml</div>
-<div class=content>
-<pre class="rouge highlight"><code data-lang=yml><table class=linenotable><tbody><tr><td class="linenos gl"><pre class=lineno> 1
+</pre></td></tr></tbody></table></code></pre></div></div><div class=paragraph><p>Product API is available at <a href=http://localhost:1519><code>http://localhost:1519</code></a>.</p></div></div></div></div><div class=sect1><h2 id=_application>3. Application</h2><div class=sectionbody><div class=sect2><h3 id=_configuration>3.1. Configuration</h3><div class=paragraph><p>We change file extension from <code>application.properties</code> to <code>application.yml</code>.</p></div><div class=listingblock><div class=title>application.yml</div><div class=content><pre class="rouge highlight"><code data-lang=yml><table class=linenotable><tbody><tr><td class="linenos gl"><pre class=lineno> 1
  2
  3
  4
@@ -583,16 +264,7 @@ It uses information inside the incoming message to perform the enrichment operat
 <span class=na>spring.config.activate.on-profile</span><span class=pi>:</span> <span class=s>test</span>
 <span class=na>app</span><span class=pi>:</span>
   <span class=na>bulk-size</span><span class=pi>:</span> <span class=s>2</span>
-</pre></td></tr></tbody></table></code></pre>
-</div>
-</div>
-<div class=paragraph>
-<p>We declare a class which contains application configuration properties.</p>
-</div>
-<div class=listingblock>
-<div class=title>AppProperties.java</div>
-<div class=content>
-<pre class="rouge highlight"><code data-lang=java><table class=linenotable><tbody><tr><td class="linenos gl"><pre class=lineno>1
+</pre></td></tr></tbody></table></code></pre></div></div><div class=paragraph><p>We declare a class which contains application configuration properties.</p></div><div class=listingblock><div class=title>AppProperties.java</div><div class=content><pre class="rouge highlight"><code data-lang=java><table class=linenotable><tbody><tr><td class="linenos gl"><pre class=lineno>1
 2
 3
 4
@@ -610,16 +282,7 @@ It uses information inside the incoming message to perform the enrichment operat
     <span class=kd>private</span> <span class=nc>String</span> <span class=n>enrichingUri</span><span class=o>;</span>
     <span class=c1>// Getter and Setter are omitted</span>
 <span class=o>}</span>
-</pre></td></tr></tbody></table></code></pre>
-</div>
-</div>
-<div class=paragraph>
-<p>We create a <code>@Bean</code> of Spring non-blocking HTTP client.</p>
-</div>
-<div class=listingblock>
-<div class=title>NetworkConfig.java</div>
-<div class=content>
-<pre class="rouge highlight"><code data-lang=java><table class=linenotable><tbody><tr><td class="linenos gl"><pre class=lineno>1
+</pre></td></tr></tbody></table></code></pre></div></div><div class=paragraph><p>We create a <code>@Bean</code> of Spring non-blocking HTTP client.</p></div><div class=listingblock><div class=title>NetworkConfig.java</div><div class=content><pre class="rouge highlight"><code data-lang=java><table class=linenotable><tbody><tr><td class="linenos gl"><pre class=lineno>1
 2
 3
 4
@@ -637,19 +300,7 @@ It uses information inside the incoming message to perform the enrichment operat
     <span class=o>}</span>
 
 <span class=o>}</span>
-</pre></td></tr></tbody></table></code></pre>
-</div>
-</div>
-</div>
-<div class=sect2>
-<h3 id=_implementation>3.2. Implementation</h3>
-<div class=paragraph>
-<p>We create a <code>@Service</code> which contains application business logic.</p>
-</div>
-<div class=listingblock>
-<div class=title>CollectionService.java</div>
-<div class=content>
-<pre class="rouge highlight"><code data-lang=java><table class=linenotable><tbody><tr><td class="linenos gl"><pre class=lineno> 1
+</pre></td></tr></tbody></table></code></pre></div></div></div><div class=sect2><h3 id=_implementation>3.2. Implementation</h3><div class=paragraph><p>We create a <code>@Service</code> which contains application business logic.</p></div><div class=listingblock><div class=title>CollectionService.java</div><div class=content><pre class="rouge highlight"><code data-lang=java><table class=linenotable><tbody><tr><td class="linenos gl"><pre class=lineno> 1
  2
  3
  4
@@ -695,60 +346,9 @@ It uses information inside the incoming message to perform the enrichment operat
                     <span class=o>.</span><span class=na>flatMap</span><span class=o>(</span><span class=n>replaceOneModelFlux</span> <span class=o>-&gt;</span> <span class=n>bulkWrite</span><span class=o>(</span><span class=n>replaceOneModelFlux</span><span class=o>,</span> <span class=n>collectionName</span><span class=o>));</span> <i class=conum data-value=6></i><b>(6)</b>
     <span class=o>}</span>
 <span class=o>}</span>
-</pre></td></tr></tbody></table></code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tbody><tr>
-<td><i class=conum data-value=1></i><b>1</b></td>
-<td>Creates a stream of documents from the collection.</td>
-</tr>
-<tr>
-<td><i class=conum data-value=2></i><b>2</b></td>
-<td>Limits the maximum number of loaded documents in the <em>RAM</em> in case of consumption process is slower than production.
-If the maximum buffer size is exceeded, an <code>IllegalStateException</code> is thrown.</td>
-</tr>
-<tr>
-<td><i class=conum data-value=3></i><b>3</b></td>
-<td>Enriches document asynchronously with the external one.</td>
-</tr>
-<tr>
-<td><i class=conum data-value=4></i><b>4</b></td>
-<td>Creates a <code>ReplaceOneModel</code> from document.</td>
-</tr>
-<tr>
-<td><i class=conum data-value=5></i><b>5</b></td>
-<td>Group documents into streams of fixed size. The last stream can be smaller.</td>
-</tr>
-<tr>
-<td><i class=conum data-value=6></i><b>6</b></td>
-<td>Calls bulk write function.</td>
-</tr>
-</tbody></table>
-</div>
-<div class="admonitionblock note">
-<table>
-<tbody><tr>
-<td class=icon>
-<i class="fa icon-note" title=Note></i>
-</td>
-<td class=content>
-<div class=paragraph>
-<p>Configuration property <code>app.bulk-size</code> can be adjusted according to the project needs and available hardware resources.
-The larger the value of the maximum size, the higher the memory consumption and the size of the requests.</p>
-</div>
-</td>
-</tr>
-</tbody></table>
-</div>
-<div class=paragraph>
-<p>We create document enrichment functions.</p>
-</div>
-<div class=listingblock>
-<div class=title>CollectionService.java</div>
-<div class=content>
-<pre class="rouge highlight"><code data-lang=java><table class=linenotable><tbody><tr><td class="linenos gl"><pre class=lineno> 1
+</pre></td></tr></tbody></table></code></pre></div></div><div class="colist arabic"><table><tbody><tr><td><i class=conum data-value=1></i><b>1</b></td><td>Creates a stream of documents from the collection.</td></tr><tr><td><i class=conum data-value=2></i><b>2</b></td><td>Limits the maximum number of loaded documents in the <em>RAM</em> in case of consumption process is slower than production.
+If the maximum buffer size is exceeded, an <code>IllegalStateException</code> is thrown.</td></tr><tr><td><i class=conum data-value=3></i><b>3</b></td><td>Enriches document asynchronously with the external one.</td></tr><tr><td><i class=conum data-value=4></i><b>4</b></td><td>Creates a <code>ReplaceOneModel</code> from document.</td></tr><tr><td><i class=conum data-value=5></i><b>5</b></td><td>Group documents into streams of fixed size. The last stream can be smaller.</td></tr><tr><td><i class=conum data-value=6></i><b>6</b></td><td>Calls bulk write function.</td></tr></tbody></table></div><div class="admonitionblock note"><table><tbody><tr><td class=icon><i class="fa icon-note" title=Note></i></td><td class=content><div class=paragraph><p>Configuration property <code>app.bulk-size</code> can be adjusted according to the project needs and available hardware resources.
+The larger the value of the maximum size, the higher the memory consumption and the size of the requests.</p></div></td></tr></tbody></table></div><div class=paragraph><p>We create document enrichment functions.</p></div><div class=listingblock><div class=title>CollectionService.java</div><div class=content><pre class="rouge highlight"><code data-lang=java><table class=linenotable><tbody><tr><td class="linenos gl"><pre class=lineno> 1
  2
  3
  4
@@ -778,39 +378,7 @@ The larger the value of the maximum size, the higher the memory consumption and 
             <span class=o>.</span><span class=na>retrieve</span><span class=o>()</span>
             <span class=o>.</span><span class=na>bodyToMono</span><span class=o>(</span><span class=nc>Document</span><span class=o>.</span><span class=na>class</span><span class=o>);</span>
 <span class=o>}</span>
-</pre></td></tr></tbody></table></code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tbody><tr>
-<td><i class=conum data-value=1></i><b>1</b></td>
-<td>Adds the retrieved document from HTTP call to root of document to be enriched with the key passed in parameter.</td>
-</tr>
-<tr>
-<td><i class=conum data-value=2></i><b>2</b></td>
-<td>Retrieves a document from an URI.</td>
-</tr>
-</tbody></table>
-</div>
-<div class="admonitionblock note">
-<table>
-<tbody><tr>
-<td class=icon>
-<i class="fa icon-note" title=Note></i>
-</td>
-<td class=content>
-<div class=paragraph>
-<p>MongoDB converts and stores dates in UTC by default.</p>
-</div>
-</td>
-</tr>
-</tbody></table>
-</div>
-<div class=listingblock>
-<div class=title>CollectionService.java</div>
-<div class=content>
-<pre class="rouge highlight"><code data-lang=java><table class=linenotable><tbody><tr><td class="linenos gl"><pre class=lineno>1
+</pre></td></tr></tbody></table></code></pre></div></div><div class="colist arabic"><table><tbody><tr><td><i class=conum data-value=1></i><b>1</b></td><td>Adds the retrieved document from HTTP call to root of document to be enriched with the key passed in parameter.</td></tr><tr><td><i class=conum data-value=2></i><b>2</b></td><td>Retrieves a document from an URI.</td></tr></tbody></table></div><div class="admonitionblock note"><table><tbody><tr><td class=icon><i class="fa icon-note" title=Note></i></td><td class=content><div class=paragraph><p>MongoDB converts and stores dates in UTC by default.</p></div></td></tr></tbody></table></div><div class=listingblock><div class=title>CollectionService.java</div><div class=content><pre class="rouge highlight"><code data-lang=java><table class=linenotable><tbody><tr><td class="linenos gl"><pre class=lineno>1
 2
 3
 4
@@ -826,29 +394,7 @@ The larger the value of the maximum size, the higher the memory consumption and 
             <span class=no>REPLACE_OPTIONS</span>
     <span class=o>);</span>
 <span class=o>}</span>
-</pre></td></tr></tbody></table></code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tbody><tr>
-<td><i class=conum data-value=1></i><b>1</b></td>
-<td>Instantiates default replacement configuration.</td>
-</tr>
-<tr>
-<td><i class=conum data-value=2></i><b>2</b></td>
-<td>Filter that allows matching by document identifier.</td>
-</tr>
-<tr>
-<td><i class=conum data-value=3></i><b>3</b></td>
-<td>Content to be replaced, represents the complete enriched document.</td>
-</tr>
-</tbody></table>
-</div>
-<div class=listingblock>
-<div class=title>CollectionService.java</div>
-<div class=content>
-<pre class="rouge highlight"><code data-lang=java><table class=linenotable><tbody><tr><td class="linenos gl"><pre class=lineno>1
+</pre></td></tr></tbody></table></code></pre></div></div><div class="colist arabic"><table><tbody><tr><td><i class=conum data-value=1></i><b>1</b></td><td>Instantiates default replacement configuration.</td></tr><tr><td><i class=conum data-value=2></i><b>2</b></td><td>Filter that allows matching by document identifier.</td></tr><tr><td><i class=conum data-value=3></i><b>3</b></td><td>Content to be replaced, represents the complete enriched document.</td></tr></tbody></table></div><div class=listingblock><div class=title>CollectionService.java</div><div class=content><pre class="rouge highlight"><code data-lang=java><table class=linenotable><tbody><tr><td class="linenos gl"><pre class=lineno>1
 2
 3
 4
@@ -860,61 +406,8 @@ The larger the value of the maximum size, the higher the memory consumption and 
             <span class=o>.</span><span class=na>flatMapMany</span><span class=o>(</span><span class=n>unused</span> <span class=o>-&gt;</span> <span class=n>template</span><span class=o>.</span><span class=na>getCollection</span><span class=o>(</span><span class=n>collectionName</span><span class=o>)</span> <i class=conum data-value=3></i><b>(3)</b>
                     <span class=o>.</span><span class=na>flatMapMany</span><span class=o>(</span><span class=n>collection</span> <span class=o>-&gt;</span> <span class=n>collection</span><span class=o>.</span><span class=na>bulkWrite</span><span class=o>(</span><span class=n>updateOneModels</span><span class=o>,</span> <span class=no>BULK_WRITE_OPTIONS</span><span class=o>)));</span> <i class=conum data-value=4></i><b>(4)</b>
 <span class=o>}</span>
-</pre></td></tr></tbody></table></code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tbody><tr>
-<td><i class=conum data-value=1></i><b>1</b></td>
-<td>Instantiates writing options with disabling operations order.</td>
-</tr>
-<tr>
-<td><i class=conum data-value=2></i><b>2</b></td>
-<td>Collects the stream into a list.</td>
-</tr>
-<tr>
-<td><i class=conum data-value=3></i><b>3</b></td>
-<td>Retrieves the collection passed as a parameter.</td>
-</tr>
-<tr>
-<td><i class=conum data-value=4></i><b>4</b></td>
-<td>Bulk writes documents into MongoDB collection.</td>
-</tr>
-</tbody></table>
-</div>
-<div class="admonitionblock note">
-<table>
-<tbody><tr>
-<td class=icon>
-<i class="fa icon-note" title=Note></i>
-</td>
-<td class=content>
-<div class=paragraph>
-<p>Transactions are supported on Replicaset since MongoDB 4.2.
-If transactions are enabled, we can use <code>@Transactional</code> or <code>TransactionalOperator</code> to make a method transactional.</p>
-</div>
-</td>
-</tr>
-</tbody></table>
-</div>
-<div class=paragraph>
-<p>We implement the following interfaces:</p>
-</div>
-<div class=ulist>
-<ul>
-<li>
-<p><code>CommandLineRunner</code> : runs enrichment command at application startup.</p>
-</li>
-<li>
-<p><code>ExitCodeGenerator</code> : manages application system exit code.</p>
-</li>
-</ul>
-</div>
-<div class=listingblock>
-<div class=title>Application.java</div>
-<div class=content>
-<pre class="rouge highlight"><code data-lang=java><table class=linenotable><tbody><tr><td class="linenos gl"><pre class=lineno> 1
+</pre></td></tr></tbody></table></code></pre></div></div><div class="colist arabic"><table><tbody><tr><td><i class=conum data-value=1></i><b>1</b></td><td>Instantiates writing options with disabling operations order.</td></tr><tr><td><i class=conum data-value=2></i><b>2</b></td><td>Collects the stream into a list.</td></tr><tr><td><i class=conum data-value=3></i><b>3</b></td><td>Retrieves the collection passed as a parameter.</td></tr><tr><td><i class=conum data-value=4></i><b>4</b></td><td>Bulk writes documents into MongoDB collection.</td></tr></tbody></table></div><div class="admonitionblock note"><table><tbody><tr><td class=icon><i class="fa icon-note" title=Note></i></td><td class=content><div class=paragraph><p>Transactions are supported on Replicaset since MongoDB 4.2.
+If transactions are enabled, we can use <code>@Transactional</code> or <code>TransactionalOperator</code> to make a method transactional.</p></div></td></tr></tbody></table></div><div class=paragraph><p>We implement the following interfaces:</p></div><div class=ulist><ul><li><p><code>CommandLineRunner</code> : runs enrichment command at application startup.</p></li><li><p><code>ExitCodeGenerator</code> : manages application system exit code.</p></li></ul></div><div class=listingblock><div class=title>Application.java</div><div class=content><pre class="rouge highlight"><code data-lang=java><table class=linenotable><tbody><tr><td class="linenos gl"><pre class=lineno> 1
  2
  3
  4
@@ -988,49 +481,10 @@ If transactions are enabled, we can use <code>@Transactional</code> or <code>Tra
     <span class=o>}</span>
 
 <span class=o>}</span>
-</pre></td></tr></tbody></table></code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tbody><tr>
-<td><i class=conum data-value=1></i><b>1</b></td>
-<td>Disables auto-configuration of repositories, as we use <code>MongoReactiveTemplate</code> only.</td>
-</tr>
-<tr>
-<td><i class=conum data-value=2></i><b>2</b></td>
-<td>Allows scanning and detecting beans that carry the <code>@ConfigProperties</code> annotation.</td>
-</tr>
-<tr>
-<td><i class=conum data-value=3></i><b>3</b></td>
-<td>Subscribing to stream triggers the processing.</td>
-</tr>
-<tr>
-<td><i class=conum data-value=4></i><b>4</b></td>
-<td>Without a running web server, we have to subscribe indefinitely to the <code>Publisher</code> in order to trigger
-and wait until the end of the execution.</td>
-</tr>
-</tbody></table>
-</div>
-</div>
-<div class=sect2>
-<h3 id=_demo>3.3. Demo</h3>
-<div class=paragraph>
-<p>We launch the application :</p>
-</div>
-<div class=listingblock>
-<div class=content>
-<pre class="rouge highlight"><code data-lang=shell><table class=linenotable><tbody><tr><td class="linenos gl"><pre class=lineno>1
+</pre></td></tr></tbody></table></code></pre></div></div><div class="colist arabic"><table><tbody><tr><td><i class=conum data-value=1></i><b>1</b></td><td>Disables auto-configuration of repositories, as we use <code>MongoReactiveTemplate</code> only.</td></tr><tr><td><i class=conum data-value=2></i><b>2</b></td><td>Allows scanning and detecting beans that carry the <code>@ConfigProperties</code> annotation.</td></tr><tr><td><i class=conum data-value=3></i><b>3</b></td><td>Subscribing to stream triggers the processing.</td></tr><tr><td><i class=conum data-value=4></i><b>4</b></td><td>Without a running web server, we have to subscribe indefinitely to the <code>Publisher</code> in order to trigger
+and wait until the end of the execution.</td></tr></tbody></table></div></div><div class=sect2><h3 id=_demo>3.3. Demo</h3><div class=paragraph><p>We launch the application :</p></div><div class=listingblock><div class=content><pre class="rouge highlight"><code data-lang=shell><table class=linenotable><tbody><tr><td class="linenos gl"><pre class=lineno>1
 </pre></td><td class=code><pre>mvn spring-boot:run
-</pre></td></tr></tbody></table></code></pre>
-</div>
-</div>
-<div class=paragraph>
-<p>Output :</p>
-</div>
-<div class=listingblock>
-<div class=content>
-<pre class="rouge highlight"><code data-lang=console><table class=linenotable><tbody><tr><td class="linenos gl"><pre class=lineno> 1
+</pre></td></tr></tbody></table></code></pre></div></div><div class=paragraph><p>Output :</p></div><div class=listingblock><div class=content><pre class="rouge highlight"><code data-lang=console><table class=linenotable><tbody><tr><td class="linenos gl"><pre class=lineno> 1
  2
  3
  4
@@ -1050,86 +504,28 @@ and wait until the end of the execution.</td>
 18
 19
 20
-21
-22
-23
-24
-25
-26
-27
-28
 </pre></td><td class=code><pre><span class=c>...
-</span><span class=go>2022-06-10 00:36:45.152  INFO 7036 --- [           main] com.maoudia.tutorial.Application         : Started Application in 2.755 seconds (JVM running for 3.251)
-</span><span class=gp>2022-06-10 00:36:45.227  INFO 7036 --- [           main] com.maoudia.tutorial.Application         : ------------------&lt; Staring Collection Enriching Command &gt;</span><span class=nt>-------------------</span>
-<span class=gp>2022-06-10 00:36:45.297  INFO 7036 --- [           main] org.mongodb.driver.cluster               : No server chosen by com.mongodb.reactivestreams.client.internal.ClientSessionHelper$</span><span class=nv>$Lambda$543</span>/543409470@4647881c from cluster description ClusterDescription<span class=o>{</span><span class=nb>type</span><span class=o>=</span>UNKNOWN, <span class=nv>connectionMode</span><span class=o>=</span>SINGLE, <span class=nv>serverDescriptions</span><span class=o>=[</span>ServerDescription<span class=o>{</span><span class=nv>address</span><span class=o>=</span>localhost:15015, <span class=nb>type</span><span class=o>=</span>UNKNOWN, <span class=nv>state</span><span class=o>=</span>CONNECTING<span class=o>}]}</span><span class=nb>.</span> Waiting <span class=k>for </span>30000 ms before timing out
-<span class=go>2022-06-10 00:36:46.527  INFO 7036 --- [localhost:15015] org.mongodb.driver.connection            : Opened connection [connectionId{localValue:1, serverValue:39}] to localhost:15015
-2022-06-10 00:36:46.527  INFO 7036 --- [localhost:15015] org.mongodb.driver.connection            : Opened connection [connectionId{localValue:2, serverValue:40}] to localhost:15015
-2022-06-10 00:36:46.527  INFO 7036 --- [localhost:15015] org.mongodb.driver.cluster               : Monitor thread successfully connected to server with description ServerDescription{address=localhost:15015, type=STANDALONE, state=CONNECTED, ok=true, minWireVersion=0, maxWireVersion=13, maxDocumentSize=16777216, logicalSessionTimeoutMinutes=30, roundTripTimeNanos=61576400}
-2022-06-10 00:36:46.692  INFO 7036 --- [ntLoopGroup-2-3] org.mongodb.driver.connection            : Opened connection [connectionId{localValue:3, serverValue:41}] to localhost:15015
-2022-06-10 00:36:48.355  INFO 7036 --- [ntLoopGroup-2-3] com.maoudia.tutorial.Application         : Bulk write result with 100 modified document(s)
-2022-06-10 00:36:48.482  INFO 7036 --- [ntLoopGroup-2-4] org.mongodb.driver.connection            : Opened connection [connectionId{localValue:4, serverValue:42}] to localhost:15015
-2022-06-10 00:36:48.562  INFO 7036 --- [ntLoopGroup-2-3] com.maoudia.tutorial.Application         : Bulk write result with 100 modified document(s)
-2022-06-10 00:36:48.742  INFO 7036 --- [ntLoopGroup-2-3] com.maoudia.tutorial.Application         : Bulk write result with 100 modified document(s)
-2022-06-10 00:36:48.982  INFO 7036 --- [ntLoopGroup-2-3] com.maoudia.tutorial.Application         : Bulk write result with 100 modified document(s)
-2022-06-10 00:36:49.222  INFO 7036 --- [ntLoopGroup-2-3] com.maoudia.tutorial.Application         : Bulk write result with 100 modified document(s)
-2022-06-10 00:36:49.488  INFO 7036 --- [ntLoopGroup-2-4] com.maoudia.tutorial.Application         : Bulk write result with 100 modified document(s)
-2022-06-10 00:36:49.701  INFO 7036 --- [ntLoopGroup-2-3] com.maoudia.tutorial.Application         : Bulk write result with 100 modified document(s)
-2022-06-10 00:36:49.852  INFO 7036 --- [ntLoopGroup-2-3] com.maoudia.tutorial.Application         : Bulk write result with 100 modified document(s)
-2022-06-10 00:36:50.031  INFO 7036 --- [ntLoopGroup-2-3] com.maoudia.tutorial.Application         : Bulk write result with 100 modified document(s)
-2022-06-10 00:36:50.105  INFO 7036 --- [ntLoopGroup-2-3] com.maoudia.tutorial.Application         : Bulk write result with 100 modified document(s)
-</span><span class=gp>2022-06-10 00:36:50.106  INFO 7036 --- [ntLoopGroup-2-3] com.maoudia.tutorial.Application         : ------------------&lt; Collection Enriching Command Finished &gt;</span><span class=nt>------------------</span>
+</span><span class=go>2023-11-10T02:02:58.673+01:00  INFO 84802 --- [           main] com.maoudia.tutorial.Application         : Started Application in 0.831 seconds (process running for 0.992)
+</span><span class=gp>2023-11-10T02:02:58.725+01:00  INFO 84802 --- [           main] com.maoudia.tutorial.Application         : ------------------&lt; Staring Collection Enriching Command &gt;</span><span class=nt>-------------------</span>
+<span class=go>2023-11-10T02:02:59.186+01:00  INFO 84802 --- [ntLoopGroup-2-4] com.maoudia.tutorial.Application         : Bulk write result with 100 modified document(s)
+2023-11-10T02:02:59.244+01:00  INFO 84802 --- [ntLoopGroup-2-5] com.maoudia.tutorial.Application         : Bulk write result with 100 modified document(s)
+2023-11-10T02:02:59.290+01:00  INFO 84802 --- [ntLoopGroup-2-5] com.maoudia.tutorial.Application         : Bulk write result with 100 modified document(s)
+2023-11-10T02:02:59.357+01:00  INFO 84802 --- [ntLoopGroup-2-3] com.maoudia.tutorial.Application         : Bulk write result with 100 modified document(s)
+2023-11-10T02:02:59.438+01:00  INFO 84802 --- [ntLoopGroup-2-3] com.maoudia.tutorial.Application         : Bulk write result with 100 modified document(s)
+2023-11-10T02:02:59.503+01:00  INFO 84802 --- [ntLoopGroup-2-5] com.maoudia.tutorial.Application         : Bulk write result with 100 modified document(s)
+2023-11-10T02:02:59.578+01:00  INFO 84802 --- [ntLoopGroup-2-5] com.maoudia.tutorial.Application         : Bulk write result with 100 modified document(s)
+2023-11-10T02:02:59.632+01:00  INFO 84802 --- [ntLoopGroup-2-5] com.maoudia.tutorial.Application         : Bulk write result with 100 modified document(s)
+2023-11-10T02:02:59.727+01:00  INFO 84802 --- [ntLoopGroup-2-3] com.maoudia.tutorial.Application         : Bulk write result with 100 modified document(s)
+2023-11-10T02:02:59.776+01:00  INFO 84802 --- [ntLoopGroup-2-5] com.maoudia.tutorial.Application         : Bulk write result with 100 modified document(s)
+</span><span class=gp>2023-11-10T02:02:59.776+01:00  INFO 84802 --- [ntLoopGroup-2-5] com.maoudia.tutorial.Application         : ------------------&lt; Collection Enriching Command Finished &gt;</span><span class=nt>------------------</span>
 <span class=go>[INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
 [INFO] ------------------------------------------------------------------------
-[INFO] Total time:  17.315 s
-[INFO] Finished at: 2022-06-10T00:36:54+02:00
-[INFO] ------------------------------------------------------------------------
-
-Process finished with exit code 0</span>
-</pre></td></tr></tbody></table></code></pre>
-</div>
-</div>
-</div>
-<div class=sect2>
-<h3 id=_visuelvm_report>3.4. VisuelVM report</h3>
-<div class=paragraph>
-<p><strong>VisualVM</strong> is a lightweight profiling tool. It is used to have an overview of the threads which are launched by the application.</p>
-</div>
-<div class=imageblock>
-<div class="content image-block">
-<img src=/images/blog/bulk-update-with-spring-data-mongodb-reactive/visual-vm-report.webp alt="visuelvm report">
-</div>
-</div>
-<div class=paragraph>
-<p>There are two groups of threads that execute operations in parallel, each group forms an <em>event loop</em>.</p>
-</div>
-<div class=ulist>
-<ul>
-<li>
-<p>MongoDB requests are executed by <code>nioEventLoopGroup</code>.</p>
-</li>
-<li>
-<p>HTTP requests are executed by <code>reactor-http-nio</code>.</p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-</div>
-<div class=sect1>
-<h2 id=_integration_tests>4. Integration tests</h2>
-<div class=sectionbody>
-<div class=paragraph>
-<p>We use <strong>JUnit 5</strong> and the <strong>Testcontainers MongoDB</strong> module for the integration tests.
-It allows to have a feedback close to the real behaviour of the application which essentially do read/write operations.</p>
-</div>
-<div class=paragraph>
-<p>To keep this tutorial short, we will only write one test.</p>
-</div>
-<div class=listingblock>
-<div class=title>CollectionServiceTest.java</div>
-<div class=content>
-<pre class="rouge highlight"><code data-lang=java><table class=linenotable><tbody><tr><td class="linenos gl"><pre class=lineno> 1
+[INFO] Total time:  7.282 s
+[INFO] Finished at: 2023-11-10T02:03:03+01:00
+[INFO] ------------------------------------------------------------------------</span>
+</pre></td></tr></tbody></table></code></pre></div></div></div><div class=sect2><h3 id=_visuelvm_report>3.4. VisuelVM report</h3><div class=paragraph><p><strong>VisualVM</strong> is a lightweight profiling tool. It is used to have an overview of the threads which are launched by the application.</p></div><div class=imageblock><div class="content image-block"><img src=/images/blog/bulk-update-with-spring-data-mongodb-reactive/visual-vm-report.webp alt="visuelvm report"></div></div><div class=paragraph><p>There are two groups of threads that execute operations in parallel, each group forms an <em>event loop</em>.</p></div><div class=ulist><ul><li><p>MongoDB requests are executed by <code>nioEventLoopGroup</code>.</p></li><li><p>HTTP requests are executed by <code>reactor-http-nio</code>.</p></li></ul></div></div></div></div><div class=sect1><h2 id=_integration_tests>4. Integration tests</h2><div class=sectionbody><div class=paragraph><p>We use <strong>JUnit 5</strong> and the <strong>Testcontainers MongoDB</strong> module for the integration tests.
+It allows to have a feedback close to the real behaviour of the application which essentially do read/write operations.</p></div><div class=paragraph><p>To keep this tutorial short, we will only write one test.</p></div><div class=listingblock><div class=title>CollectionServiceTest.java</div><div class=content><pre class="rouge highlight"><code data-lang=java><table class=linenotable><tbody><tr><td class="linenos gl"><pre class=lineno> 1
  2
  3
  4
@@ -1223,45 +619,9 @@ It allows to have a feedback close to the real behaviour of the application whic
                 <span class=o>.</span><span class=na>verifyComplete</span><span class=o>();</span>
     <span class=o>}</span>
 <span class=o>}</span>
-</pre></td></tr></tbody></table></code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tbody><tr>
-<td><i class=conum data-value=1></i><b>1</b></td>
-<td>Adds TestContainers Junit 5 extension.</td>
-</tr>
-<tr>
-<td><i class=conum data-value=2></i><b>2</b></td>
-<td>Starts a MongoDB container.</td>
-</tr>
-<tr>
-<td><i class=conum data-value=3></i><b>3</b></td>
-<td>Sets up application with container’s URI.</td>
-</tr>
-<tr>
-<td><i class=conum data-value=4></i><b>4</b></td>
-<td>Uses <code>StepVerifier</code> from <strong>Reactor Test</strong> to assert output stream.</td>
-</tr>
-</tbody></table>
-</div>
-<div class=paragraph>
-<p>We launch the integration tests :</p>
-</div>
-<div class=listingblock>
-<div class=content>
-<pre class="rouge highlight"><code data-lang=shell><table class=linenotable><tbody><tr><td class="linenos gl"><pre class=lineno>1
+</pre></td></tr></tbody></table></code></pre></div></div><div class="colist arabic"><table><tbody><tr><td><i class=conum data-value=1></i><b>1</b></td><td>Adds TestContainers Junit 5 extension.</td></tr><tr><td><i class=conum data-value=2></i><b>2</b></td><td>Starts a MongoDB container.</td></tr><tr><td><i class=conum data-value=3></i><b>3</b></td><td>Sets up application with container’s URI.</td></tr><tr><td><i class=conum data-value=4></i><b>4</b></td><td>Uses <code>StepVerifier</code> from <strong>Reactor Test</strong> to assert output stream.</td></tr></tbody></table></div><div class=paragraph><p>We launch the integration tests :</p></div><div class=listingblock><div class=content><pre class="rouge highlight"><code data-lang=shell><table class=linenotable><tbody><tr><td class="linenos gl"><pre class=lineno>1
 </pre></td><td class=code><pre>mvn <span class=nb>test</span> <span class=nt>-Dspring</span>.profiles.active<span class=o>=</span><span class=nb>test</span>
-</pre></td></tr></tbody></table></code></pre>
-</div>
-</div>
-<div class=paragraph>
-<p>Test results :</p>
-</div>
-<div class=listingblock>
-<div class=content>
-<pre class="rouge highlight"><code data-lang=console><table class=linenotable><tbody><tr><td class="linenos gl"><pre class=lineno> 1
+</pre></td></tr></tbody></table></code></pre></div></div><div class=paragraph><p>Test results :</p></div><div class=listingblock><div class=content><pre class="rouge highlight"><code data-lang=console><table class=linenotable><tbody><tr><td class="linenos gl"><pre class=lineno> 1
  2
  3
  4
@@ -1275,7 +635,7 @@ It allows to have a feedback close to the real behaviour of the application whic
 12
 13
 </pre></td><td class=code><pre><span class=c>...
-</span><span class=go>[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 20.563 s - in com.maoudia.tutorial.CollectionServiceTest
+</span><span class=go>[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.098 s - in com.maoudia.tutorial.CollectionServiceTest
 [INFO]
 [INFO] Results:
 [INFO]
@@ -1284,72 +644,12 @@ It allows to have a feedback close to the real behaviour of the application whic
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
 [INFO] ------------------------------------------------------------------------
-[INFO] Total time:  32.100 s
-[INFO] Finished at: 2022-06-10T01:02:17+02:00
+[INFO] Total time:  11.539 s
+[INFO] Finished at: 2023-11-10T02:06:45+01:00
 [INFO] ------------------------------------------------------------------------</span>
-</pre></td></tr></tbody></table></code></pre>
-</div>
-</div>
-</div>
-</div>
-<div class=sect1>
-<h2 id=_conclusion>5. Conclusion</h2>
-<div class=sectionbody>
-<div class=paragraph>
-<p>In this tutorial, we managed to implement a complete solution to enrich and update efficiently a MongoDB collection.
-Moreover, we have seen how to write integration tests with JUnit 5 and Testcontainers.</p>
-</div>
-<div class=paragraph>
-<p>The complete source code is available on <a href=https://github.com/maoudia/code.maoudia.com/tree/main/bulk-update-with-spring-data-mongodb-reactive>Github</a>.</p>
-</div>
-<div class=paragraph>
-<p>In the next chapter of <strong>MongoDB Reactive CLI</strong> series, we will add new features and use <a href=https://picocli.info/>Picocli</a> to facilitate interactions
-with the application.</p>
-</div>
-</div>
-</div>
-<div class=sect1>
-<h2 id=_resources>6. Resources</h2>
-<div class=sectionbody>
-<div class=ulist>
-<ul>
-<li>
-<p><a href=https://www.enterpriseintegrationpatterns.com/DataEnricher.html>EIP Data enricher</a></p>
-</li>
-<li>
-<p><a href=https://www.mongodb.com/try/download/database-tools>MongoDB Database Tools</a></p>
-</li>
-<li>
-<p><a href=https://adresse.data.gouv.fr/data/ban/adresses/latest/addok/>French Adresses Data</a></p>
-</li>
-<li>
-<p><a href=https://mongodb.github.io/mongo-java-driver/4.6/driver-reactive/tutorials/bulk-writes/>MongoDB Java Driver Bulk operations</a></p>
-</li>
-<li>
-<p><a href=https://projectreactor.io/docs/core/release/reference/>Reactor 3 Reference Guide</a></p>
-</li>
-<li>
-<p><a href=https://docs.spring.io/spring-data/mongodb/docs/current/reference/html/>Spring Data MongoDB Reference</a></p>
-</li>
-<li>
-<p><a href=https://docs.spring.io/spring-framework/docs/current/reference/html/web-reactive.html>Web on Reactive Stack</a></p>
-</li>
-<li>
-<p><a href=https://visualvm.github.io/>VisualVM</a></p>
-</li>
-<li>
-<p><a href=https://www.testcontainers.org/modules/databases/mongodb/>Testcontainers MongoDB</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-</div>
-<div class=footer>
-<div class=tags>
-<i class="fa fa-tags"></i>
-<div class=links>
-<a href=https://www.maoudia.com/tags/eip/>EIP</a>
+</pre></td></tr></tbody></table></code></pre></div></div></div></div><div class=sect1><h2 id=_conclusion>5. Conclusion</h2><div class=sectionbody><div class=paragraph><p>In this tutorial, we managed to implement a complete solution to enrich and update efficiently a MongoDB collection.
+Moreover, we have seen how to write integration tests with JUnit 5 and Testcontainers.</p></div><div class=paragraph><p>The complete source code is available on <a href=https://github.com/maoudia/code.maoudia.com/tree/main/bulk-update-with-spring-data-mongodb-reactive>Github</a>.</p></div><div class=paragraph><p>In the next chapter of <strong>MongoDB Reactive CLI</strong> series, we will add new features and use <a href=https://picocli.info/>Picocli</a> to facilitate interactions
+with the application.</p></div></div></div><div class=sect1><h2 id=_resources>6. Resources</h2><div class=sectionbody><div class=ulist><ul><li><p><a href=https://www.enterpriseintegrationpatterns.com/DataEnricher.html>EIP Data enricher</a></p></li><li><p><a href=https://www.mongodb.com/try/download/database-tools>MongoDB Database Tools</a></p></li><li><p><a href=https://adresse.data.gouv.fr/data/ban/adresses/latest/addok/>French Adresses Data</a></p></li><li><p><a href=https://mongodb.github.io/mongo-java-driver/4.6/driver-reactive/tutorials/bulk-writes/>MongoDB Java Driver Bulk operations</a></p></li><li><p><a href=https://projectreactor.io/docs/core/release/reference/>Reactor 3 Reference Guide</a></p></li><li><p><a href=https://docs.spring.io/spring-data/mongodb/docs/current/reference/html/>Spring Data MongoDB Reference</a></p></li><li><p><a href=https://docs.spring.io/spring-framework/docs/current/reference/html/web-reactive.html>Web on Reactive Stack</a></p></li><li><p><a href=https://visualvm.github.io/>VisualVM</a></p></li><li><p><a href=https://www.testcontainers.org/modules/databases/mongodb/>Testcontainers MongoDB</a></p></li></ul></div></div></div></div><div class=footer><div class=tags><i class="fa fa-tags"></i><div class=links><a href=https://www.maoudia.com/tags/eip/>EIP</a>
 <a href=https://www.maoudia.com/tags/java/>Java</a>
 <a href=https://www.maoudia.com/tags/reactor/>Reactor</a>
 <a href=https://www.maoudia.com/tags/mongodb/>MongoDB</a>
@@ -1358,54 +658,10 @@ with the application.</p>
 <a href=https://www.maoudia.com/tags/spring-webflux/>Spring WebFlux</a>
 <a href=https://www.maoudia.com/tags/docker-compose/>Docker Compose</a>
 <a href=https://www.maoudia.com/tags/testcontainers/>TestContainers</a>
-<a href=https://www.maoudia.com/tags/visualvm/>VisualVM</a>
-</div>
-</div>
-<div class=languages>
-<i class="fa fa-language"></i>
-<div class=links>
-<a href=https://www.maoudia.com/fr/blog/mise-a-jour-en-masse-avec-spring-data-mongodb-reactive/>fr</a>
-</div>
-</div>
-</div>
-</article>
-</div>
-<div id=webmentions-container>
-<script src=https://www.maoudia.com/js/webmention.min.js integrity=sha384-jpBjl7uFXhBwC/Pl3XF47lKziQiVigVJCtlg1xu0m3tqSlKzWyv5DzHnIQWWTakS data-id=webmention-container crossorigin=anonymous async></script>
-<div id=webmentions></div>
-</div>
-<div id=comments-container>
-<script src=https://giscus.app/client.js data-repo=maoudia/discussions.maoudia.com data-repo-id=R_kgDOGX153A data-category=General data-category-id=DIC_kwDOGX153M4B_2Vz data-mapping=og:title data-reactions-enabled=1 data-emit-metadata data-theme=light data-input-position=bottom data-loading=lazy data-lang=en crossorigin=anonymous async></script>
-<div id=giscus></div>
-</div>
-</div>
-<footer>
-<div class=container>
-<div class=categories>
-<a href=/categories/ alt=Categories><strong>Categories</strong></a>
-<ul>
-<li>
-<a href=/categories/reactive-programming alt="Reactive programming">Reactive programming
-(1)</a>
-</li>
-<li>
-<a href=/categories/tutorial alt=Tutorial>Tutorial
-(1)</a>
-</li>
-</ul>
-</div>
-<div class=series>
-<a href=/series/><strong>Series</strong></a>
-<ul>
-<li>
-<a href=/series/mongodb-reactive-cli>Mongodb reactive CLI
-(1)</a>
-</li>
-</ul>
-</div>
-<div class=right>
-<div class=external-profiles>
-<strong>Find me on</strong>
+<a href=https://www.maoudia.com/tags/visualvm/>VisualVM</a></div></div><div class=languages><i class="fa fa-language"></i><div class=links><a href=https://www.maoudia.com/fr/blog/mise-a-jour-en-masse-avec-spring-data-mongodb-reactive/>fr</a></div></div></div></article></div><div id=webmentions-container><script src=https://www.maoudia.com/js/webmention.min.js integrity=sha384-jpBjl7uFXhBwC/Pl3XF47lKziQiVigVJCtlg1xu0m3tqSlKzWyv5DzHnIQWWTakS data-id=webmention-container crossorigin=anonymous async></script><div id=webmentions></div></div><div id=comments-container><script src=https://giscus.app/client.js data-repo=maoudia/discussions.maoudia.com data-repo-id=R_kgDOGX153A data-category=General data-category-id=DIC_kwDOGX153M4B_2Vz data-mapping=og:title data-reactions-enabled=1 data-emit-metadata data-theme=light data-input-position=bottom data-loading=lazy data-lang=en crossorigin=anonymous async></script><div id=giscus></div></div></div><footer><div class=container><div class=categories><a href=/categories/ alt=Categories><strong>Categories</strong></a><ul><li><a href=/categories/reactive-programming alt="Reactive programming">Reactive programming
+(1)</a></li><li><a href=/categories/tutorial alt=Tutorial>Tutorial
+(1)</a></li></ul></div><div class=series><a href=/series/><strong>Series</strong></a><ul><li><a href=/series/mongodb-reactive-cli>Mongodb reactive CLI
+(1)</a></li></ul></div><div class=right><div class=external-profiles><strong>Find me on</strong>
 <a href=https://twitter.com/aoudiamoncef title="Moncef AOUDIA Twitter" target=_blank rel="noopener noreferrer"><i class="fab fa-twitter"></i></a>
 <a href=https://github.com/aoudiamoncef title="Moncef AOUDIA Github" target=_blank rel="noopener noreferrer"><i class="fab fa-github"></i></a>
 <a href=https://gitlab.com/aoudiamoncef title="Moncef AOUDIA Gitlab" target=_blank rel="noopener noreferrer"><i class="fab fa-gitlab"></i></a>
@@ -1422,40 +678,14 @@ with the application.</p>
 <a href=https://www.reddit.com/user/aoudiamoncef title="Moncef AOUDIA Reddit" target=_blank rel="noopener noreferrer"><i class="fab fa-reddit"></i></a>
 <a href=https://slides.com/aoudiamoncef title="Moncef AOUDIA Slides" target=_blank rel="noopener noreferrer"><i class="fas fa-sliders-h"></i></a>
 <a href=https://speakerdeck.com/aoudiamoncef title="Moncef AOUDIA SpeakerDeck" target=_blank rel="noopener noreferrer"><i class="fab fa-speaker-deck"></i></a>
-<a href=/index.xml title="Moncef AOUDIA RSS" target=_blank rel="noopener noreferrer"><i class="fas fa-rss"></i></a>
-</div>
-<div class=languages>
-<strong>Other languages</strong>
+<a href=/index.xml title="Moncef AOUDIA RSS" target=_blank rel="noopener noreferrer"><i class="fas fa-rss"></i></a></div><div class=languages><strong>Other languages</strong>
 <a href=https://www.maoudia.com/ class=active>en</a>
-<span> | </span>
-<a href=https://www.maoudia.com/fr/>fr</a>
-</div>
-</div>
-</div>
-</footer>
-<div class=credits>
-<div class=container>
-<div class=copyright>
-<a href=https://creativecommons.org/licenses/by-sa/4.0 target=_blank rel=noopener>
-&copy;
-2022
-Moncef AOUDIA
-</a>
-</div>
-<div class=author>
-<a href=https://github.com/Lednerb/bilberry-hugo-theme target=_blank rel=noopener>Bilberry Hugo Theme</a>
-</div>
-</div>
-</div>
-<script type=text/javascript src=https://www.maoudia.com/js/theme.min.js crossorigin=anonymous defer></script>
-<div id=activate-algolia-search class=hidden>
-<input type=hidden id=algolia-search-appId>
+<span>|</span>
+<a href=https://www.maoudia.com/fr/>fr</a></div></div></div></footer><div class=credits><div class=container><div class=copyright><a href=https://creativecommons.org/licenses/by-sa/4.0 target=_blank rel=noopener>&copy;
+2023
+Moncef AOUDIA</a></div><div class=author><a href=https://github.com/Lednerb/bilberry-hugo-theme target=_blank rel=noopener>Bilberry Hugo Theme</a></div></div></div><script type=text/javascript src=https://www.maoudia.com/js/theme.min.js crossorigin=anonymous defer></script><div id=activate-algolia-search class=hidden><input type=hidden id=algolia-search-appId>
 <input type=hidden id=algolia-search-apiKey>
 <input type=hidden id=algolia-search-indexName>
 <input type=hidden id=algolia-search-noSearchResults value="Nothing found.">
-<input type=hidden id=algolia-search-currentLanguageOnly>
-</div>
-<script src=https://www.maoudia.com/js/vanilla-back-to-top.min.js integrity=sha384-vPjvei7c1a3IpCr0kkDEOMRmlCHcv8REJw1B2eKJM55swier62xiYRVistfMKEUj crossorigin=anonymous></script>
-<script>addBackToTop({diameter:48,backgroundColor:'transparent',textColor:'rgb(45, 54, 66)'})</script>
-</body>
-</html>
+<input type=hidden id=algolia-search-currentLanguageOnly></div><script src=https://www.maoudia.com/js/vanilla-back-to-top.min.js integrity=sha384-vPjvei7c1a3IpCr0kkDEOMRmlCHcv8REJw1B2eKJM55swier62xiYRVistfMKEUj crossorigin=anonymous></script>
+<script>addBackToTop({diameter:48,backgroundColor:'transparent',textColor:'rgb(45, 54, 66)'})</script></body></html>
