@@ -17,15 +17,33 @@ slug = "uses"
 +++
 
 :oss: image:/images/badges/oss.svg[open source badge, 50, 20]
-
-
-Voici les logiciels et le matériel que j'utilise.
+    
+[.lead]
+Voici les logiciels et le matériel que j'utilise ou que j'ai utilisés.
 
 <!--more-->
 
 == Matériel
 
 === Ordinateurs 💻
+
+.Macbook Pro 14" 2021
+[source, yaml]
+----
+Système d'exploitation: macOS 14.1 23B74 arm64
+Hôte: MacBookPro18,3
+Noyau: 23.1.0
+Shell: zsh 5.9
+Résolution: 1512x982
+Environnement de bureau: Aqua
+Gestionnaire de fenêtres: Quartz Compositor
+Thème GF: Blue (Light)
+Terminal: WarpTerminal
+Processeur: Apple M1 Pro
+Processeur graphique: Apple M1 Pro
+Mémoire vive: '16Go'  
+Stockage: '512Go'
+----
 
 .Dell XPS 9570 
 [source]

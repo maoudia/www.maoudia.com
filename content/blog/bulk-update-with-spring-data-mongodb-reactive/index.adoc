@@ -636,7 +636,7 @@ with the application.
 * https://www.enterpriseintegrationpatterns.com/DataEnricher.html[EIP Data enricher]
 * https://www.mongodb.com/try/download/database-tools[MongoDB Database Tools]
 * https://adresse.data.gouv.fr/data/ban/adresses/latest/addok/[French Adresses Data]
-* https://mongodb.github.io/mongo-java-driver/4.6/driver-reactive/tutorials/bulk-writes/[MongoDB Java Driver Bulk operations]
+* https://mongodb.github.io/mongo-java-driver/4.11/driver-reactive/tutorials/bulk-writes/[MongoDB Java Driver Bulk operations]
 * https://projectreactor.io/docs/core/release/reference/[Reactor 3 Reference Guide]
 * https://docs.spring.io/spring-data/mongodb/docs/current/reference/html/[Spring Data MongoDB Reference]
 * https://docs.spring.io/spring-framework/docs/current/reference/html/web-reactive.html[Web on Reactive Stack]

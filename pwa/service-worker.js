@@ -143,7 +143,8 @@ registerRoute(
   ({ request }) =>
     request.url.startsWith(
       "https://github-readme-streak-stats.herokuapp.com"
-    ) || request.url.startsWith("https://github-readme-stats.vercel.app"),
+    ) || request.url.startsWith("https://github-readme-stats.vercel.app")
+      || request.url.startsWith("https://github-profile-trophy.vercel.app"),
   new StaleWhileRevalidate({
     plugins: [
       new CacheableResponsePlugin({

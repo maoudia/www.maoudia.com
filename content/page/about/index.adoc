@@ -50,10 +50,14 @@ slug = "about"
 :cloudflarepages: image:{badges}/cloudflarepages.svg[cloudflarepages]
 :clubhouseBadge: image:{badges}/clubhouse-badge.svg[clubhouse, link = "https://www.clubhouse.com/@aoudiamoncef"] 
 :codacy: image:{badges}/codacy.svg[codacy]
+:codecov: image:{badges}/codecov.svg[codecov]
 :confluence: image:{badges}/confluence.svg[confluence]
 :consul: image:{badges}/consul.svg[consul]
 :css3: image:{badges}/css3.svg[css3]
 :curl: image:{badges}/curl.svg[curl]
+:datadog: image:{badges}/datadog.svg[datadog]
+:datagrip: image:{badges}/datagrip.svg[datagrip]
+:dart: image:{badges}/dart.svg[dart]
 :deezer: image:{badges}/deezer.svg[deezer]
 :dependabot: image:{badges}/dependabot.svg[dependabot]
 :devto: image:{badges}/devto.svg[dev.to] 
@@ -65,6 +69,7 @@ slug = "about"
 :elasticsearch: image:{badges}/elasticsearch.svg[elasticsearch]
 :fastlane: image:{badges}/fastlane.svg[fastlane]
 :filezilla: image:{badges}/filezilla.svg[filezilla]
+:flutter: image:{badges}/flutter.svg[flutter]
 :focustodo: image:{badges}/focustodo.svg[focustodo]
 :joplin: image:{badges}/joplin.svg[joplin]
 :gatling: image:{badges}/gatling.svg[gatling]
@@ -84,10 +89,12 @@ slug = "about"
 :gradle: image:{badges}/gradle.svg[gradle]
 :grafana: image:{badges}/grafana.svg[grafana]
 :graphql: image:{badges}/graphql.svg[graphql]
+:gravatarBadge: image:{badges}/gravatar-large.svg[gravatarbadge, link = "https://gravatar.com/aoudiamoncef"]
 :hangouts: image:{badges}/hangouts.svg[googlehangouts]
 :hashnode: image:{badges}/hashnode.svg[hashnode]
 :hashnodeBadge: image:{badges}/hashnode-large.svg[hashnodebadge, link = "https://aoudiamoncef.hashnode.dev"]
 :heidisql: image:{badges}/heidisql.svg[heidisql]
+:helm: image:{badges}/helm.svg[helm]
 :hibernate: image:{badges}/hibernate.svg[hibernate]
 :homeassistant: image:{badges}/homeassistant.svg[homeassistant]
 :html5: image:{badges}/html5.svg[html5]
@@ -102,6 +109,7 @@ slug = "about"
 :jira: image:{badges}/jira.svg[jira]
 :junit5: image:{badges}/junit.svg[junit5]
 :k3s: image:{badges}/k3s.svg[k3s]
+:kafka: image:{badges}/kafka.svg[kafka]
 :keepassxc: image:{badges}/junit.svg[keepassxc]
 :keycloak: image:{badges}/keycloak.svg[keycloak]
 :kibana: image:{badges}/kibana.svg[kibana]
@@ -138,12 +146,14 @@ slug = "about"
 :ohmyzsh: image:{badges}/ohmyzsh.svg[ohmyzsh]
 :openapiinitiative: image:{badges}/openapi.svg[openapiinitiative]
 :opensourceinitiative: image:{badges}/oss.svg[opensourceinitiative]
+:opentelemetry: image:{badges}/opentelemetry.svg[opentelemetry]
 :overleaf: image:{badges}/overleaf.svg[overleaf]
 :pandas: image:{badges}/pandas.svg[pandas]
 :pihole: image:{badges}/pihole.svg[pihole]
 :plex: image:{badges}/plex.svg[plex]
 :pocket: image:{badges}/pocket.svg[pocket]
 :pocketBadge: image:{badges}/pocket-large.svg[pocketbadge, link = "https://getpocket.com/@701dbpd1T08b8g7f59Ab790A73g1T0G2725K38yf75eym1w2di86eN27V2dIJ51a"]
+:portainer: image:{badges}/portainer.svg[portainer]
 :postgresql: image:{badges}/postgresql.svg[postgresql]
 :postman: image:{badges}/postman.svg[postman]
 :proxmox: image:{badges}/proxmox.svg[proxmox]
@@ -185,6 +195,8 @@ slug = "about"
 :supabase: image:{badges}/supabase.svg[supabase]
 :syncthing: image:{badges}/syncthing.svg[syncthing]
 :synology: image:{badges}/synology.svg[synology]
+:telegram: image:{badges}/telegram.svg[telegram]
+:termius: image:{badges}/termius.svg[termius]
 :thymeleaf: image:{badges}/thymeleaf.svg[thymeleaf]
 :traefikproxy: image:{badges}/traefikproxy.svg[traefikproxy]
 :travisci: image:{badges}/travisci.svg[travisci]
@@ -204,6 +216,7 @@ slug = "about"
 :windowsterminal: image:{badges}/windowsterminal.svg[windowsterminal]
 :winds: image:{badges}/winds.svg[winds]
 :workplace: image:{badges}/workplace.svg[workplace]
+:xcode: image:{badges}/xcode.svg[xcode]
 :yammer: image:{badges}/yammer.svg[yammer]
 :zulip: image:{badges}/zulip.svg[zulip]
 
@@ -234,6 +247,7 @@ slug = "about"
 {maoudia}
 {rssBadge}
 {biolinkBadge}
+{gravatarBadge}
 
 == My universe 🔮
 
@@ -251,6 +265,7 @@ Technologies I have used* at work and/or side projects.
             <span class="image"><img src="/images/badges/solidity.svg" alt="solidity"></span>
             <span class="image"><img src="/images/badges/typescript.svg" alt="typescript"></span>
             <span class="image"><img src="/images/badges/python.svg" alt="python"></span>
+            <span class="image"><img src="/images/badges/dart.svg" alt="dart"></span>
             <span class="image"><img src="/images/badges/graphql.svg" alt="graphql"></span>
             <span class="image"><img src="/images/badges/sql.svg" alt="sql"></span>
             <span class="image"><img src="/images/badges/asciidoc.svg" alt="asciidoc"></span>
@@ -269,8 +284,10 @@ Technologies I have used* at work and/or side projects.
 [.badge]
 ====
 {androidstudio}
+{datagrip}
 {intellijidea}
 {visualstudiocode}
+{xcode}
 {webstorm}
 ====
 
@@ -281,6 +298,7 @@ Technologies I have used* at work and/or side projects.
 {activemq}
 {elasticsearch}
 {influxdb}
+{kafka}
 {mariadb}
 {mongodb}
 {mysql}
@@ -297,6 +315,7 @@ Technologies I have used* at work and/or side projects.
 {apachecamel}
 {apollographql}
 {bootstrap}
+{flutter}
 {gatsby}
 {hibernate}
 {hugo}
@@ -304,6 +323,7 @@ Technologies I have used* at work and/or side projects.
 {junit5}
 {mutiny}
 {numpy}
+{opentelemetry}
 {pandas}
 {quarkus}
 {rxjava}
@@ -329,11 +349,13 @@ Technologies I have used* at work and/or side projects.
 {calibre}
 {chocolatey}
 {curl}
+{datadog}
 {docker}
 {fastlane}
 {filezilla}
 {focustodo}
 {joplin}
+{helm}
 {k3s}
 {kodi}
 {kubernetes}
@@ -362,6 +384,7 @@ Technologies I have used* at work and/or side projects.
 {supabase}
 {syncthing}
 {synology}
+{termius}
 {traefikproxy}
 {truenas}
 {ubiquiti}
@@ -384,6 +407,7 @@ Technologies I have used* at work and/or side projects.
 {cloudflare}
 {cloudflarepages}
 {codacy}
+{codecov}
 {confluence}
 {consul}
 {dependabot}
@@ -418,6 +442,7 @@ Technologies I have used* at work and/or side projects.
 {meet}
 {slack}
 {spectrum}
+{telegram}
 {workplace}
 {yammer}
 {zulip}
@@ -466,7 +491,7 @@ image:https://github-readme-stats.vercel.app/api/pin/?username=maoudia&repo=www.
 
 image:https://github-readme-stats.vercel.app/api?username=aoudiamoncef&show_icons=true&theme=flag-india&hide_title=true&count_private=true&locale=en[Github stats visualization, 495, 165]
 image:https://github-readme-streak-stats.herokuapp.com/?user=aoudiamoncef[Github streak stats visualization, 495, 195]
-
+image:https://github-profile-trophy.vercel.app/?username=aoudiamoncef[trophy stats visualization, 495, 195]
 
 [NOTE]
 ====
