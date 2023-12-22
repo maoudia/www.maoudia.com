@@ -55,6 +55,7 @@ slug = "about"
 :consul: image:{badges}/consul.svg[consul]
 :css3: image:{badges}/css3.svg[css3]
 :curl: image:{badges}/curl.svg[curl]
+:cypress: image:{badges}/cypress.svg[cypress]
 :datadog: image:{badges}/datadog.svg[datadog]
 :datagrip: image:{badges}/datagrip.svg[datagrip]
 :dart: image:{badges}/dart.svg[dart]
@@ -69,6 +70,8 @@ slug = "about"
 :elasticsearch: image:{badges}/elasticsearch.svg[elasticsearch]
 :fastlane: image:{badges}/fastlane.svg[fastlane]
 :filezilla: image:{badges}/filezilla.svg[filezilla]
+:fireship: image:{badges}/fireship.svg[fireship]
+:fluentbit: image:{badges}/fluentbit.svg[fluentbit]
 :flutter: image:{badges}/flutter.svg[flutter]
 :focustodo: image:{badges}/focustodo.svg[focustodo]
 :joplin: image:{badges}/joplin.svg[joplin]
@@ -91,23 +94,31 @@ slug = "about"
 :graphql: image:{badges}/graphql.svg[graphql]
 :gravatarBadge: image:{badges}/gravatar-large.svg[gravatarbadge, link = "https://gravatar.com/aoudiamoncef"]
 :hangouts: image:{badges}/hangouts.svg[googlehangouts]
+:harbor: image:{badges}/harbor.svg[harbor]
 :hashnode: image:{badges}/hashnode.svg[hashnode]
 :hashnodeBadge: image:{badges}/hashnode-large.svg[hashnodebadge, link = "https://aoudiamoncef.hashnode.dev"]
 :heidisql: image:{badges}/heidisql.svg[heidisql]
 :helm: image:{badges}/helm.svg[helm]
 :hibernate: image:{badges}/hibernate.svg[hibernate]
 :homeassistant: image:{badges}/homeassistant.svg[homeassistant]
+:homebrew: image:{badges}/homebrew.svg[homebrew]
+:hoppscotch: image:{badges}/hoppscotch.svg[hoppscotch]
 :html5: image:{badges}/html5.svg[html5]
 :hugo: image:{badges}/hugo.svg[hugo] 
 :hyper: image:{badges}/hyper.svg[hyper]
 :influxdb: image:{badges}/influxdb.svg[influxdb]
+:insomnia: image:{badges}/insomnia.svg[insomnia]
 :intellijidea: image:{badges}/intellijidea.svg[intellijidea]
+:ipfs: image:{badges}/ipfs.svg[ipfs]
 :jamstack: image:{badges}/jamstack.svg[jamstack]
 :java: image:{badges}/java.svg[java]
 :jekyll: image:{badges}/jekyll.svg[jekyll]
+:jellyfin: image:{badges}/jellyfin.svg[jellyfin]
 :jenkins: image:{badges}/jenkins.svg[jenkins]
 :jira: image:{badges}/jira.svg[jira]
+:jmeter: image:{badges}/jmeter.svg[jmeter]
 :junit5: image:{badges}/junit.svg[junit5]
+:jwt: image:{badges}/jwt.svg[jwt]
 :k3s: image:{badges}/k3s.svg[k3s]
 :kafka: image:{badges}/kafka.svg[kafka]
 :keepassxc: image:{badges}/junit.svg[keepassxc]
@@ -117,16 +128,21 @@ slug = "about"
 :kong: image:{badges}/kong.svg[kong]
 :kotlin: image:{badges}/kotlin.svg[kotlin]
 :kubernetes: image:{badges}/kubernetes.svg[kubernetes]
-:latex: image:{badges}/latex.svg[latex] 
+:latex: image:{badges}/latex.svg[latex]
+:lens: image:{badges}/lens.svg[lens]
+:letsencrypt: image:{badges}/letsencrypt.svg[letsencrypt]
+:lighthouse: image:{badges}/lighthouse.svg[lighthouse]
 :linkedin: image:{badges}/linkedin.svg[linkedin] 
 :linkedinBadge: image:{badges}/linkedin-large.svg[linkedinbadge, link = "https://www.linkedin.com/in/%F0%9F%91%A8%E2%80%8D%F0%9F%92%BB-moncef-aoudia-7723b311b"] 
 :linux: image:{badges}/linux.svg[linux]
+:liquibase: image:{badges}/liquibase.svg[liquibase]
 :logstash: image:{badges}/logstash.svg[logstash]
 :macos: image:{badges}/macos.svg[macos]
 :maoudia: image:{badges}/maoudiacom-large.svg[maoudia, link = "https://www.maoudia.com/en/"]
 :mariadb: image:{badges}/mariadb.svg[mariadb]
 :markdown: image:{badges}/markdown.svg[markdown]
 :mattermost: image:{badges}/mattermost.svg[mattermost]
+:maven: image:{badges}/maven.svg[maven]
 :medium: image:{badges}/medium.svg[medium]
 :mediumBadge: image:{badges}/medium-large.svg[mediumbadge, link = "https://medium.com/@aoudiamoncef"]
 :meet: image:{badges}/meet.svg[googlemeet]
@@ -139,35 +155,45 @@ slug = "about"
 :mutiny: image:{badges}/mutiny.svg[mutiny]
 :myki: image:{badges}/myki.svg[myki]
 :mysql: image:{badges}/mysql.svg[mysql]
+:nestjs: image:{badges}/nestjs.svg[nestjs]
 :netlify: image:{badges}/netlify.svg[netlify]
 :nextcloud: image:{badges}/nextcloud.svg[nextcloud]
 :npm: image:{badges}/npm.svg[npm]
 :numpy: image:{badges}/numpy.svg[numpy]
+:nuxtjs: image:{badges}/nuxtjs.svg[nuxtjs]
 :ohmyzsh: image:{badges}/ohmyzsh.svg[ohmyzsh]
 :openapiinitiative: image:{badges}/openapi.svg[openapiinitiative]
 :opensourceinitiative: image:{badges}/oss.svg[opensourceinitiative]
 :opentelemetry: image:{badges}/opentelemetry.svg[opentelemetry]
+:openvpn: image:{badges}/openvpn.svg[openvpn]
 :overleaf: image:{badges}/overleaf.svg[overleaf]
 :pandas: image:{badges}/pandas.svg[pandas]
 :pihole: image:{badges}/pihole.svg[pihole]
 :plex: image:{badges}/plex.svg[plex]
 :pocket: image:{badges}/pocket.svg[pocket]
+:podman: image:{badges}/podman.svg[podman]
 :pocketBadge: image:{badges}/pocket-large.svg[pocketbadge, link = "https://getpocket.com/@701dbpd1T08b8g7f59Ab790A73g1T0G2725K38yf75eym1w2di86eN27V2dIJ51a"]
 :portainer: image:{badges}/portainer.svg[portainer]
 :postgresql: image:{badges}/postgresql.svg[postgresql]
 :postman: image:{badges}/postman.svg[postman]
+:promeheus: image:{badges}/prometheus.svg[prometheus]
+:proton: image:{badges}/proton.svg[proton]
+:protonvpn: image:{badges}/protonvpn.svg[protonvpn]
 :proxmox: image:{badges}/proxmox.svg[proxmox]
+:pwa: image:{badges}/pwa.svg[pwa]
 :python: image:{badges}/python.svg[python]
 :quarkus: image:{badges}/quarkus.svg[quarkus]
 :quora: image:{badges}/quora.svg[quora]
 :quoraBadge: image:{badges}/quora-large.svg[quora, link = "https://www.quora.com/profile/Moncef-AOUDIA"]
 :rainbow: image:{badges}/rainbow.svg[rainbow]
 :rancher: image:{badges}/rancher.svg[rancher]
+:raspberrypi: image:{badges}/raspberrypi.svg[raspberrypi]
 :reactivex: image:{badges}/reactivex.svg[reactivex]
 :reactor: image:{badges}/reactor.svg[reactor] 
 :reddit: image:{badges}/reddit.svg[reddit]
 :redditBadge: image:{badges}/reddit-large.svg[redditbadge, link = "https://www.reddit.com/user/aoudiamoncef"]
 :redis: image:{badges}/redis.svg[redis]
+:relay: image:{badges}/relay.svg[relay]
 :rocksdb: image:{badges}/rocksdb.svg[rocksdb]
 :rss: image:{badges}/rss.svg[rss]
 :rssBadge: image:{badges}/rss-large.svg[rssbadge, link = "https://www.maoudia.com/index.xml"]
@@ -193,11 +219,14 @@ slug = "about"
 :stackoverflow: image:{badges}/stackoverflow.svg[stackoverflow]
 :stackoverflowBadge: image:{badges}/stackoverflow-large.svg[stackoverflowbadge, link = "https://stackoverflow.com/users/8126192/moncef-aoudia"]
 :supabase: image:{badges}/supabase.svg[supabase]
+:swagger: image:{badges}/swagger.svg[swagger]
 :syncthing: image:{badges}/syncthing.svg[syncthing]
 :synology: image:{badges}/synology.svg[synology]
+:tailwind: image:{badges}/tailwind.svg[tailwind]
 :telegram: image:{badges}/telegram.svg[telegram]
 :termius: image:{badges}/termius.svg[termius]
 :thymeleaf: image:{badges}/thymeleaf.svg[thymeleaf]
+:tomcat: image:{badges}/tomcat.svg[tomcat]
 :traefikproxy: image:{badges}/traefikproxy.svg[traefikproxy]
 :travisci: image:{badges}/travisci.svg[travisci]
 :truenas: image:{badges}/truenas.svg[truenas]
@@ -209,8 +238,15 @@ slug = "about"
 :ubuntu: image:{badges}/ubuntu.svg[ubuntu]
 :uptimekuma: image:{badges}/uptimekuma.svg[uptimekuma]
 :vagrant: image:{badges}/vagrant.svg[vagrant]
+:vault: image:{badges}/vault.svg[vault]
+:vaultwarden: image:{badges}/vaultwarden.svg[vaultwarden]
 :visualstudiocode: image:{badges}/visualstudiocode.svg[visualstudiocode]
 :visualvm: image:{badges}/visualvm.svg[visualvm]
+:vite: image:{badges}/vite.svg[vite]
+:vuejs: image:{badges}/vuejs.svg[vuejs]
+:warp: image:{badges}/warp.svg[warp]
+:webassembly: image:{badges}/webassembly.svg[webassembly]
+:webrtc: image:{badges}/webrtc.svg[webrtc]
 :webstorm: image:{badges}/webstorm.svg[webstorm]
 :windows: image:{badges}/windows.svg[windows]
 :windowsterminal: image:{badges}/windowsterminal.svg[windowsterminal]
@@ -218,6 +254,8 @@ slug = "about"
 :workplace: image:{badges}/workplace.svg[workplace]
 :xcode: image:{badges}/xcode.svg[xcode]
 :yammer: image:{badges}/yammer.svg[yammer]
+:zigbee: image:{badges}/zigbee.svg[zigbee]
+:zsh: image:{badges}/zsh.svg[zsh]
 :zulip: image:{badges}/zulip.svg[zulip]
 
 [.lead]
@@ -320,8 +358,11 @@ Les technologies que j'ai utilisées* au travail et/ou dans le cadre de projets 
 {hugo}
 {jekyll}
 {junit5}
+{liquibase}
 {mutiny}
+{nestjs}
 {numpy}
+{nuxtjs}
 {opentelemetry}
 {pandas}
 {quarkus}
@@ -330,7 +371,9 @@ Les technologies que j'ai utilisées* au travail et/ou dans le cadre de projets 
 {spring}
 {springboot}
 {springsecurity}
+{tailwind}
 {thymeleaf}
+{vuejs}
 ====
 
 .Outils
@@ -348,13 +391,18 @@ Les technologies que j'ai utilisées* au travail et/ou dans le cadre de projets 
 {calibre}
 {chocolatey}
 {curl}
+{cypress}
 {datadog}
 {docker}
 {fastlane}
 {filezilla}
 {focustodo}
+{fluentbit}
+{insomnia}
 {joplin}
 {helm}
+{homebrew}
+{hoppscotch}
 {k3s}
 {kodi}
 {kubernetes}
@@ -364,33 +412,43 @@ Les technologies que j'ai utilisées* au travail et/ou dans le cadre de projets 
 {gradle}
 {heidisql}
 {nextcloud}
+{harbor}
 {homeassistant}
 {hyper}
 {kibana}
 {keepassxc}
+{lens}
+{lighthouse}
 {logstash}
+{maven}
 {mremoteng}
 {npm}
 {ohmyzsh}
 {pihole}
-{plex}
 {pocket}
+{podman}
 {portainer}
 {postman}
+{promeheus}
 {proxmox}
 {rancher}
 {sonarlint}
 {supabase}
+{swagger}
 {syncthing}
 {synology}
 {termius}
 {traefikproxy}
-{truenas}
 {ubiquiti}
 {uptimekuma}
 {vagrant}
+{vault}
+{vaultwarden}
 {visualvm}
+{vite}
+{warp}
 {windowsterminal}
+{zsh}
 ====
 
 .Services
@@ -455,6 +513,7 @@ Les technologies que j'ai utilisées* au travail et/ou dans le cadre de projets 
 {arduino}
 {linux}
 {macos}
+{truenas}
 {ubuntu}
 {windows}
 ====
@@ -466,13 +525,30 @@ Les technologies que j'ai utilisées* au travail et/ou dans le cadre de projets 
 {brave}
 {chrome}
 {deezer}
+{fireship}
+{ipfs}
 {jamstack}
+{jellyfin}
+{jwt}
+{letsencrypt}
 {microservices}
 {mqtt}
 {openapiinitiative}
 {opensourceinitiative}
+{openvpn}
+{plex}
+{proton}
+{protonvpn}
+{pwa}
+{raspberrypi}
+{reactivex}
+{relay}
 {spotify}
+{tomcat}
 {ublockorigin}
+{webassembly}
+{webrtc}
+{zigbee}
 ====
 
 {empty} +
