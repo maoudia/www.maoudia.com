@@ -91,7 +91,7 @@ socialMediaLinks = [
   { link = "https://twitter.com/aoudiamoncef", title = "Moncef AOUDIA Twitter", icon = "fab fa-twitter" },
   { link = "https://github.com/aoudiamoncef", title = "Moncef AOUDIA Github", icon = "fab fa-github" },
   { link = "https://gitlab.com/aoudiamoncef", title = "Moncef AOUDIA Gitlab", icon = "fab fa-gitlab" },
-  { link = "https://www.linkedin.com/in/%F0%9F%91%A8%E2%80%8D%F0%9F%92%BB-moncef-aoudia-7723b311b", title = "Moncef AOUDIA Linkedin", icon = "fab fa-linkedin" },
+  { link = "https://www.linkedin.com/in/moncef-aoudia-7723b311b", title = "Moncef AOUDIA Linkedin", icon = "fab fa-linkedin" },
   { link = "mailto:mf.aoudia@gmail.com", title = "Moncef AOUDIA Gmail", icon = "fas fa-envelope" },
   { link = "https://www.clubhouse.com/@aoudiamoncef", title = "Moncef AOUDIA Clubhouse", icon = "far fa-copyright" },
   { link = "https://discordapp.com/users/365160200900182026", title = "Moncef AOUDIA Discord", icon = "fab fa-discord" },
