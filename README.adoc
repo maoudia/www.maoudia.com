@@ -41,7 +41,7 @@ Launch a local Hugo server including live reload:
 .Development
 [source,shell]
 ----
-hugo server --debug --buildDrafts --buildExpired --buildFuture  --templateMetrics --templateMetricsHints --verbose --verboseLog
+hugo server --debug --buildDrafts --buildExpired --buildFuture  --templateMetrics --templateMetricsHints --verbose
 ----
 
 .Build PWA service worker

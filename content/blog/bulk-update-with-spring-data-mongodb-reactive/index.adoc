@@ -85,7 +85,7 @@ The application will read the address documents, add the product and save the en
 
 === Generation
 
-We generate the project skeleton from https://start.spring.io/#!type=maven-project&language=java&platformVersion=3.1.5&packaging=jar&jvmVersion=21&groupId=com.maoudia&artifactId=bulk-update-with-spring-data-mongodb&name=Bulk%20Update%20with%20Spring%20Data%20MongoDB%20Reactive&description=Bulk%20Update%20with%20Spring%20data%20MongoDB%20reactive&packageName=com.maoudia.tutorial&dependencies=data-mongodb-reactive,webflux,testcontainers[`Spring Initializr`, window=\"_blank\"].
+We generate the project skeleton from https://start.spring.io/#!type=maven-project&language=java&platformVersion=3.2.2&packaging=jar&jvmVersion=21&groupId=com.maoudia&artifactId=bulk-update-with-spring-data-mongodb&name=Bulk%20Update%20with%20Spring%20Data%20MongoDB%20Reactive&description=Bulk%20Update%20with%20Spring%20data%20MongoDB%20reactive&packageName=com.maoudia.tutorial&dependencies=data-mongodb-reactive,webflux,testcontainers[`Spring Initializr`, window=\"_blank\"].
 
 === Structure
 
@@ -284,13 +284,25 @@ We declare a class which contains application configuration properties.
 .AppProperties.java
 ----
 @ConfigurationProperties(prefix = "app")
-public class AppProperties {
-    private int bulkSize;
-    private int bufferMaxSize;
-    private String collectionName;
-    private String enrichingKey;
-    private String enrichingUri;
-    // Getter and Setter are omitted
+@Validated
+public record AppProperties(
+        @DefaultValue("128")
+        @Positive
+        int bulkSize,
+
+        @DefaultValue("1024")
+        @Positive
+        int bufferMaxSize,
+
+        @NotBlank
+        String collectionName,
+
+        @NotBlank
+        String enrichingKey,
+
+        @NotNull
+        URI enrichingUri
+) {
 }
 ----
 
@@ -333,10 +345,10 @@ public class CollectionService {
 
     public Flux<BulkWriteResult> enrichAll(String collectionName, String enrichingKey, String enrichingUri) {
             return template.findAll(Document.class, collectionName) // <1>
-                    .onBackpressureBuffer(properties.getBufferMaxSize()) // <2>
+                    .onBackpressureBuffer(properties.bufferMaxSize()) // <2>
                     .flatMap(document -> enrich(document,  enrichingKey, enrichingUri)) // <3>
                     .map(CollectionService::toReplaceOneModel) // <4>
-                    .window(properties.getBulkSize()) // <5>
+                    .window(properties.bulkSize()) // <5>
                     .flatMap(replaceOneModelFlux -> bulkWrite(replaceOneModelFlux, collectionName)); // <6>
     }
 }
@@ -453,7 +465,7 @@ public class Application implements CommandLineRunner, ExitCodeGenerator {
 
     @Override
     public void run(final String... args) {
-        service.enrichAll(properties.getCollectionName(), properties.getEnrichingKey(), properties.getEnrichingUri())
+        service.enrichAll(properties.collectionName(), properties.enrichingKey(), properties.enrichingUri())
                 .doOnSubscribe(unused -> LOGGER.info("------------------< Staring Collection Enriching Command >-------------------")) // <3>
                 .doOnNext(bulkWriteResult -> LOGGER.info("Bulk write result with {} modified document(s)", bulkWriteResult.getModifiedCount()))
                 .doOnError(throwable -> {
@@ -547,12 +559,19 @@ To keep this tutorial short, we will only write one test.
 class CollectionServiceTest {
 
     @Container
-    private static final MongoDBContainer mongoDBContainer = new MongoDBContainer("mongo:5.0.8") // <2>
-            .withReuse(true);
+    public static GenericContainer<?> jsonServerContainer = new GenericContainer<>("clue/json-server:latest")
+            .withExposedPorts(80)
+            .withFileSystemBind("./data/product/db.json", "/data/db.json", BindMode.READ_ONLY)
+            .waitingFor(Wait.forHttp("/").forStatusCode(200).forPort(80))
+            .withReuse(true); // <2>
+
+    @Container
+    private static final MongoDBContainer mongoDBContainer = new MongoDBContainer("mongo:7.0.2");
 
     @DynamicPropertySource
     private static void setProperties(DynamicPropertyRegistry registry) {
         registry.add("spring.data.mongodb.uri", mongoDBContainer::getReplicaSetUrl); // <3>
+        registry.add("app.enriching-uri", () -> "http://" + jsonServerContainer.getHost() + ":" + jsonServerContainer.getMappedPort(80) + "/products/1");
     }
 
     @Autowired
@@ -574,14 +593,12 @@ class CollectionServiceTest {
         givenDocument3.put("_id", "628ea3edb5110304e5e814f8");
         givenDocument3.put("type", "housenumber");
 
-        template.insert(Arrays.asList(givenDocument1, givenDocument2, givenDocument3), properties.getCollectionName()).blockLast();
+        template.insert(Arrays.asList(givenDocument1, givenDocument2, givenDocument3), properties.collectionName()).blockLast();
 
-        BulkWriteResult expectedBulkWriteResult1 = BulkWriteResult.acknowledged(WriteRequest.Type.REPLACE, 2, 2, Collections.emptyList(),
-                Collections.emptyList());
-        BulkWriteResult expectedBulkWriteResult2 = BulkWriteResult.acknowledged(WriteRequest.Type.REPLACE, 1, 1, Collections.emptyList(),
-                Collections.emptyList());
+        BulkWriteResult expectedBulkWriteResult1 = BulkWriteResult.acknowledged(WriteRequest.Type.REPLACE, 2, 2, Collections.emptyList(), Collections.emptyList());
+        BulkWriteResult expectedBulkWriteResult2 = BulkWriteResult.acknowledged(WriteRequest.Type.REPLACE, 1, 1, Collections.emptyList(), Collections.emptyList());
 
-        command.enrichAll( properties.getCollectionName(), properties.getEnrichingKey() , properties.getEnrichingUri())
+        command.enrichAll( properties.collectionName(), properties.enrichingKey() , properties.enrichingUri())
                 .as(StepVerifier::create) // <4>
                 .expectNext(expectedBulkWriteResult1)
                 .expectNext(expectedBulkWriteResult2)
