@@ -4,8 +4,9 @@
   useSessionStorage = false
 [instagram]
   simple = false
-[twitter]
+[x]
   enableDNT = true
+[twitter]
   simple = false
 [youtube]
   privacyEnhanced = true
