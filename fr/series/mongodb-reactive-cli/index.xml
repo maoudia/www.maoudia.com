@@ -1,8 +1,8 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>MongoDB Reactive CLI on Moncef AOUDIA</title><link>https://www.maoudia.com/fr/series/mongodb-reactive-cli/</link><description>Recent content in MongoDB Reactive CLI on Moncef AOUDIA</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright © 2021 Moncef AOUDIA</copyright><lastBuildDate>Mon, 20 Jun 2022 00:00:00 +0200</lastBuildDate><atom:link href="https://www.maoudia.com/fr/series/mongodb-reactive-cli/index.xml" rel="self" type="application/rss+xml"/><item><title>Mise À Jour En Masse Avec Spring Data MongoDB Reactive</title><link>https://www.maoudia.com/fr/blog/mise-a-jour-en-masse-avec-spring-data-mongodb-reactive/</link><pubDate>Mon, 20 Jun 2022 00:00:00 +0200</pubDate><guid>https://www.maoudia.com/fr/blog/mise-a-jour-en-masse-avec-spring-data-mongodb-reactive/</guid><description>&lt;div class="paragraph">
-&lt;p>Afin de mettre à jour les documents d’une collection MongoDB, on passe souvent par des requêtes de mise à jour, si le volume des données est conséquent,
-cela peut conduire à des problèmes de performance et une surconsommation des ressources matérielles.&lt;/p>
-&lt;/div>
-&lt;div class="paragraph">
-&lt;p>On va implémenter une solution pour enrichir et mettre à jour efficacement un grand volume de données
-en utilisant Spring Data MongoDB Reactive.&lt;/p>
-&lt;/div></description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>MongoDB Reactive CLI on Moncef AOUDIA</title><link>https://www.maoudia.com/fr/series/mongodb-reactive-cli/</link><description>Recent content in MongoDB Reactive CLI on Moncef AOUDIA</description><generator>Hugo</generator><language>fr</language><copyright>Copyright © 2021 Moncef AOUDIA</copyright><lastBuildDate>Fri, 09 Feb 2024 01:03:23 +0100</lastBuildDate><atom:link href="https://www.maoudia.com/fr/series/mongodb-reactive-cli/index.xml" rel="self" type="application/rss+xml"/><item><title>Mise À Jour En Masse Avec Spring Data MongoDB Reactive</title><link>https://www.maoudia.com/fr/blog/mise-a-jour-en-masse-avec-spring-data-mongodb-reactive/</link><pubDate>Mon, 20 Jun 2022 00:00:00 +0200</pubDate><guid>https://www.maoudia.com/fr/blog/mise-a-jour-en-masse-avec-spring-data-mongodb-reactive/</guid><description>&lt;div class="paragraph"&gt;
+&lt;p&gt;Afin de mettre à jour les documents d’une collection MongoDB, on passe souvent par des requêtes de mise à jour, si le volume des données est conséquent,
+cela peut conduire à des problèmes de performance et une surconsommation des ressources matérielles.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;On va implémenter une solution pour enrichir et mettre à jour efficacement un grand volume de données
+en utilisant Spring Data MongoDB Reactive.&lt;/p&gt;
+&lt;/div&gt;</description></item></channel></rss>
