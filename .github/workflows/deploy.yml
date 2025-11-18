@@ -19,7 +19,7 @@ jobs:
           fetch-depth: 0    # Fetch all history for .GitInfo and .Lastmod
 
       - name: Setup Hugo
-        uses: peaceiris/actions-hugo@v2
+        uses: peaceiris/actions-hugo@v3
         with:
           hugo-version: ${{ vars.HUGO_VERSION }}
           extended: true
@@ -33,7 +33,7 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
          ruby-version: ${{ vars.RUBY_VERSION }} 
-      - run: gem install asciidoctor asciidoctor-html5s asciidoctor-rouge
+      - run: gem install asciidoctor asciidoctor-html5s asciidoctor-rouge asciidoctor-diagram
 
       - name: Setup Node.js
         uses: actions/setup-node@v2
@@ -56,7 +56,7 @@ jobs:
           index_languages: en,fr
 
       - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         if: github.ref == 'refs/heads/main'
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}

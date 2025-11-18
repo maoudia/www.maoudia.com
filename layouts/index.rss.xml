@@ -34,8 +34,8 @@ xmlns:webfeeds="http://webfeeds.org/rss/1.0">
     <webfeeds:icon>{{ "images/favicons/favicon.ico" | absURL }}</webfeeds:icon>
     <webfeeds:logo>{{ "images/logo.png" | absURL }}</webfeeds:logo>
     <webfeeds:related layout="card" target="browser"/>
-    {{ if .Site.GoogleAnalytics }}
-    <webfeeds:analytics id="{{.Site.GoogleAnalytics}}" engine="GoogleAnalytics"/>
+    {{ with .Site.Config.Services.GoogleAnalytics.ID }}
+    <webfeeds:analytics id="{{.}}" engine="GoogleAnalytics"/>
     {{ end }}
     {{ range where .Site.RegularPages "Params.exclude" "!=" true }}
     <item>

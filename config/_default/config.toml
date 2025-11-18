@@ -36,7 +36,7 @@ disableAliases = false
     startLevel = 2
   [markup.asciidocExt]
     backend = "html5"
-    extensions = ["asciidoctor-html5s"]
+    extensions = ["asciidoctor-html5s", "asciidoctor-diagram"]
     failureLevel = "fatal"
     noHeaderOrFooter = true
     preserveTOC = true
@@ -61,5 +61,5 @@ disableAliases = false
 
 [security]
   [security.exec]
-    allow = ['^dart-sass-embedded$', '^go$', '^npx$', '^postcss$', '^asciidoctor$']
+    allow = ['^dart-sass-embedded$', '^go$', '^npx$', '^postcss$', '^asciidoctor$', '^git$']
     osEnv = ['(?i)^(PATH|PATHEXT|APPDATA|TMP|TEMP|TERM|GEM_PATH)$']
