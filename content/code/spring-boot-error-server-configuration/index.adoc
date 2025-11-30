@@ -1,0 +1,373 @@
++++
+title = "Spring Boot Error Server Configuration"
+date = 2024-02-27T00:00:00+02:00
+description = "Learn how to configure Spring Boot error handling for different environments with practical examples and best practices."
+author = "Moncef AOUDIA"
+showAuthor = false
+showReadingTime = true
+readingtime = 6
+tags = ["Java", "Spring Boot", "Error Handling", "Configuration", "Best Practices"]
+categories = ["Tutorial"]
+slug = "spring-boot-error-server-configuration"
+type = "code"
+[twitter]
+    card = "summary_large_image"
+    site = "@AoudiaMoncef"
+    creator = "@AoudiaMoncef"
+    title = "Spring Boot Error Server Configuration"
+    description = "Learn how to configure Spring Boot error handling for different environments with practical examples and best practices."
++++
+
+:toc: macro
+:toc-title: Table of contents
+:toclevels: 1
+:imagesdir: /images/code/spring-boot-error-server-configuration
+ifdef::env-github[]
+:imagesdir: ../../static/images/spring-boot-error-server-configuration
+endif::[]
+
+[.lead]
+
+Spring Boot provides flexible error handling configuration options that allow you to control what information is exposed in error responses. This is crucial for maintaining security in production while providing detailed debugging information in development environments.
+
+This tutorial showcases varying error response behaviors across different deployment profiles using a REST controller that intentionally throws errors for demonstration purposes.
+
+<!--more-->
+
+toc::[]
+
+== Error Configuration Options
+
+Spring Boot offers six key configurable error properties that control error response behavior:
+
+=== Include Binding Errors
+
+Controls visibility of validation errors in form submissions.
+
+* *Default Value:* `NEVER`
+* *Possible Values:* `ALWAYS`, `NEVER`, `ON_PARAM`
+* *Description:* Specifies whether binding errors, such as validation errors in form submissions, should be included in error responses.
+
+=== Include Exception
+
+Toggles detailed exception information in responses.
+
+* *Default Value:* `false`
+* *Possible Values:* `true`, `false`
+* *Description:* Specifies whether detailed exception information should be included in error responses.
+
+=== Include Message
+
+Manages error message visibility.
+
+* *Default Value:* `NEVER`
+* *Possible Values:* `ALWAYS`, `NEVER`, `ON_PARAM`
+* *Description:* Specifies whether error messages should be included in error responses.
+
+=== Include Stack Trace
+
+Determines stack trace inclusion in error responses.
+
+* *Default Value:* `NEVER`
+* *Possible Values:* `ALWAYS`, `NEVER`, `ON_PARAM`
+* *Description:* Specifies whether stack traces should be included in error responses.
+
+=== Error Controller Path
+
+Default location for error handling.
+
+* *Default Value:* `/error`
+* *Possible Values:* Any valid URL path
+* *Description:* Defines the path of the error controller, which handles error requests.
+
+=== Whitelabel Error Page
+
+Enables or disables the default error page displayed in browsers.
+
+* *Default Value:* `true`
+* *Possible Values:* `true`, `false`
+* *Description:* Specifies whether to enable the default Whitelabel Error Page displayed in browsers in case of a server error.
+
+[NOTE]
+====
+Understanding the configuration values:
+
+* *ALWAYS:* Always include or enable the corresponding attribute or feature.
+* *NEVER:* Never include or enable the corresponding attribute or feature.
+* *ON_PARAM:* Include or enable the corresponding attribute or feature based on the presence of a specific query parameter.
+====
+
+== Environment-Specific Profiles
+
+=== Development Environment
+
+Configuration for development profiles (local, test, dev):
+
+* *Include Binding Errors:* `ALWAYS`
+* *Include Exception:* `true`
+* *Include Message:* `ALWAYS`
+* *Include Stack Trace:* `ALWAYS`
+
+All error details are included to facilitate debugging and development.
+
+=== QA and Staging Environment
+
+Configuration for QA and staging profiles:
+
+* *Include Binding Errors:* `ON_PARAM`
+* *Include Exception:* `true`
+* *Include Message:* `ON_PARAM`
+* *Include Stack Trace:* `ON_PARAM`
+
+Details are shown conditionally via query parameters (e.g., `?trace=true`).
+
+=== Production Environment
+
+Configuration for production profile:
+
+* *Whitelabel Error Page Enabled:* `false`
+
+Whitelabel error page is disabled for security, omitting sensitive details entirely.
+
+== Project Setup
+
+=== Requirements
+
+* link:https://adoptium.net/[`OpenJDK 21.0.x`]
+* link:https://maven.apache.org/[`Maven 3.9.x`]
+* link:https://docs.spring.io/spring-boot/docs/current/reference/html/[`Spring Boot 3.2.3`]
+
+=== Maven Configuration
+
+The project uses Spring Boot 3.2.3 with Java 21.
+
+[source,xml,indent=0,linenums=true]
+.pom.xml
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.2.3</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+    <groupId>com.maoudia</groupId>
+    <artifactId>app</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>maoudia-app</name>
+    <description>MAOUDIA APP</description>
+
+    <properties>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+</project>
+----
+
+== Application Configuration
+
+=== Error Configuration
+
+The application configuration demonstrates profile-based error handling settings.
+
+[source,yml,indent=0,linenums=true]
+.application.yml
+----
+server:
+  port: 8080
+  error:
+    include-binding-errors: NEVER
+    include-exception: OFF
+    include-message: NEVER
+    include-stacktrace: NEVER
+    path: /error
+    whitelabel:
+      enabled: ON
+
+spring:
+  application:
+    name: app
+---
+spring.config.activate.on-profile: local, test, dev
+server:
+  error:
+    include-binding-errors: ALWAYS
+    include-exception: ON
+    include-message: ALWAYS
+    include-stacktrace: ALWAYS
+---
+spring.config.activate.on-profile: qa, staging
+server:
+  error:
+    include-binding-errors: ON_PARAM
+    include-exception: ON
+    include-message: ON_PARAM
+    include-stacktrace: ON_PARAM
+---
+spring.config.activate.on-profile: prod
+server:
+  error:
+    whitelabel:
+      enabled: OFF
+----
+
+== Implementation
+
+=== Error Resource Controller
+
+We create a REST controller with an endpoint that intentionally throws errors to showcase error handling behavior.
+
+[source,java,indent=0,linenums=true]
+.ErrorResource.java
+----
+package com.maoudia;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class ErrorResource {
+
+    /**
+     * Endpoint to intentionally throw an error.
+     *
+     * @return ResponseEntity containing an error message
+     */
+    @GetMapping("/throw")
+    public ResponseEntity<String> throwError() {
+        // Simulate an error by throwing a RuntimeException
+        throw new RuntimeException("This endpoint always throws an error.");
+    }
+
+}
+----
+
+== Testing Error Responses
+
+=== Default Configuration
+
+Request without any specific profile:
+
+[source,bash,indent=0,linenums=true]
+----
+curl -X GET http://localhost:8080/throw
+----
+
+Response:
+
+[source,json,indent=0,linenums=true]
+----
+{
+  "timestamp": "2024-02-27T10:10:03.310+00:00",
+  "status": 500,
+  "error": "Internal Server Error",
+  "path": "/throw"
+}
+----
+
+Notice that no sensitive information is exposed in the default configuration.
+
+=== Staging Profile with Query Parameter
+
+Request with staging profile and `trace=true` parameter:
+
+[source,bash,indent=0,linenums=true]
+----
+curl -X GET http://localhost:8080/throw?trace=true
+----
+
+Response:
+
+[source,json,indent=0,linenums=true]
+----
+{
+  "timestamp": "2024-02-27T10:16:25.951+00:00",
+  "status": 500,
+  "error": "Internal Server Error",
+  "exception": "java.lang.RuntimeException",
+  "trace": "java.lang.RuntimeException: This endpoint always throws an error.\n\tat com.maoudia.ErrorResource.throwError(ErrorResource.java:18)\n\tat java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)\n\tat java.base/java.lang.reflect.Method.invoke(Method.java:580)\n...",
+  "path": "/throw"
+}
+----
+
+With the `trace=true` query parameter in staging environment, the full stack trace is returned for debugging purposes.
+
+=== Development Profile
+
+When running with development profiles (local, test, dev), all error details are automatically included without requiring query parameters.
+
+=== Production Profile
+
+In production, the whitelabel error page is disabled, and production requests omit sensitive details entirely, returning only the minimal error information.
+
+[IMPORTANT]
+====
+Enable each profile (e.g., local, test, dev, qa, staging, prod) in your Spring Boot application to see the respective error handling behavior. You can activate a profile using:
+
+* Command line: `--spring.profiles.active=staging`
+* Environment variable: `SPRING_PROFILES_ACTIVE=staging`
+* application.yml: `spring.profiles.active=staging`
+====
+
+== Best Practices
+
+=== Security Considerations
+
+* *Never expose stack traces in production* - They can reveal internal application structure and potential security vulnerabilities.
+* *Use conditional disclosure* - In staging/QA environments, use `ON_PARAM` to allow developers to see details only when needed.
+* *Disable whitelabel page in production* - Custom error pages provide better user experience and don't expose Spring Boot information.
+
+=== Development Efficiency
+
+* *Enable all details in development* - Use `ALWAYS` settings to facilitate debugging.
+* *Consistent environment naming* - Use clear profile names (dev, qa, staging, prod) across all projects.
+* *Document query parameters* - Make sure developers know about the `?trace=true` option in non-production environments.
+
+=== Monitoring and Logging
+
+While limiting error details in responses is important for security, ensure comprehensive error logging is enabled in all environments for monitoring and troubleshooting purposes.
+
+== Conclusion
+
+Proper error handling configuration is essential for maintaining security while providing useful debugging information. By leveraging Spring Boot's profile-based configuration, you can:
+
+* Expose detailed error information in development environments
+* Provide conditional access to error details in staging/QA
+* Maintain security by limiting error exposure in production
+* Improve developer experience without compromising security
+
+The complete source code is available on https://gist.github.com/aoudiamoncef/bba3f7c79f1056a22a3a82b3a171b5b3[GitHub Gist].
+
+== Resources
+
+* https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/autoconfigure/web/ErrorProperties.html[Spring Boot ErrorProperties Documentation]
+* https://docs.spring.io/spring-boot/docs/current/reference/html/application-properties.html#appendix.application-properties.server[Spring Boot Application Properties - Server Section]
+* https://reflectoring.io/spring-boot-exception-handling/[Complete Guide to Exception Handling in Spring Boot]
+* https://docs.spring.io/spring-boot/docs/current/reference/html/web.html#web.servlet.spring-mvc.error-handling[Spring Boot Error Handling Reference]
