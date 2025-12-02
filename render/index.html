@@ -1,0 +1,479 @@
+<!doctype html><html class=no-js lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=siteBaseUrl content="https://www.maoudia.com/"><meta name=author content="Moncef AOUDIA"><meta name=description content="Moncef AOUDIA's website"><meta name=keywords content="blog,personal,programming,java,graphql,springboot,quarkus,reactor,camel,apollo,opensource,multilingual"><link href=https://github.com/aoudiamoncef rel=me><link rel=webmention href=https://webmention.io/www.maoudia.com/webmention><link rel=pingback href=https://webmention.io/www.maoudia.com/xmlrpc><meta name=generator content="Hugo 0.152.0"><noscript><meta http-equiv=refresh content="0; url=https://www.maoudia.com/render/"></noscript><title>Render | Moncef AOUDIA</title><meta name=description content="Render - Moncef AOUDIA's website"><meta itemprop=name content="Render"><meta itemprop=description content="Render - Moncef AOUDIA's website"><meta name=twitter:card content="summary_large_image"><meta name=twitter:site content="@AoudiaMoncef"><meta name=twitter:title content="Moncef AOUDIA"><meta name=twitter:image content="https://www.maoudia.com/images/banners/banner-1200x600.png"><meta name=twitter:image:src content="https://www.maoudia.com/images/banners/banner-1200x600.png"><meta name=twitter:creator content="@AoudiaMoncef"><meta property="og:title" content="Render"><meta property="og:description" content='
+This guide will help you understand and implement support for users with multiple authentication identities in the OSRD project’s Editoast service.
+
+
+1. Understanding the Authentication System
+
+
+1.1. Current Architecture
+
+
+Failed to generate image: Could not find the &#39;mmdc&#39; executable in PATH; add it to the PATH or specify its location using the &#39;mmdc&#39; document attribute
+graph TB
+    subgraph "External Auth Providers"
+        OIDC[OIDC Provider]
+        SAML[SAML Provider]
+        Mock[Mock Auth Dev]
+    end
+
+    subgraph "OSRD System"
+        Gateway[Gateway<br/>Adds x-osrd-user header]
+        Editoast[Editoast Service]
+        OpenFGA[OpenFGA<br/>Authorization Service]
+
+        subgraph "PostgreSQL Database"
+            SubjectTable[authn_subject<br/>Base entity]
+            UserTable[authn_user<br/>User info + identity]
+            GroupTable[authn_group<br/>Groups]
+        end
+    end
+
+    OIDC --> Gateway
+    SAML --> Gateway
+    Mock --> Gateway
+
+    Gateway -->|"Header: provider/userid"| Editoast
+    Editoast --> OpenFGA
+    Editoast --> SubjectTable
+    SubjectTable --> UserTable
+    SubjectTable --> GroupTable
+'><meta property="og:type" content="article"><meta property="og:url" content="https://www.maoudia.com/render/"><meta property="og:image" content="https://www.maoudia.com/images/banners/banner-1200x600.png"><meta property="og:image:secure_url" content="https://www.maoudia.com/images/banners/banner-1200x600.png"><meta property="og:image:type" content="image/png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="600"><meta property="article:section" content="page"><meta property="article:published_time" content="2021-05-19T08:30:00+00:00"><meta property="article:modified_time" content="2025-12-02T11:09:10+01:00"><meta property="og:locale" content="en"><meta property="og:locale:alternate" content="fr"><head><link rel=apple-touch-icon sizes=180x180 href=/images/favicons/apple-touch-icon-180x180.webp><link rel=icon type=image/png sizes=32x32 href=/images/favicons/favicon-32x32.webp><link rel=icon type=image/png sizes=16x16 href=/images/favicons/favicon-16x16.webp><link rel=manifest href=/manifest.json crossorigin=use-credentials><link rel=mask-icon href=/images/favicons/safari-pinned-tab.svg color=#5bbad5><meta name=apple-mobile-web-app-title content="https://www.maoudia.com"><meta name=application-name content="https://www.maoudia.com"><meta name=msapplication-TileColor content="#00a300"><meta name=theme-color media="(prefers-color-scheme: light)" content="white"><meta name=theme-color media="(prefers-color-scheme: dark)" content="black"></head><link rel=preload as=script href=https://www.maoudia.com/js/modernizr-simple.min.js><script src=/js/modernizr-simple.min.js></script><link href=https://www.maoudia.com/index.xml rel=alternate type=application/rss+xml title="Moncef AOUDIA"><link href=https://www.maoudia.com/blog/index.xml rel=feed type=application/rss+xml title="Moncef AOUDIA Blog"><link rel=canonical href=https://www.maoudia.com/render/><link rel=preload as=script href=https://www.maoudia.com/js/theme.min.js crossorigin=anonymous><link rel=stylesheet href=https://www.maoudia.com/css/theme.min.css><link rel=stylesheet href=https://www.maoudia.com/css/main.min.css integrity></head><body class=bilberry-hugo-theme><nav class=permanentTopNav><div class=container><ul class=topnav><li><a href=https://www.maoudia.com/render/>Render</a></li><li><a href=https://www.maoudia.com/uses/>Uses</a></li><li><a href=https://www.maoudia.com/about/>About</a></li></ul><div id=search-box class=search><i class="fas fa-search"></i>
+<input id=search type=text placeholder="Search ..."></div></div></nav><header><div class=container><div class=logo><a href=https://www.maoudia.com/ class=logo><img src=/images/logo.png width=512 height=512 alt="Moncef AOUDIA logo">
+<span class=overlay><i class="fa fa-home"></i></span></a></div><div class=titles><h3 class=title><a href=/about/>Moncef AOUDIA</a></h3></div><div class=languages><a href=https://www.maoudia.com/ class=active>en</a>
+<span>| </span><a href=https://www.maoudia.com/fr/>fr</a></div><div class="toggler permanentTopNav"><i class="fa fa-bars" aria-hidden=true></i></div></div></header><div class="main container"><div class="article-wrapper u-cf single"><article class="default article"><div class=content><h1 class=article-title><a href=https://www.maoudia.com/render/>Render</a></h1><div class=meta></div><div class="paragraph lead"><p>This guide will help you understand and implement support for users with multiple authentication identities in the OSRD project’s Editoast service.</p></div><div class=sect1><h2 id=_understanding_the_authentication_system>1. Understanding the Authentication System</h2><div class=sectionbody><div class=sect2><h3 id=_current_architecture>1.1. Current Architecture</h3><div class=listingblock><div class=content><pre>Failed to generate image: Could not find the &#39;mmdc&#39; executable in PATH; add it to the PATH or specify its location using the &#39;mmdc&#39; document attribute
+graph TB
+    subgraph &#34;External Auth Providers&#34;
+        OIDC[OIDC Provider]
+        SAML[SAML Provider]
+        Mock[Mock Auth Dev]
+    end
+
+    subgraph &#34;OSRD System&#34;
+        Gateway[Gateway&lt;br/&gt;Adds x-osrd-user header]
+        Editoast[Editoast Service]
+        OpenFGA[OpenFGA&lt;br/&gt;Authorization Service]
+
+        subgraph &#34;PostgreSQL Database&#34;
+            SubjectTable[authn_subject&lt;br/&gt;Base entity]
+            UserTable[authn_user&lt;br/&gt;User info + identity]
+            GroupTable[authn_group&lt;br/&gt;Groups]
+        end
+    end
+
+    OIDC --&gt; Gateway
+    SAML --&gt; Gateway
+    Mock --&gt; Gateway
+
+    Gateway --&gt;|&#34;Header: provider/userid&#34;| Editoast
+    Editoast --&gt; OpenFGA
+    Editoast --&gt; SubjectTable
+    SubjectTable --&gt; UserTable
+    SubjectTable --&gt; GroupTable</pre></div></div></div><div class=sect2><h3 id=_current_database_schema>1.2. Current Database Schema</h3><div class=listingblock><div class=content><pre>Failed to generate image: Could not find the &#39;mmdc&#39; executable in PATH; add it to the PATH or specify its location using the &#39;mmdc&#39; document attribute
+erDiagram
+    authn_subject {
+        bigserial id PK
+    }
+
+    authn_user {
+        bigint id PK,FK
+        varchar(255) identity_id UK
+        text name
+    }
+
+    authn_group {
+        bigint id PK,FK
+        text name
+    }
+
+    authn_subject ||--o| authn_user : &#34;is a&#34;
+    authn_subject ||--o| authn_group : &#34;is a&#34;</pre></div></div></div><div class=sect2><h3 id=_the_problem>1.3. The Problem</h3><div class=paragraph><p>Currently, each user can only have ONE identity (e.g., <code>oidc/john.doe</code>). If the same person authenticates through different providers, they appear as different users:</p></div><div class=ulist><ul><li><p><code>oidc/john.doe</code> → User ID 1</p></li><li><p><code>saml/jdoe@company.com</code> → User ID 2 (different user!)</p></li></ul></div><div class=paragraph><p>We need to allow the same user to authenticate through multiple providers while maintaining a single user account.</p></div></div></div></div><div class=sect1><h2 id=_solution_design>2. Solution Design</h2><div class=sectionbody><div class=sect2><h3 id=_new_database_schema>2.1. New Database Schema</h3><div class=listingblock><div class=content><pre>Failed to generate image: Could not find the &#39;mmdc&#39; executable in PATH; add it to the PATH or specify its location using the &#39;mmdc&#39; document attribute
+erDiagram
+    authn_subject {
+        bigserial id PK
+    }
+
+    authn_user {
+        bigint id PK,FK
+        text name
+    }
+
+    authn_user_identity {
+        bigserial id PK
+        bigint user_id FK
+        varchar(255) identity UK
+    }
+
+    authn_group {
+        bigint id PK,FK
+        text name
+    }
+
+    authn_subject ||--o| authn_user : &#34;is a&#34;
+    authn_subject ||--o| authn_group : &#34;is a&#34;
+    authn_user ||--o{ authn_user_identity : &#34;has many&#34;</pre></div></div></div><div class=sect2><h3 id=_key_changes>2.2. Key Changes</h3><div class="olist arabic"><ol class=arabic><li><p><strong>Remove</strong> <code>identity_id</code> column from <code>authn_user</code></p></li><li><p><strong>Create</strong> new <code>authn_user_identity</code> table</p></li><li><p><strong>Migrate</strong> existing identities to the new table</p></li><li><p><strong>Update</strong> all code that queries by identity</p></li></ol></div></div></div></div><div class=sect1><h2 id=_implementation_plan>3. Implementation Plan</h2><div class=sectionbody><div class=sect2><h3 id=_step_1_database_migration>3.1. Step 1: Database Migration</h3><div class=paragraph><p>Create migration file: <code>editoast/migrations/2024-XX-XX-XXXXXX_multiple_user_identities/up.sql</code></p></div><div class=listingblock><div class=content><pre class="rouge highlight"><code data-lang=sql><span class=c1>-- Create new identity table</span>
+<span class=k>CREATE</span> <span class=k>TABLE</span> <span class=n>authn_user_identity</span> <span class=p>(</span>
+    <span class=n>id</span> <span class=n>BIGSERIAL</span> <span class=k>PRIMARY</span> <span class=k>KEY</span><span class=p>,</span>
+    <span class=n>user_id</span> <span class=nb>BIGINT</span> <span class=k>NOT</span> <span class=k>NULL</span> <span class=k>REFERENCES</span> <span class=n>authn_user</span><span class=p>(</span><span class=n>id</span><span class=p>)</span> <span class=k>ON</span> <span class=k>DELETE</span> <span class=k>CASCADE</span><span class=p>,</span>
+    <span class=k>identity</span> <span class=nb>VARCHAR</span><span class=p>(</span><span class=mi>255</span><span class=p>)</span> <span class=k>NOT</span> <span class=k>NULL</span> <span class=k>UNIQUE</span>
+<span class=p>);</span>
+
+<span class=c1>-- Create index for performance</span>
+<span class=k>CREATE</span> <span class=k>INDEX</span> <span class=n>idx_user_identity_user_id</span> <span class=k>ON</span> <span class=n>authn_user_identity</span><span class=p>(</span><span class=n>user_id</span><span class=p>);</span>
+<span class=k>CREATE</span> <span class=k>INDEX</span> <span class=n>idx_user_identity_identity</span> <span class=k>ON</span> <span class=n>authn_user_identity</span><span class=p>(</span><span class=k>identity</span><span class=p>);</span>
+
+<span class=c1>-- Migrate existing data</span>
+<span class=k>INSERT</span> <span class=k>INTO</span> <span class=n>authn_user_identity</span> <span class=p>(</span><span class=n>user_id</span><span class=p>,</span> <span class=k>identity</span><span class=p>)</span>
+<span class=k>SELECT</span> <span class=n>id</span><span class=p>,</span> <span class=n>identity_id</span>
+<span class=k>FROM</span> <span class=n>authn_user</span>
+<span class=k>WHERE</span> <span class=n>identity_id</span> <span class=k>IS</span> <span class=k>NOT</span> <span class=k>NULL</span><span class=p>;</span>
+
+<span class=c1>-- Drop old column</span>
+<span class=k>ALTER</span> <span class=k>TABLE</span> <span class=n>authn_user</span> <span class=k>DROP</span> <span class=k>COLUMN</span> <span class=n>identity_id</span><span class=p>;</span>
+
+<span class=c1>-- Make name required (as per workshop notes)</span>
+<span class=k>ALTER</span> <span class=k>TABLE</span> <span class=n>authn_user</span> <span class=k>ALTER</span> <span class=k>COLUMN</span> <span class=n>name</span> <span class=k>SET</span> <span class=k>NOT</span> <span class=k>NULL</span><span class=p>;</span></code></pre></div></div><div class=paragraph><p>Down migration: <code>editoast/migrations/2024-XX-XX-XXXXXX_multiple_user_identities/down.sql</code></p></div><div class=listingblock><div class=content><pre class="rouge highlight"><code data-lang=sql><span class=c1>-- Re-add identity_id column</span>
+<span class=k>ALTER</span> <span class=k>TABLE</span> <span class=n>authn_user</span> <span class=k>ADD</span> <span class=k>COLUMN</span> <span class=n>identity_id</span> <span class=nb>VARCHAR</span><span class=p>(</span><span class=mi>255</span><span class=p>);</span>
+
+<span class=c1>-- Migrate back (take first identity per user)</span>
+<span class=k>UPDATE</span> <span class=n>authn_user</span> <span class=n>u</span>
+<span class=k>SET</span> <span class=n>identity_id</span> <span class=o>=</span> <span class=p>(</span>
+    <span class=k>SELECT</span> <span class=k>identity</span>
+    <span class=k>FROM</span> <span class=n>authn_user_identity</span>
+    <span class=k>WHERE</span> <span class=n>user_id</span> <span class=o>=</span> <span class=n>u</span><span class=p>.</span><span class=n>id</span>
+    <span class=k>ORDER</span> <span class=k>BY</span> <span class=n>id</span>
+    <span class=k>LIMIT</span> <span class=mi>1</span>
+<span class=p>);</span>
+
+<span class=c1>-- Add unique constraint</span>
+<span class=k>ALTER</span> <span class=k>TABLE</span> <span class=n>authn_user</span> <span class=k>ADD</span> <span class=k>CONSTRAINT</span> <span class=n>authn_user_identity_id_key</span> <span class=k>UNIQUE</span><span class=p>(</span><span class=n>identity_id</span><span class=p>);</span>
+
+<span class=c1>-- Drop identity table</span>
+<span class=k>DROP</span> <span class=k>TABLE</span> <span class=n>authn_user_identity</span><span class=p>;</span>
+
+<span class=c1>-- Revert name to optional</span>
+<span class=k>ALTER</span> <span class=k>TABLE</span> <span class=n>authn_user</span> <span class=k>ALTER</span> <span class=k>COLUMN</span> <span class=n>name</span> <span class=k>DROP</span> <span class=k>NOT</span> <span class=k>NULL</span><span class=p>;</span></code></pre></div></div></div><div class=sect2><h3 id=_step_2_update_database_models>3.2. Step 2: Update Database Models</h3><div class=paragraph><p>Update <code>editoast/database/src/tables.rs</code>:</p></div><div class=listingblock><div class=content><pre class="rouge highlight"><code data-lang=rust><span class=c1>// Add new table definition</span>
+<span class=nd>table!</span> <span class=p>{</span>
+    <span class=nf>authn_user_identity</span> <span class=p>(</span><span class=n>id</span><span class=p>)</span> <span class=p>{</span>
+        <span class=n>id</span> <span class=k>-&gt;</span> <span class=n>Bigint</span><span class=p>,</span>
+        <span class=n>user_id</span> <span class=k>-&gt;</span> <span class=n>Bigint</span><span class=p>,</span>
+        <span class=n>identity</span> <span class=k>-&gt;</span> <span class=n>Varchar</span><span class=p>,</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+
+<span class=c1>// Update authn_user table - remove identity_id</span>
+<span class=nd>table!</span> <span class=p>{</span>
+    <span class=nf>authn_user</span> <span class=p>(</span><span class=n>id</span><span class=p>)</span> <span class=p>{</span>
+        <span class=n>id</span> <span class=k>-&gt;</span> <span class=n>Bigint</span><span class=p>,</span>
+        <span class=n>name</span> <span class=k>-&gt;</span> <span class=n>Text</span><span class=p>,</span>  <span class=c1>// Now required</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+
+<span class=c1>// Add joinable relationship</span>
+<span class=nn>diesel</span><span class=p>::</span><span class=nd>joinable!</span><span class=p>(</span><span class=n>authn_user_identity</span> <span class=k>-&gt;</span> <span class=nf>authn_user</span> <span class=p>(</span><span class=n>user_id</span><span class=p>));</span>
+
+<span class=c1>// Update allow_tables_to_appear_in_same_query</span>
+<span class=nn>diesel</span><span class=p>::</span><span class=nd>allow_tables_to_appear_in_same_query!</span><span class=p>(</span>
+    <span class=n>authn_subject</span><span class=p>,</span>
+    <span class=n>authn_user</span><span class=p>,</span>
+    <span class=n>authn_user_identity</span><span class=p>,</span>  <span class=c1>// Add this</span>
+    <span class=n>authn_group</span><span class=p>,</span>
+    <span class=c1>// ... other tables</span>
+<span class=p>);</span></code></pre></div></div></div><div class=sect2><h3 id=_step_3_update_storagedriver_implementation>3.3. Step 3: Update StorageDriver Implementation</h3><div class=paragraph><p>Modify <code>editoast/src/models/auth_driver.rs</code>:</p></div><div class=listingblock><div class=content><pre class="rouge highlight"><code data-lang=rust><span class=k>impl</span> <span class=n>StorageDriver</span> <span class=k>for</span> <span class=n>PgAuthDriver</span> <span class=p>{</span>
+    <span class=k>async</span> <span class=k>fn</span> <span class=nf>get_user_info_by_identity</span><span class=p>(</span>
+        <span class=o>&amp;</span><span class=k>self</span><span class=p>,</span>
+        <span class=n>user_identity</span><span class=p>:</span> <span class=o>&amp;</span><span class=n>UserIdentity</span><span class=p>,</span>
+    <span class=p>)</span> <span class=k>-&gt;</span> <span class=nb>Result</span><span class=o>&lt;</span><span class=nb>Option</span><span class=o>&lt;</span><span class=n>User</span><span class=o>&gt;</span><span class=p>,</span> <span class=k>Self</span><span class=p>::</span><span class=n>Error</span><span class=o>&gt;</span> <span class=p>{</span>
+        <span class=k>let</span> <span class=n>conn</span> <span class=o>=</span> <span class=k>self</span><span class=py>.pool</span><span class=nf>.get</span><span class=p>()</span><span class=k>.await</span><span class=o>?</span><span class=p>;</span>
+
+        <span class=c1>// Join with identity table</span>
+        <span class=k>let</span> <span class=n>info</span> <span class=o>=</span> <span class=nn>authn_user</span><span class=p>::</span><span class=n>table</span>
+            <span class=nf>.inner_join</span><span class=p>(</span><span class=nn>authn_user_identity</span><span class=p>::</span><span class=n>table</span><span class=p>)</span>
+            <span class=nf>.select</span><span class=p>((</span><span class=nn>authn_user</span><span class=p>::</span><span class=n>id</span><span class=p>,</span> <span class=nn>authn_user</span><span class=p>::</span><span class=n>name</span><span class=p>))</span>
+            <span class=nf>.filter</span><span class=p>(</span><span class=nn>authn_user_identity</span><span class=p>::</span><span class=n>identity</span><span class=nf>.eq</span><span class=p>(</span><span class=o>&amp;</span><span class=n>user_identity</span><span class=p>))</span>
+            <span class=py>.first</span><span class=p>::</span><span class=o>&lt;</span><span class=p>(</span><span class=nb>i64</span><span class=p>,</span> <span class=nb>String</span><span class=p>)</span><span class=o>&gt;</span><span class=p>(</span><span class=n>conn</span><span class=nf>.write</span><span class=p>()</span><span class=k>.await</span><span class=nf>.deref_mut</span><span class=p>())</span>
+            <span class=k>.await</span>
+            <span class=nf>.optional</span><span class=p>()</span><span class=o>?</span><span class=p>;</span>
+
+        <span class=k>let</span> <span class=nf>Some</span><span class=p>((</span><span class=n>id</span><span class=p>,</span> <span class=n>name</span><span class=p>))</span> <span class=o>=</span> <span class=n>info</span> <span class=k>else</span> <span class=p>{</span>
+            <span class=k>return</span> <span class=nf>Ok</span><span class=p>(</span><span class=nb>None</span><span class=p>);</span>
+        <span class=p>};</span>
+
+        <span class=c1>// Get all identities for this user</span>
+        <span class=k>let</span> <span class=n>identities</span> <span class=o>=</span> <span class=nn>authn_user_identity</span><span class=p>::</span><span class=n>table</span>
+            <span class=nf>.select</span><span class=p>(</span><span class=nn>authn_user_identity</span><span class=p>::</span><span class=n>identity</span><span class=p>)</span>
+            <span class=nf>.filter</span><span class=p>(</span><span class=nn>authn_user_identity</span><span class=p>::</span><span class=n>user_id</span><span class=nf>.eq</span><span class=p>(</span><span class=n>id</span><span class=p>))</span>
+            <span class=py>.load</span><span class=p>::</span><span class=o>&lt;</span><span class=nb>String</span><span class=o>&gt;</span><span class=p>(</span><span class=n>conn</span><span class=nf>.write</span><span class=p>()</span><span class=k>.await</span><span class=nf>.deref_mut</span><span class=p>())</span>
+            <span class=k>.await</span><span class=o>?</span><span class=p>;</span>
+
+        <span class=nf>Ok</span><span class=p>(</span><span class=nf>Some</span><span class=p>(</span><span class=n>User</span> <span class=p>{</span>
+            <span class=n>id</span><span class=p>,</span>
+            <span class=n>info</span><span class=p>:</span> <span class=n>UserInfo</span> <span class=p>{</span>
+                <span class=n>identity</span><span class=p>:</span> <span class=n>user_identity</span><span class=nf>.clone</span><span class=p>(),</span> <span class=c1>// Primary identity</span>
+                <span class=n>name</span><span class=p>,</span>
+                <span class=n>all_identities</span><span class=p>:</span> <span class=n>identities</span><span class=p>,</span>      <span class=c1>// New field</span>
+            <span class=p>},</span>
+        <span class=p>}))</span>
+    <span class=p>}</span>
+
+    <span class=k>async</span> <span class=k>fn</span> <span class=nf>get_user_id</span><span class=p>(</span>
+        <span class=o>&amp;</span><span class=k>self</span><span class=p>,</span>
+        <span class=n>user_identity</span><span class=p>:</span> <span class=o>&amp;</span><span class=n>UserIdentity</span>
+    <span class=p>)</span> <span class=k>-&gt;</span> <span class=nb>Result</span><span class=o>&lt;</span><span class=nb>Option</span><span class=o>&lt;</span><span class=nb>i64</span><span class=o>&gt;</span><span class=p>,</span> <span class=k>Self</span><span class=p>::</span><span class=n>Error</span><span class=o>&gt;</span> <span class=p>{</span>
+        <span class=k>let</span> <span class=n>conn</span> <span class=o>=</span> <span class=k>self</span><span class=py>.pool</span><span class=nf>.get</span><span class=p>()</span><span class=k>.await</span><span class=o>?</span><span class=p>;</span>
+
+        <span class=c1>// Query through identity table</span>
+        <span class=k>let</span> <span class=n>id</span> <span class=o>=</span> <span class=nn>authn_user_identity</span><span class=p>::</span><span class=n>table</span>
+            <span class=nf>.select</span><span class=p>(</span><span class=nn>authn_user_identity</span><span class=p>::</span><span class=n>user_id</span><span class=p>)</span>
+            <span class=nf>.filter</span><span class=p>(</span><span class=nn>authn_user_identity</span><span class=p>::</span><span class=n>identity</span><span class=nf>.eq</span><span class=p>(</span><span class=o>&amp;</span><span class=n>user_identity</span><span class=p>))</span>
+            <span class=py>.first</span><span class=p>::</span><span class=o>&lt;</span><span class=nb>i64</span><span class=o>&gt;</span><span class=p>(</span><span class=n>conn</span><span class=nf>.write</span><span class=p>()</span><span class=k>.await</span><span class=nf>.deref_mut</span><span class=p>())</span>
+            <span class=k>.await</span>
+            <span class=nf>.optional</span><span class=p>()</span><span class=o>?</span><span class=p>;</span>
+        <span class=nf>Ok</span><span class=p>(</span><span class=n>id</span><span class=p>)</span>
+    <span class=p>}</span>
+
+    <span class=k>async</span> <span class=k>fn</span> <span class=nf>ensure_user</span><span class=p>(</span><span class=o>&amp;</span><span class=k>self</span><span class=p>,</span> <span class=n>user</span><span class=p>:</span> <span class=o>&amp;</span><span class=n>UserInfo</span><span class=p>)</span> <span class=k>-&gt;</span> <span class=nb>Result</span><span class=o>&lt;</span><span class=n>User</span><span class=p>,</span> <span class=k>Self</span><span class=p>::</span><span class=n>Error</span><span class=o>&gt;</span> <span class=p>{</span>
+        <span class=k>let</span> <span class=n>conn</span> <span class=o>=</span> <span class=k>self</span><span class=py>.pool</span><span class=nf>.get</span><span class=p>()</span><span class=k>.await</span><span class=o>?</span><span class=p>;</span>
+
+        <span class=n>conn</span><span class=nf>.transaction</span><span class=p>(|</span><span class=n>conn</span><span class=p>|</span> <span class=p>{</span>
+            <span class=k>async</span> <span class=k>move</span> <span class=p>{</span>
+                <span class=c1>// Check if identity exists</span>
+                <span class=k>let</span> <span class=n>existing</span> <span class=o>=</span> <span class=k>self</span><span class=nf>.get_user_info_by_identity</span><span class=p>(</span><span class=o>&amp;</span><span class=n>user</span><span class=py>.identity</span><span class=p>)</span><span class=k>.await</span><span class=o>?</span><span class=p>;</span>
+
+                <span class=k>if</span> <span class=k>let</span> <span class=nf>Some</span><span class=p>(</span><span class=n>existing_user</span><span class=p>)</span> <span class=o>=</span> <span class=n>existing</span> <span class=p>{</span>
+                    <span class=k>return</span> <span class=nf>Ok</span><span class=p>(</span><span class=n>existing_user</span><span class=p>);</span>
+                <span class=p>}</span>
+
+                <span class=c1>// Create new user</span>
+                <span class=k>let</span> <span class=n>subject_id</span><span class=p>:</span> <span class=nb>i64</span> <span class=o>=</span> <span class=nn>dsl</span><span class=p>::</span><span class=nf>insert_into</span><span class=p>(</span><span class=nn>authn_subject</span><span class=p>::</span><span class=n>table</span><span class=p>)</span>
+                    <span class=nf>.default_values</span><span class=p>()</span>
+                    <span class=nf>.returning</span><span class=p>(</span><span class=nn>authn_subject</span><span class=p>::</span><span class=n>id</span><span class=p>)</span>
+                    <span class=nf>.get_result</span><span class=p>(</span><span class=n>conn</span><span class=p>)</span>
+                    <span class=k>.await</span><span class=o>?</span><span class=p>;</span>
+
+                <span class=c1>// Insert user</span>
+                <span class=nn>dsl</span><span class=p>::</span><span class=nf>insert_into</span><span class=p>(</span><span class=nn>authn_user</span><span class=p>::</span><span class=n>table</span><span class=p>)</span>
+                    <span class=nf>.values</span><span class=p>((</span>
+                        <span class=nn>authn_user</span><span class=p>::</span><span class=n>id</span><span class=nf>.eq</span><span class=p>(</span><span class=n>subject_id</span><span class=p>),</span>
+                        <span class=nn>authn_user</span><span class=p>::</span><span class=n>name</span><span class=nf>.eq</span><span class=p>(</span><span class=o>&amp;</span><span class=n>user</span><span class=py>.name</span><span class=p>),</span>
+                    <span class=p>))</span>
+                    <span class=nf>.execute</span><span class=p>(</span><span class=n>conn</span><span class=p>)</span>
+                    <span class=k>.await</span><span class=o>?</span><span class=p>;</span>
+
+                <span class=c1>// Insert identity</span>
+                <span class=nn>dsl</span><span class=p>::</span><span class=nf>insert_into</span><span class=p>(</span><span class=nn>authn_user_identity</span><span class=p>::</span><span class=n>table</span><span class=p>)</span>
+                    <span class=nf>.values</span><span class=p>((</span>
+                        <span class=nn>authn_user_identity</span><span class=p>::</span><span class=n>user_id</span><span class=nf>.eq</span><span class=p>(</span><span class=n>subject_id</span><span class=p>),</span>
+                        <span class=nn>authn_user_identity</span><span class=p>::</span><span class=n>identity</span><span class=nf>.eq</span><span class=p>(</span><span class=o>&amp;</span><span class=n>user</span><span class=py>.identity</span><span class=p>),</span>
+                    <span class=p>))</span>
+                    <span class=nf>.execute</span><span class=p>(</span><span class=n>conn</span><span class=p>)</span>
+                    <span class=k>.await</span><span class=o>?</span><span class=p>;</span>
+
+                <span class=nf>Ok</span><span class=p>(</span><span class=n>User</span> <span class=p>{</span>
+                    <span class=n>id</span><span class=p>:</span> <span class=n>subject_id</span><span class=p>,</span>
+                    <span class=n>info</span><span class=p>:</span> <span class=n>user</span><span class=nf>.clone</span><span class=p>(),</span>
+                <span class=p>})</span>
+            <span class=p>}</span>
+        <span class=p>}</span><span class=nf>.scope_boxed</span><span class=p>())</span>
+        <span class=k>.await</span>
+    <span class=p>}</span>
+<span class=p>}</span></code></pre></div></div></div><div class=sect2><h3 id=_step_4_implement_cli_command>3.4. Step 4: Implement CLI Command</h3><div class=paragraph><p>Add new command in <code>editoast/src/client/user.rs</code>:</p></div><div class=listingblock><div class=content><pre class="rouge highlight"><code data-lang=rust><span class=nd>#[derive(Args,</span> <span class=nd>Debug)]</span>
+<span class=k>pub</span> <span class=k>struct</span> <span class=n>AddIdentityCommand</span> <span class=p>{</span>
+    <span class=cd>/// Existing user (by current identity or user ID)</span>
+    <span class=n>existing</span><span class=p>:</span> <span class=nb>String</span><span class=p>,</span>
+
+    <span class=cd>/// New identities to add</span>
+    <span class=nd>#[arg(required</span> <span class=nd>=</span> <span class=kc>true</span><span class=nd>)]</span>
+    <span class=n>new_identities</span><span class=p>:</span> <span class=nb>Vec</span><span class=o>&lt;</span><span class=nb>String</span><span class=o>&gt;</span><span class=p>,</span>
+<span class=p>}</span>
+
+<span class=k>pub</span> <span class=k>async</span> <span class=k>fn</span> <span class=nf>add_identity</span><span class=p>(</span>
+    <span class=n>db_pool</span><span class=p>:</span> <span class=nb>Arc</span><span class=o>&lt;</span><span class=n>DbConnectionPoolV2</span><span class=o>&gt;</span><span class=p>,</span>
+    <span class=n>cmd</span><span class=p>:</span> <span class=n>AddIdentityCommand</span><span class=p>,</span>
+<span class=p>)</span> <span class=k>-&gt;</span> <span class=nb>Result</span><span class=o>&lt;</span><span class=p>()</span><span class=o>&gt;</span> <span class=p>{</span>
+    <span class=k>let</span> <span class=n>conn</span> <span class=o>=</span> <span class=o>&amp;</span><span class=k>mut</span> <span class=n>db_pool</span><span class=nf>.get</span><span class=p>()</span><span class=k>.await</span><span class=o>?</span><span class=p>;</span>
+
+    <span class=c1>// Find user by identity or ID</span>
+    <span class=k>let</span> <span class=n>user_id</span> <span class=o>=</span> <span class=k>if</span> <span class=n>cmd</span><span class=py>.existing</span><span class=nf>.contains</span><span class=p>(</span><span class=sc>&#39;/&#39;</span><span class=p>)</span> <span class=p>{</span>
+        <span class=c1>// It&#39;s an identity</span>
+        <span class=nn>authn_user_identity</span><span class=p>::</span><span class=n>table</span>
+            <span class=nf>.select</span><span class=p>(</span><span class=nn>authn_user_identity</span><span class=p>::</span><span class=n>user_id</span><span class=p>)</span>
+            <span class=nf>.filter</span><span class=p>(</span><span class=nn>authn_user_identity</span><span class=p>::</span><span class=n>identity</span><span class=nf>.eq</span><span class=p>(</span><span class=o>&amp;</span><span class=n>cmd</span><span class=py>.existing</span><span class=p>))</span>
+            <span class=py>.first</span><span class=p>::</span><span class=o>&lt;</span><span class=nb>i64</span><span class=o>&gt;</span><span class=p>(</span><span class=n>conn</span><span class=p>)</span>
+            <span class=k>.await</span>
+            <span class=nf>.map_err</span><span class=p>(|</span><span class=n>_</span><span class=p>|</span> <span class=nn>anyhow</span><span class=p>::</span><span class=nd>anyhow!</span><span class=p>(</span><span class=s>&#34;User not found: {}&#34;</span><span class=p>,</span> <span class=n>cmd</span><span class=py>.existing</span><span class=p>))</span><span class=o>?</span>
+    <span class=p>}</span> <span class=k>else</span> <span class=p>{</span>
+        <span class=c1>// Try parsing as user ID</span>
+        <span class=n>cmd</span><span class=py>.existing.parse</span><span class=p>::</span><span class=o>&lt;</span><span class=nb>i64</span><span class=o>&gt;</span><span class=p>()</span>
+            <span class=nf>.map_err</span><span class=p>(|</span><span class=n>_</span><span class=p>|</span> <span class=nn>anyhow</span><span class=p>::</span><span class=nd>anyhow!</span><span class=p>(</span><span class=s>&#34;Invalid user ID or identity: {}&#34;</span><span class=p>,</span> <span class=n>cmd</span><span class=py>.existing</span><span class=p>))</span><span class=o>?</span>
+    <span class=p>};</span>
+
+    <span class=c1>// Verify user exists</span>
+    <span class=k>let</span> <span class=n>user_exists</span> <span class=o>=</span> <span class=nn>authn_user</span><span class=p>::</span><span class=n>table</span>
+        <span class=nf>.select</span><span class=p>(</span><span class=nn>dsl</span><span class=p>::</span><span class=nf>count</span><span class=p>(</span><span class=nn>authn_user</span><span class=p>::</span><span class=n>id</span><span class=p>))</span>
+        <span class=nf>.filter</span><span class=p>(</span><span class=nn>authn_user</span><span class=p>::</span><span class=n>id</span><span class=nf>.eq</span><span class=p>(</span><span class=n>user_id</span><span class=p>))</span>
+        <span class=py>.first</span><span class=p>::</span><span class=o>&lt;</span><span class=nb>i64</span><span class=o>&gt;</span><span class=p>(</span><span class=n>conn</span><span class=p>)</span>
+        <span class=k>.await</span><span class=o>?</span> <span class=o>&gt;</span> <span class=mi>0</span><span class=p>;</span>
+
+    <span class=k>if</span> <span class=o>!</span><span class=n>user_exists</span> <span class=p>{</span>
+        <span class=k>return</span> <span class=nf>Err</span><span class=p>(</span><span class=nn>anyhow</span><span class=p>::</span><span class=nd>anyhow!</span><span class=p>(</span><span class=s>&#34;User with ID {} not found&#34;</span><span class=p>,</span> <span class=n>user_id</span><span class=p>));</span>
+    <span class=p>}</span>
+
+    <span class=c1>// Add new identities</span>
+    <span class=k>for</span> <span class=n>identity</span> <span class=k>in</span> <span class=n>cmd</span><span class=py>.new_identities</span> <span class=p>{</span>
+        <span class=c1>// Check if identity already exists</span>
+        <span class=k>let</span> <span class=n>exists</span> <span class=o>=</span> <span class=nn>authn_user_identity</span><span class=p>::</span><span class=n>table</span>
+            <span class=nf>.select</span><span class=p>(</span><span class=nn>dsl</span><span class=p>::</span><span class=nf>count</span><span class=p>(</span><span class=nn>authn_user_identity</span><span class=p>::</span><span class=n>id</span><span class=p>))</span>
+            <span class=nf>.filter</span><span class=p>(</span><span class=nn>authn_user_identity</span><span class=p>::</span><span class=n>identity</span><span class=nf>.eq</span><span class=p>(</span><span class=o>&amp;</span><span class=n>identity</span><span class=p>))</span>
+            <span class=py>.first</span><span class=p>::</span><span class=o>&lt;</span><span class=nb>i64</span><span class=o>&gt;</span><span class=p>(</span><span class=n>conn</span><span class=p>)</span>
+            <span class=k>.await</span><span class=o>?</span> <span class=o>&gt;</span> <span class=mi>0</span><span class=p>;</span>
+
+        <span class=k>if</span> <span class=n>exists</span> <span class=p>{</span>
+            <span class=nd>warn!</span><span class=p>(</span><span class=s>&#34;Identity &#39;{}&#39; already exists, skipping&#34;</span><span class=p>,</span> <span class=n>identity</span><span class=p>);</span>
+            <span class=k>continue</span><span class=p>;</span>
+        <span class=p>}</span>
+
+        <span class=c1>// Insert new identity</span>
+        <span class=nn>dsl</span><span class=p>::</span><span class=nf>insert_into</span><span class=p>(</span><span class=nn>authn_user_identity</span><span class=p>::</span><span class=n>table</span><span class=p>)</span>
+            <span class=nf>.values</span><span class=p>((</span>
+                <span class=nn>authn_user_identity</span><span class=p>::</span><span class=n>user_id</span><span class=nf>.eq</span><span class=p>(</span><span class=n>user_id</span><span class=p>),</span>
+                <span class=nn>authn_user_identity</span><span class=p>::</span><span class=n>identity</span><span class=nf>.eq</span><span class=p>(</span><span class=o>&amp;</span><span class=n>identity</span><span class=p>),</span>
+            <span class=p>))</span>
+            <span class=nf>.execute</span><span class=p>(</span><span class=n>conn</span><span class=p>)</span>
+            <span class=k>.await</span><span class=o>?</span><span class=p>;</span>
+
+        <span class=nd>info!</span><span class=p>(</span><span class=s>&#34;Added identity &#39;{}&#39; to user {}&#34;</span><span class=p>,</span> <span class=n>identity</span><span class=p>,</span> <span class=n>user_id</span><span class=p>);</span>
+    <span class=p>}</span>
+
+    <span class=nf>Ok</span><span class=p>(())</span>
+<span class=p>}</span></code></pre></div></div><div class=paragraph><p>Update CLI router in <code>editoast/src/client/user.rs</code>:</p></div><div class=listingblock><div class=content><pre class="rouge highlight"><code data-lang=rust><span class=nd>#[derive(Subcommand,</span> <span class=nd>Debug)]</span>
+<span class=k>pub</span> <span class=k>enum</span> <span class=n>UserCommand</span> <span class=p>{</span>
+    <span class=cd>/// Add a new user</span>
+    <span class=nf>Add</span><span class=p>(</span><span class=n>AddUserCommand</span><span class=p>),</span>
+
+    <span class=cd>/// Add identity to existing user</span>
+    <span class=nf>AddIdentity</span><span class=p>(</span><span class=n>AddIdentityCommand</span><span class=p>),</span>
+
+    <span class=cd>/// List all users</span>
+    <span class=n>List</span><span class=p>,</span>
+
+    <span class=cd>/// Delete a user</span>
+    <span class=nf>Delete</span><span class=p>(</span><span class=n>DeleteUserCommand</span><span class=p>),</span>
+<span class=p>}</span>
+
+<span class=k>pub</span> <span class=k>async</span> <span class=k>fn</span> <span class=nf>handle_user_command</span><span class=p>(</span>
+    <span class=n>db_pool</span><span class=p>:</span> <span class=nb>Arc</span><span class=o>&lt;</span><span class=n>DbConnectionPoolV2</span><span class=o>&gt;</span><span class=p>,</span>
+    <span class=n>command</span><span class=p>:</span> <span class=n>UserCommand</span><span class=p>,</span>
+<span class=p>)</span> <span class=k>-&gt;</span> <span class=nb>Result</span><span class=o>&lt;</span><span class=p>()</span><span class=o>&gt;</span> <span class=p>{</span>
+    <span class=k>match</span> <span class=n>command</span> <span class=p>{</span>
+        <span class=nn>UserCommand</span><span class=p>::</span><span class=nf>Add</span><span class=p>(</span><span class=n>cmd</span><span class=p>)</span> <span class=k>=&gt;</span> <span class=nf>add_user</span><span class=p>(</span><span class=n>db_pool</span><span class=p>,</span> <span class=n>cmd</span><span class=p>)</span><span class=k>.await</span><span class=p>,</span>
+        <span class=nn>UserCommand</span><span class=p>::</span><span class=nf>AddIdentity</span><span class=p>(</span><span class=n>cmd</span><span class=p>)</span> <span class=k>=&gt;</span> <span class=nf>add_identity</span><span class=p>(</span><span class=n>db_pool</span><span class=p>,</span> <span class=n>cmd</span><span class=p>)</span><span class=k>.await</span><span class=p>,</span>
+        <span class=nn>UserCommand</span><span class=p>::</span><span class=n>List</span> <span class=k>=&gt;</span> <span class=nf>list_users</span><span class=p>(</span><span class=n>db_pool</span><span class=p>)</span><span class=k>.await</span><span class=p>,</span>
+        <span class=nn>UserCommand</span><span class=p>::</span><span class=nf>Delete</span><span class=p>(</span><span class=n>cmd</span><span class=p>)</span> <span class=k>=&gt;</span> <span class=nf>delete_user</span><span class=p>(</span><span class=n>db_pool</span><span class=p>,</span> <span class=n>cmd</span><span class=p>)</span><span class=k>.await</span><span class=p>,</span>
+    <span class=p>}</span>
+<span class=p>}</span></code></pre></div></div></div><div class=sect2><h3 id=_step_5_testing>3.5. Step 5: Testing</h3><div class=paragraph><p>Create comprehensive tests in <code>editoast/src/models/auth_driver_tests.rs</code>:</p></div><div class=listingblock><div class=content><pre class="rouge highlight"><code data-lang=rust><span class=nd>#[tokio::test]</span>
+<span class=k>async</span> <span class=k>fn</span> <span class=nf>test_multiple_identities_same_user</span><span class=p>()</span> <span class=p>{</span>
+    <span class=k>let</span> <span class=n>pool</span> <span class=o>=</span> <span class=nf>setup_test_db</span><span class=p>()</span><span class=k>.await</span><span class=p>;</span>
+    <span class=k>let</span> <span class=n>driver</span> <span class=o>=</span> <span class=nn>PgAuthDriver</span><span class=p>::</span><span class=nf>new</span><span class=p>(</span><span class=nn>Arc</span><span class=p>::</span><span class=nf>new</span><span class=p>(</span><span class=n>pool</span><span class=p>));</span>
+
+    <span class=c1>// Create user with first identity</span>
+    <span class=k>let</span> <span class=n>user1</span> <span class=o>=</span> <span class=n>driver</span><span class=nf>.ensure_user</span><span class=p>(</span><span class=o>&amp;</span><span class=n>UserInfo</span> <span class=p>{</span>
+        <span class=n>identity</span><span class=p>:</span> <span class=s>&#34;oidc/john.doe&#34;</span><span class=nf>.into</span><span class=p>(),</span>
+        <span class=n>name</span><span class=p>:</span> <span class=s>&#34;John Doe&#34;</span><span class=nf>.into</span><span class=p>(),</span>
+    <span class=p>})</span><span class=k>.await</span><span class=nf>.unwrap</span><span class=p>();</span>
+
+    <span class=c1>// Add second identity using CLI command</span>
+    <span class=nf>add_identity</span><span class=p>(</span><span class=n>pool</span><span class=p>,</span> <span class=n>AddIdentityCommand</span> <span class=p>{</span>
+        <span class=n>existing</span><span class=p>:</span> <span class=n>user1</span><span class=py>.id</span><span class=nf>.to_string</span><span class=p>(),</span>
+        <span class=n>new_identities</span><span class=p>:</span> <span class=nd>vec!</span><span class=p>[</span><span class=s>&#34;saml/jdoe@company.com&#34;</span><span class=nf>.into</span><span class=p>()],</span>
+    <span class=p>})</span><span class=k>.await</span><span class=nf>.unwrap</span><span class=p>();</span>
+
+    <span class=c1>// Both identities should resolve to same user</span>
+    <span class=k>let</span> <span class=n>user2</span> <span class=o>=</span> <span class=n>driver</span><span class=nf>.get_user_info_by_identity</span><span class=p>(</span>
+        <span class=o>&amp;</span><span class=s>&#34;saml/jdoe@company.com&#34;</span><span class=nf>.into</span><span class=p>()</span>
+    <span class=p>)</span><span class=k>.await</span><span class=nf>.unwrap</span><span class=p>()</span><span class=nf>.unwrap</span><span class=p>();</span>
+
+    <span class=nd>assert_eq!</span><span class=p>(</span><span class=n>user1</span><span class=py>.id</span><span class=p>,</span> <span class=n>user2</span><span class=py>.id</span><span class=p>);</span>
+    <span class=nd>assert_eq!</span><span class=p>(</span><span class=n>user1</span><span class=py>.info.name</span><span class=p>,</span> <span class=n>user2</span><span class=py>.info.name</span><span class=p>);</span>
+<span class=p>}</span>
+
+<span class=nd>#[tokio::test]</span>
+<span class=k>async</span> <span class=k>fn</span> <span class=nf>test_duplicate_identity_warning</span><span class=p>()</span> <span class=p>{</span>
+    <span class=k>let</span> <span class=n>pool</span> <span class=o>=</span> <span class=nf>setup_test_db</span><span class=p>()</span><span class=k>.await</span><span class=p>;</span>
+
+    <span class=c1>// Create user with identity</span>
+    <span class=nf>create_test_user</span><span class=p>(</span><span class=o>&amp;</span><span class=n>pool</span><span class=p>,</span> <span class=s>&#34;oidc/jane.doe&#34;</span><span class=p>,</span> <span class=s>&#34;Jane Doe&#34;</span><span class=p>)</span><span class=k>.await</span><span class=p>;</span>
+
+    <span class=c1>// Try to add same identity - should log warning</span>
+    <span class=k>let</span> <span class=n>result</span> <span class=o>=</span> <span class=nf>add_identity</span><span class=p>(</span><span class=n>pool</span><span class=p>,</span> <span class=n>AddIdentityCommand</span> <span class=p>{</span>
+        <span class=n>existing</span><span class=p>:</span> <span class=s>&#34;oidc/jane.doe&#34;</span><span class=nf>.into</span><span class=p>(),</span>
+        <span class=n>new_identities</span><span class=p>:</span> <span class=nd>vec!</span><span class=p>[</span><span class=s>&#34;oidc/jane.doe&#34;</span><span class=nf>.into</span><span class=p>()],</span>
+    <span class=p>})</span><span class=k>.await</span><span class=p>;</span>
+
+    <span class=c1>// Should succeed but log warning</span>
+    <span class=nd>assert!</span><span class=p>(</span><span class=n>result</span><span class=nf>.is_ok</span><span class=p>());</span>
+<span class=p>}</span>
+
+<span class=nd>#[tokio::test]</span>
+<span class=k>async</span> <span class=k>fn</span> <span class=nf>test_user_groups_with_multiple_identities</span><span class=p>()</span> <span class=p>{</span>
+    <span class=c1>// Test that groups work correctly with multiple identities</span>
+    <span class=k>let</span> <span class=n>pool</span> <span class=o>=</span> <span class=nf>setup_test_db</span><span class=p>()</span><span class=k>.await</span><span class=p>;</span>
+    <span class=k>let</span> <span class=n>driver</span> <span class=o>=</span> <span class=nn>PgAuthDriver</span><span class=p>::</span><span class=nf>new</span><span class=p>(</span><span class=nn>Arc</span><span class=p>::</span><span class=nf>new</span><span class=p>(</span><span class=n>pool</span><span class=p>));</span>
+
+    <span class=c1>// Create user and group</span>
+    <span class=k>let</span> <span class=n>user</span> <span class=o>=</span> <span class=nf>create_test_user</span><span class=p>(</span><span class=o>&amp;</span><span class=n>pool</span><span class=p>,</span> <span class=s>&#34;oidc/alice&#34;</span><span class=p>,</span> <span class=s>&#34;Alice&#34;</span><span class=p>)</span><span class=k>.await</span><span class=p>;</span>
+    <span class=k>let</span> <span class=n>group</span> <span class=o>=</span> <span class=nf>create_test_group</span><span class=p>(</span><span class=o>&amp;</span><span class=n>pool</span><span class=p>,</span> <span class=s>&#34;developers&#34;</span><span class=p>)</span><span class=k>.await</span><span class=p>;</span>
+    <span class=nf>add_user_to_group</span><span class=p>(</span><span class=o>&amp;</span><span class=n>pool</span><span class=p>,</span> <span class=n>user</span><span class=py>.id</span><span class=p>,</span> <span class=n>group</span><span class=py>.id</span><span class=p>)</span><span class=k>.await</span><span class=p>;</span>
+
+    <span class=c1>// Add second identity</span>
+    <span class=nf>add_identity</span><span class=p>(</span><span class=n>pool</span><span class=p>,</span> <span class=n>AddIdentityCommand</span> <span class=p>{</span>
+        <span class=n>existing</span><span class=p>:</span> <span class=n>user</span><span class=py>.id</span><span class=nf>.to_string</span><span class=p>(),</span>
+        <span class=n>new_identities</span><span class=p>:</span> <span class=nd>vec!</span><span class=p>[</span><span class=s>&#34;saml/alice@corp.com&#34;</span><span class=nf>.into</span><span class=p>()],</span>
+    <span class=p>})</span><span class=k>.await</span><span class=nf>.unwrap</span><span class=p>();</span>
+
+    <span class=c1>// Check groups work with both identities</span>
+    <span class=k>let</span> <span class=n>groups1</span> <span class=o>=</span> <span class=n>driver</span><span class=nf>.user_groups</span><span class=p>(</span><span class=o>&amp;</span><span class=nf>User</span><span class=p>(</span><span class=n>user</span><span class=py>.id</span><span class=p>))</span><span class=k>.await</span><span class=nf>.unwrap</span><span class=p>();</span>
+
+    <span class=k>let</span> <span class=n>user2</span> <span class=o>=</span> <span class=n>driver</span><span class=nf>.get_user_info_by_identity</span><span class=p>(</span>
+        <span class=o>&amp;</span><span class=s>&#34;saml/alice@corp.com&#34;</span><span class=nf>.into</span><span class=p>()</span>
+    <span class=p>)</span><span class=k>.await</span><span class=nf>.unwrap</span><span class=p>()</span><span class=nf>.unwrap</span><span class=p>();</span>
+    <span class=k>let</span> <span class=n>groups2</span> <span class=o>=</span> <span class=n>driver</span><span class=nf>.user_groups</span><span class=p>(</span><span class=o>&amp;</span><span class=nf>User</span><span class=p>(</span><span class=n>user2</span><span class=py>.id</span><span class=p>))</span><span class=k>.await</span><span class=nf>.unwrap</span><span class=p>();</span>
+
+    <span class=nd>assert_eq!</span><span class=p>(</span><span class=n>groups1</span><span class=p>,</span> <span class=n>groups2</span><span class=p>);</span>
+<span class=p>}</span></code></pre></div></div></div></div></div><div class=sect1><h2 id=_testing_checklist>4. Testing Checklist</h2><div class=sectionbody><div class=sect2><h3 id=_unit_tests>4.1. Unit Tests</h3><div class="ulist checklist"><ul class=checklist><li><p><i class="fa fa-square-o"></i> Test user creation with identity</p></li><li><p><i class="fa fa-square-o"></i> Test adding multiple identities</p></li><li><p><i class="fa fa-square-o"></i> Test duplicate identity handling</p></li><li><p><i class="fa fa-square-o"></i> Test identity lookup</p></li><li><p><i class="fa fa-square-o"></i> Test user deletion cascades to identities</p></li></ul></div></div><div class=sect2><h3 id=_integration_tests>4.2. Integration Tests</h3><div class="ulist checklist"><ul class=checklist><li><p><i class="fa fa-square-o"></i> Test authentication with different identities</p></li><li><p><i class="fa fa-square-o"></i> Test authorization works with multiple identities</p></li><li><p><i class="fa fa-square-o"></i> Test CLI commands</p></li><li><p><i class="fa fa-square-o"></i> Test existing user/group commands still work</p></li></ul></div></div><div class=sect2><h3 id=_manual_testing>4.3. Manual Testing</h3><div class="olist arabic"><ol class=arabic><li><p><strong>Create user with identity</strong>:</p></li></ol></div><div class=listingblock><div class=content><pre class="rouge highlight"><code data-lang=bash>   editoast user add <span class=s1>&#39;oidc/test.user&#39;</span> <span class=s1>&#39;Test User&#39;</span></code></pre></div></div><div class="olist arabic"><ol class=arabic><li><p><strong>Add additional identity</strong>:</p></li></ol></div><div class=listingblock><div class=content><pre class="rouge highlight"><code data-lang=bash>   editoast user add-identity <span class=s1>&#39;oidc/test.user&#39;</span> <span class=s1>&#39;saml/tuser@company.com&#39;</span> <span class=s1>&#39;mock/testuser&#39;</span></code></pre></div></div><div class="olist arabic"><ol class=arabic><li><p><strong>Verify authentication</strong>:</p><div class=ulist><ul><li><p>Login with original identity</p></li><li><p>Login with new identity</p></li><li><p>Check both resolve to same user</p></li></ul></div></li><li><p><strong>Test with roles</strong>:</p></li></ol></div><div class=listingblock><div class=content><pre class="rouge highlight"><code data-lang=bash>   editoast roles add <span class=s1>&#39;oidc/test.user&#39;</span> Admin
+   <span class=c># Login with saml/tuser@company.com should have Admin role</span></code></pre></div></div></div></div></div><div class=sect1><h2 id=_common_pitfalls>5. Common Pitfalls</h2><div class=sectionbody><div class="olist arabic"><ol class=arabic><li><p><strong>Identity Format</strong>: Always use <code>provider/userid</code> format</p></li><li><p><strong>Cascade Deletes</strong>: Ensure foreign keys have <code>ON DELETE CASCADE</code></p></li><li><p><strong>Transaction Safety</strong>: Use database transactions for multi-table operations</p></li><li><p><strong>Unique Constraints</strong>: Identity must remain globally unique</p></li><li><p><strong>Migration Rollback</strong>: Test down migration doesn’t lose data</p></li></ol></div></div></div><div class=sect1><h2 id=_development_workflow>6. Development Workflow</h2><div class=sectionbody><div class="olist arabic"><ol class=arabic><li><p><strong>Setup Environment</strong>:</p></li></ol></div><div class=listingblock><div class=content><pre class="rouge highlight"><code data-lang=bash>   <span class=nb>cd </span>editoast
+   diesel migration run
+   cargo build</code></pre></div></div><div class="olist arabic"><ol class=arabic><li><p><strong>Run Tests</strong>:</p></li></ol></div><div class=listingblock><div class=content><pre class="rouge highlight"><code data-lang=bash>   cargo <span class=nb>test </span>auth_driver
+   cargo <span class=nb>test </span>user_command</code></pre></div></div><div class="olist arabic"><ol class=arabic><li><p><strong>Test CLI</strong>:</p></li></ol></div><div class=listingblock><div class=content><pre class="rouge highlight"><code data-lang=bash>   cargo run <span class=nt>--</span> user add-identity <span class=nt>--help</span></code></pre></div></div><div class="olist arabic"><ol class=arabic><li><p><strong>Create PR</strong>:</p><div class=ulist><ul><li><p>Reference issue #13822</p></li><li><p>Include migration files</p></li><li><p>Update documentation</p></li><li><p>Add comprehensive tests</p></li></ul></div></li></ol></div></div></div><div class=sect1><h2 id=_api_changes>7. API Changes</h2><div class=sectionbody><div class=paragraph><p>No REST API changes needed! The authentication happens transparently:</p></div><div class="olist arabic"><ol class=arabic><li><p>Gateway sends identity in header</p></li><li><p>Editoast looks up user by identity</p></li><li><p>If found, uses that user (regardless of which identity)</p></li><li><p>All existing endpoints work unchanged</p></li></ol></div></div></div><div class=sect1><h2 id=_success_criteria>8. Success Criteria</h2><div class=sectionbody><div class=paragraph><p>✅ Users can have multiple identities
+✅ CLI command to add identities
+✅ All identities resolve to same user
+✅ Existing functionality unaffected
+✅ Database migrations are reversible
+✅ Comprehensive test coverage</p></div></div></div><div class=sect1><h2 id=_questions_to_consider>9. Questions to Consider</h2><div class=sectionbody><div class="olist arabic"><ol class=arabic><li><p><strong>Identity Management UI</strong>: Should we add API endpoints to manage identities?</p></li><li><p><strong>Identity Removal</strong>: Should we allow removing identities (keeping at least one)?</p></li><li><p><strong>Primary Identity</strong>: Should we track which identity is primary?</p></li><li><p><strong>Audit Trail</strong>: Should we log identity additions/removals?</p></li></ol></div><div class=paragraph><p>Good luck with the implementation! The key is maintaining backward compatibility while adding the new multi-identity support.</p></div></div></div></div><div class="footer no-tags"></div></article></div></div><footer><div class=container><div class=categories><a href=/categories/ alt=Categories><strong>Categories</strong></a><ul><li><a href=/categories/tutorial alt=Tutorial>Tutorial
+(5)</a></li><li><a href=/categories/reactive-programming alt="Reactive programming">Reactive programming
+(3)</a></li></ul></div><div class=series><a href=/series/><strong>Series</strong></a><ul><li><a href=/series/mongodb-reactive-cli>Mongodb reactive CLI
+(1)</a></li></ul></div><div class=right><div class=external-profiles><strong>Find me on</strong>
+<a href=https://twitter.com/aoudiamoncef title="Moncef AOUDIA Twitter" target=_blank rel="noopener noreferrer"><i class="fab fa-twitter"></i></a>
+<a href=https://github.com/aoudiamoncef title="Moncef AOUDIA Github" target=_blank rel="noopener noreferrer"><i class="fab fa-github"></i></a>
+<a href=https://gitlab.com/aoudiamoncef title="Moncef AOUDIA Gitlab" target=_blank rel="noopener noreferrer"><i class="fab fa-gitlab"></i></a>
+<a href=https://www.linkedin.com/in/moncef-aoudia-7723b311b title="Moncef AOUDIA Linkedin" target=_blank rel="noopener noreferrer"><i class="fab fa-linkedin"></i></a>
+<a href=mailto:mf.aoudia@gmail.com title="Moncef AOUDIA Gmail" target=_blank rel="noopener noreferrer"><i class="fas fa-envelope"></i></a>
+<a href=https://www.clubhouse.com/@aoudiamoncef title="Moncef AOUDIA Clubhouse" target=_blank rel="noopener noreferrer"><i class="far fa-copyright"></i></a>
+<a href=https://discordapp.com/users/365160200900182026 title="Moncef AOUDIA Discord" target=_blank rel="noopener noreferrer"><i class="fab fa-discord"></i></a>
+<a href=https://getpocket.com/@701dbpd1T08b8g7f59Ab790A73g1T0G2725K38yf75eym1w2di86eN27V2dIJ51a title="Moncef AOUDIA Pocket" target=_blank rel="noopener noreferrer"><i class="fab fa-get-pocket"></i></a>
+<a href=https://dev.to/aoudiamoncef title="Moncef AOUDIA DEV.TO" target=_blank rel="noopener noreferrer"><i class="fab fa-dev"></i></a>
+<a href=https://medium.com/@aoudiamoncef title="Moncef AOUDIA Medium" target=_blank rel="noopener noreferrer"><i class="fab fa-medium-m"></i></a>
+<a href=https://aoudiamoncef.hashnode.dev title="Moncef AOUDIA Hashnode" target=_blank rel="noopener noreferrer"><i class="fas fa-h-square"></i></a>
+<a href=https://stackoverflow.com/users/8126192/moncef-aoudia title="Moncef AOUDIA Stackoverflow" target=_blank rel="noopener noreferrer"><i class="fab fa-stack-overflow"></i></a>
+<a href=https://www.quora.com/profile/Moncef-AOUDIA title="Moncef AOUDIA Quora" target=_blank rel="noopener noreferrer"><i class="fab fa-quora"></i></a>
+<a href=https://www.reddit.com/user/aoudiamoncef title="Moncef AOUDIA Reddit" target=_blank rel="noopener noreferrer"><i class="fab fa-reddit"></i></a>
+<a href=https://slides.com/aoudiamoncef title="Moncef AOUDIA Slides" target=_blank rel="noopener noreferrer"><i class="fas fa-sliders-h"></i></a>
+<a href=https://speakerdeck.com/aoudiamoncef title="Moncef AOUDIA SpeakerDeck" target=_blank rel="noopener noreferrer"><i class="fab fa-speaker-deck"></i></a>
+<a href=/index.xml title="Moncef AOUDIA RSS" target=_blank rel="noopener noreferrer"><i class="fas fa-rss"></i></a></div><div class=languages><strong>Other languages</strong>
+<a href=https://www.maoudia.com/ class=active>en</a>
+<span>| </span><a href=https://www.maoudia.com/fr/>fr</a></div></div></div></footer><div class=credits><div class=container><div class=copyright><a href=https://creativecommons.org/licenses/by-sa/4.0 target=_blank rel=noopener>&copy;
+2025
+Moncef AOUDIA</a></div><div class=author><a href=https://github.com/Lednerb/bilberry-hugo-theme target=_blank rel=noopener>Bilberry Hugo Theme</a></div></div></div><script type=text/javascript src=https://www.maoudia.com/js/theme.min.js crossorigin=anonymous defer></script><div id=activate-algolia-search class=hidden><input type=hidden id=algolia-search-appId>
+<input type=hidden id=algolia-search-apiKey>
+<input type=hidden id=algolia-search-indexName>
+<input type=hidden id=algolia-search-noSearchResults value="Nothing found.">
+<input type=hidden id=algolia-search-currentLanguageOnly></div><script src=https://www.maoudia.com/js/vanilla-back-to-top.min.js integrity=sha384-vPjvei7c1a3IpCr0kkDEOMRmlCHcv8REJw1B2eKJM55swier62xiYRVistfMKEUj crossorigin=anonymous></script><script>addBackToTop({diameter:48,backgroundColor:"transparent",textColor:"rgb(45, 54, 66)"})</script></body></html>

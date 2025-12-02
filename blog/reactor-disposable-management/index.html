@@ -1,0 +1,520 @@
+<!doctype html><html class=no-js lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=siteBaseUrl content="https://www.maoudia.com/"><meta name=author content="Moncef AOUDIA"><meta name=description content="Moncef AOUDIA's website"><meta name=keywords content="blog,personal,programming,java,graphql,springboot,quarkus,reactor,camel,apollo,opensource,multilingual"><link href=https://github.com/aoudiamoncef rel=me><link rel=webmention href=https://webmention.io/www.maoudia.com/webmention><link rel=pingback href=https://webmention.io/www.maoudia.com/xmlrpc><meta name=generator content="Hugo 0.152.0"><noscript><meta http-equiv=refresh content="0; url=https://www.maoudia.com/blog/reactor-disposable-management/"></noscript><title>Reactor Disposable Management: Composite and Swap | Moncef AOUDIA</title><meta name=description content="Learn how to manage resources and subscriptions in reactive applications using Reactor's Disposable, Disposable.Composite, and Disposable.Swap."><meta itemprop=name content="Reactor Disposable Management: Composite and Swap"><meta itemprop=description content="Learn how to manage resources and subscriptions in reactive applications using Reactor's Disposable, Disposable.Composite, and Disposable.Swap."><meta name=twitter:card content="summary_large_image"><meta name=twitter:site content="@AoudiaMoncef"><meta name=twitter:title content="Reactor Disposable Management: Composite and Swap"><meta name=twitter:image content><meta name=twitter:image:src content><meta name=twitter:creator content="@AoudiaMoncef"><meta property="og:title" content="Reactor Disposable Management: Composite and Swap"><meta property="og:description" content="Learn how to manage resources and subscriptions in reactive applications using Reactor's Disposable, Disposable.Composite, and Disposable.Swap."><meta property="og:type" content="article"><meta property="og:url" content="https://www.maoudia.com/blog/reactor-disposable-management/"><meta property="og:image" content="https://www.maoudia.com/images/blog/reactor-disposable-management/featured-image-en.svg"><meta property="og:image:secure_url" content="https://www.maoudia.com/images/blog/reactor-disposable-management/featured-image-en.svg"><meta property="og:image:type" content="image/png"><meta property="og:image:width" content><meta property="og:image:height" content><meta property="article:section" content="blog"><meta property="article:published_time" content="2024-05-20T00:00:00+02:00"><meta property="article:modified_time" content="2025-12-02T11:09:10+01:00"><meta property="og:locale" content="en"><meta property="og:locale:alternate" content="fr"><head><link rel=apple-touch-icon sizes=180x180 href=/images/favicons/apple-touch-icon-180x180.webp><link rel=icon type=image/png sizes=32x32 href=/images/favicons/favicon-32x32.webp><link rel=icon type=image/png sizes=16x16 href=/images/favicons/favicon-16x16.webp><link rel=manifest href=/manifest.json crossorigin=use-credentials><link rel=mask-icon href=/images/favicons/safari-pinned-tab.svg color=#5bbad5><meta name=apple-mobile-web-app-title content="https://www.maoudia.com"><meta name=application-name content="https://www.maoudia.com"><meta name=msapplication-TileColor content="#00a300"><meta name=theme-color media="(prefers-color-scheme: light)" content="white"><meta name=theme-color media="(prefers-color-scheme: dark)" content="black"></head><link rel=preload as=script href=https://www.maoudia.com/js/modernizr-simple.min.js><script src=/js/modernizr-simple.min.js></script><link href=https://www.maoudia.com/index.xml rel=alternate type=application/rss+xml title="Moncef AOUDIA"><link href=https://www.maoudia.com/blog/index.xml rel=feed type=application/rss+xml title="Moncef AOUDIA Blog"><link rel=canonical href=https://www.maoudia.com/blog/reactor-disposable-management/><link rel=preload as=script href=https://www.maoudia.com/js/theme.min.js crossorigin=anonymous><link rel=stylesheet href=https://www.maoudia.com/css/theme.min.css><link rel=stylesheet href=https://www.maoudia.com/css/main.min.css integrity></head><body class=bilberry-hugo-theme><nav class=permanentTopNav><div class=container><ul class=topnav><li><a href=https://www.maoudia.com/render/>Render</a></li><li><a href=https://www.maoudia.com/uses/>Uses</a></li><li><a href=https://www.maoudia.com/about/>About</a></li></ul><div id=search-box class=search><i class="fas fa-search"></i>
+<input id=search type=text placeholder="Search ..."></div></div></nav><header><div class=container><div class=logo><a href=https://www.maoudia.com/ class=logo><img src=/images/logo.png width=512 height=512 alt="Moncef AOUDIA logo">
+<span class=overlay><i class="fa fa-home"></i></span></a></div><div class=titles><h3 class=title><a href=/about/>Moncef AOUDIA</a></h3></div><div class=languages><a href=https://www.maoudia.com/ class=active>en</a>
+<span>| </span><a href=https://www.maoudia.com/fr/>fr</a></div><div class="toggler permanentTopNav"><i class="fa fa-bars" aria-hidden=true></i></div></div></header><div class="main container"><div class="article-wrapper u-cf single"><article class="default article"><div class="featured-image webfeedsFeaturedVisual"><a href=https://www.maoudia.com/blog/reactor-disposable-management/ alt="article with featured image"><img src=/images/blog/reactor-disposable-management/featured-image-en.svg width=1200 height=600 alt="featured image"></a></div><div class=content><h1 class=article-title><a href=https://www.maoudia.com/blog/reactor-disposable-management/>Reactor Disposable Management: Composite and Swap</a></h1><div class=meta><span>Published on </span><span class=date>2024-05-20</span>
+<span>| </span><span>Updated on </span><span class=date>2025-12-02</span>
+<span>| </span><span class=readingTime>10 mins read</span>
+<span>| </span><span class=categories><a href=https://www.maoudia.com/categories/tutorial/>Tutorial</a>
+<a href=https://www.maoudia.com/categories/reactive-programming/>Reactive Programming</a></span></div><div class="paragraph lead"><p>Reactor Disposable provides a mechanism for managing resources, subscriptions, or actions in a reactive application. This guide explores three main types: <code>Disposable</code>, <code>Disposable.Composite</code>, and <code>Disposable.Swap</code>, with practical examples using Spring Boot.</p></div><div id=toc class=toc><div id=toctitle class=title>Table of contents</div><ul class=sectlevel1><li><a href=#_overview>1. Overview</a></li><li><a href=#_types_of_disposables>2. Types of Disposables</a></li><li><a href=#_project_setup>3. Project Setup</a></li><li><a href=#_domain_model>4. Domain Model</a></li><li><a href=#_implementation>5. Implementation</a></li><li><a href=#_testing>6. Testing</a></li><li><a href=#_use_cases_and_best_practices>7. Use Cases and Best Practices</a></li><li><a href=#_common_patterns>8. Common Patterns</a></li><li><a href=#_troubleshooting>9. Troubleshooting</a></li><li><a href=#_performance_considerations>10. Performance Considerations</a></li><li><a href=#_conclusion>11. Conclusion</a></li><li><a href=#_resources>12. Resources</a></li></ul></div><div class=sect1><h2 id=_overview>1. Overview</h2><div class=sectionbody><div class=paragraph><p>In reactive programming, proper resource management is crucial to prevent memory leaks and ensure clean shutdown of applications. Project Reactor provides the <code>Disposable</code> interface and its variants to manage the lifecycle of reactive streams and associated resources.</p></div><div class=paragraph><p>This tutorial demonstrates practical usage of these disposables in a Spring Boot application with a user search service that manages asynchronous operations.</p></div></div></div><div class=sect1><h2 id=_types_of_disposables>2. Types of Disposables</h2><div class=sectionbody><div class=sect2><h3 id=_disposable>2.1. Disposable</h3><div class=paragraph><p>Represents a single resource that can be disposed of when it’s no longer needed, typically used for cleanup purposes.</p></div><div id=disposable-single-resource class=listingblock><div class=content><pre>Failed to generate image: Could not find the &#39;mmdc&#39; executable in PATH; add it to the PATH or specify its location using the &#39;mmdc&#39; document attribute
+%%{init: {&#39;theme&#39;:&#39;neutral&#39;, &#39;themeVariables&#39;: { &#39;fontSize&#39;:&#39;18px&#39;}}}%%
+graph LR
+    A[&#34;&lt;b&gt;Disposable&lt;/b&gt;&lt;br/&gt;Single Resource Management&#34;] --&gt; B[Create Subscription]
+    B --&gt; C[Active ✓]
+    C --&gt; D[dispose]
+    D --&gt; E[Released ❌]
+
+    classDef typeStyle fill:#2563eb,stroke:#1e40af,color:#fff,stroke-width:3px
+    classDef activeStyle fill:#10b981,stroke:#059669,color:#fff,stroke-width:2px
+    classDef disposedStyle fill:#ef4444,stroke:#dc2626,color:#fff,stroke-width:2px
+    classDef neutralStyle fill:#f3f4f6,stroke:#9ca3af,color:#111,stroke-width:2px
+
+    class A typeStyle
+    class C activeStyle
+    class E disposedStyle
+    class B,D neutralStyle</pre></div></div><div class=sect3><h4 id=_real_world_usage>2.1.1. Real-World Usage</h4><div class=ulist><ul><li><p><strong>Messaging Application:</strong> Manage subscriptions to message queues. When a user subscribes to a topic, create a disposable subscription. When they unsubscribe, call <code>dispose()</code> to release resources.</p></li><li><p><strong>File Processing System:</strong> Manage file streams. When a file is opened for processing, create a disposable stream. When processing completes or an error occurs, dispose the stream to release system resources.</p></li></ul></div></div><div class=sect3><h4 id=_example>2.1.2. Example</h4><div class=listingblock><div class=content><pre class="rouge highlight"><code data-lang=java><span class=nc>Disposable</span> <span class=n>subscription</span> <span class=o>=</span> <span class=n>flux</span>
+    <span class=o>.</span><span class=na>subscribe</span><span class=o>(</span>
+        <span class=n>value</span> <span class=o>-&gt;</span> <span class=nc>System</span><span class=o>.</span><span class=na>out</span><span class=o>.</span><span class=na>println</span><span class=o>(</span><span class=n>value</span><span class=o>),</span>
+        <span class=n>error</span> <span class=o>-&gt;</span> <span class=nc>System</span><span class=o>.</span><span class=na>err</span><span class=o>.</span><span class=na>println</span><span class=o>(</span><span class=n>error</span><span class=o>),</span>
+        <span class=o>()</span> <span class=o>-&gt;</span> <span class=nc>System</span><span class=o>.</span><span class=na>out</span><span class=o>.</span><span class=na>println</span><span class=o>(</span><span class=s>&#34;Complete&#34;</span><span class=o>)</span>
+    <span class=o>);</span>
+
+<span class=n>subscription</span><span class=o>.</span><span class=na>dispose</span><span class=o>();</span></code></pre></div></div></div></div><div class=sect2><h3 id=_disposable_composite>2.2. Disposable.Composite</h3><div class=paragraph><p>Represents a collection of disposables that can be managed as a single unit, allowing for the disposal of multiple resources at once.</p></div><div id=disposable-composite-multiple-resources class=listingblock><div class=content><pre>Failed to generate image: Could not find the &#39;mmdc&#39; executable in PATH; add it to the PATH or specify its location using the &#39;mmdc&#39; document attribute
+%%{init: {&#39;theme&#39;:&#39;neutral&#39;, &#39;themeVariables&#39;: { &#39;fontSize&#39;:&#39;18px&#39;}}}%%
+graph TB
+    A[&#34;&lt;b&gt;Disposable.Composite&lt;/b&gt;&lt;br/&gt;Multiple Resources Management&#34;]
+    A --&gt; B[Subscription 1 ✓]
+    A --&gt; C[Subscription 2 ✓]
+    A --&gt; D[Subscription 3 ✓]
+    B --&gt; E[dispose all]
+    C --&gt; E
+    D --&gt; E
+    E --&gt; F[All Released ❌]
+
+    classDef typeStyle fill:#7B68EE,stroke:#5C4DB8,color:#fff,stroke-width:3px
+    classDef activeStyle fill:#10b981,stroke:#059669,color:#fff,stroke-width:2px
+    classDef disposedStyle fill:#ef4444,stroke:#dc2626,color:#fff,stroke-width:2px
+    classDef neutralStyle fill:#f3f4f6,stroke:#9ca3af,color:#111,stroke-width:2px
+
+    class A typeStyle
+    class B,C,D activeStyle
+    class F disposedStyle
+    class E neutralStyle</pre></div></div><div class=sect3><h4 id=_real_world_usage_2>2.2.1. Real-World Usage</h4><div class=ulist><ul><li><p><strong>Financial Trading Application:</strong> Manage multiple subscriptions to market data feeds, trade execution services, and risk management systems. Dispose of all subscriptions together when the trading system shuts down.</p></li><li><p><strong>IoT System:</strong> Manage multiple sensor readings or device connections. Dispose of all connections together when the IoT device is turned off or removed from the network.</p></li></ul></div></div><div class=sect3><h4 id=_example_2>2.2.2. Example</h4><div class=listingblock><div class=content><pre class="rouge highlight"><code data-lang=java><span class=nc>Disposable</span><span class=o>.</span><span class=na>Composite</span> <span class=n>composite</span> <span class=o>=</span> <span class=nc>Disposables</span><span class=o>.</span><span class=na>composite</span><span class=o>();</span>
+
+<span class=n>composite</span><span class=o>.</span><span class=na>add</span><span class=o>(</span><span class=n>subscription1</span><span class=o>);</span>
+<span class=n>composite</span><span class=o>.</span><span class=na>add</span><span class=o>(</span><span class=n>subscription2</span><span class=o>);</span>
+<span class=n>composite</span><span class=o>.</span><span class=na>add</span><span class=o>(</span><span class=n>subscription3</span><span class=o>);</span>
+
+<span class=n>composite</span><span class=o>.</span><span class=na>dispose</span><span class=o>();</span></code></pre></div></div></div></div><div class=sect2><h3 id=_disposable_swap>2.3. Disposable.Swap</h3><div class=paragraph><p>Allows for the dynamic replacement of one disposable with another, enabling seamless transitions between different resources or actions.</p></div><div id=disposable-swap-dynamic-replacement class=listingblock><div class=content><pre>Failed to generate image: Could not find the &#39;mmdc&#39; executable in PATH; add it to the PATH or specify its location using the &#39;mmdc&#39; document attribute
+%%{init: {&#39;theme&#39;:&#39;neutral&#39;, &#39;themeVariables&#39;: { &#39;fontSize&#39;:&#39;18px&#39;}}}%%
+graph LR
+    A[&#34;&lt;b&gt;Disposable.Swap&lt;/b&gt;&lt;br/&gt;Dynamic Replacement&#34;] --&gt; B[Subscription 1 ✓]
+    B --&gt; C[update]
+    C --&gt; D[Sub 1: Disposed ❌]
+    C --&gt; E[Subscription 2 ✓]
+    E --&gt; F[update]
+    F --&gt; G[Sub 2: Disposed ❌]
+    F --&gt; H[Subscription 3 ✓]
+
+    classDef typeStyle fill:#50C878,stroke:#3AA05E,color:#fff,stroke-width:3px
+    classDef activeStyle fill:#10b981,stroke:#059669,color:#fff,stroke-width:2px
+    classDef disposedStyle fill:#ef4444,stroke:#dc2626,color:#fff,stroke-width:2px
+    classDef neutralStyle fill:#f3f4f6,stroke:#9ca3af,color:#111,stroke-width:2px
+
+    class A typeStyle
+    class B,E,H activeStyle
+    class D,G disposedStyle
+    class C,F neutralStyle</pre></div></div><div class=sect3><h4 id=_real_world_usage_3>2.3.1. Real-World Usage</h4><div class=ulist><ul><li><p><strong>Chat Application:</strong> Manage connections to chat servers. When a user switches chat rooms, replace the current connection with a new one using <code>Disposable.Swap</code>, enabling seamless room transitions.</p></li><li><p><strong>Gaming Server:</strong> Manage player sessions. When a player logs in or joins a game, create a disposable session. Replace sessions smoothly as players move between games.</p></li></ul></div></div><div class=sect3><h4 id=_disposable_swap_vs_switchmap>2.3.2. Disposable.Swap vs switchMap</h4><table class="tableblock frame-all grid-all stretch"><col style=width:20%><col style=width:40%><col style=width:40%><thead><tr><th class="tableblock halign-left valign-top">Aspect</th><th class="tableblock halign-left valign-top">switchMap</th><th class="tableblock halign-left valign-top">Disposable.Swap</th></tr></thead><tbody><tr><td class="tableblock halign-left valign-top"><p class=tableblock>Control</p></td><td class="tableblock halign-left valign-top"><p class=tableblock>Automatic switching</p></td><td class="tableblock halign-left valign-top"><p class=tableblock>Manual control</p></td></tr><tr><td class="tableblock halign-left valign-top"><p class=tableblock>Cancellation</p></td><td class="tableblock halign-left valign-top"><p class=tableblock>Handled automatically</p></td><td class="tableblock halign-left valign-top"><p class=tableblock>Requires explicit handling</p></td></tr><tr><td class="tableblock halign-left valign-top"><p class=tableblock>Use Case</p></td><td class="tableblock halign-left valign-top"><p class=tableblock>Stream transformation</p></td><td class="tableblock halign-left valign-top"><p class=tableblock>Resource management</p></td></tr><tr><td class="tableblock halign-left valign-top"><p class=tableblock>Complexity</p></td><td class="tableblock halign-left valign-top"><p class=tableblock>Simpler for stream operations</p></td><td class="tableblock halign-left valign-top"><p class=tableblock>More control for resources</p></td></tr></tbody></table><div class=ulist><ul><li><p><strong><code>switchMap</code>:</strong> Automatically switches between Publishers, discarding previous ones, without user intervention for cancellation handling.</p></li><li><p><strong><code>Disposable.Swap</code>:</strong> Allows manual cancellation handling for seamless replacement of disposables, providing more control over resource lifecycle.</p></li></ul></div></div></div></div></div><div class=sect1><h2 id=_project_setup>3. Project Setup</h2><div class=sectionbody><div class=sect2><h3 id=_requirements>3.1. Requirements</h3><div class=ulist><ul><li><p><a href=https://adoptium.net/><code>OpenJDK 21.0.x</code></a></p></li><li><p><a href=https://maven.apache.org/><code>Maven 3.9.x</code></a></p></li><li><p><a href=https://docs.spring.io/spring-boot/docs/current/reference/html/><code>Spring Boot 3.2.x</code></a></p></li></ul></div></div><div class=sect2><h3 id=_maven_configuration>3.2. Maven Configuration</h3><div class=listingblock><div class=title>pom.xml</div><div class=content><pre class="rouge highlight"><code data-lang=xml><table class=linenotable><tbody><tr><td class="linenos gl"><pre class=lineno> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+</pre></td><td class=code><pre><span class=cp>&lt;?xml version=&#34;1.0&#34; encoding=&#34;UTF-8&#34;?&gt;</span>
+<span class=nt>&lt;project</span> <span class=na>xmlns=</span><span class=s>&#34;http://maven.apache.org/POM/4.0.0&#34;</span>
+         <span class=na>xmlns:xsi=</span><span class=s>&#34;http://www.w3.org/2001/XMLSchema-instance&#34;</span>
+         <span class=na>xsi:schemaLocation=</span><span class=s>&#34;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&#34;</span><span class=nt>&gt;</span>
+    <span class=nt>&lt;modelVersion&gt;</span>4.0.0<span class=nt>&lt;/modelVersion&gt;</span>
+    <span class=nt>&lt;parent&gt;</span>
+        <span class=nt>&lt;groupId&gt;</span>org.springframework.boot<span class=nt>&lt;/groupId&gt;</span>
+        <span class=nt>&lt;artifactId&gt;</span>spring-boot-starter-parent<span class=nt>&lt;/artifactId&gt;</span>
+        <span class=nt>&lt;version&gt;</span>3.2.2<span class=nt>&lt;/version&gt;</span>
+        <span class=nt>&lt;relativePath/&gt;</span>
+    <span class=nt>&lt;/parent&gt;</span>
+    <span class=nt>&lt;groupId&gt;</span>com.maoudia<span class=nt>&lt;/groupId&gt;</span>
+    <span class=nt>&lt;artifactId&gt;</span>app<span class=nt>&lt;/artifactId&gt;</span>
+    <span class=nt>&lt;version&gt;</span>0.0.1-SNAPSHOT<span class=nt>&lt;/version&gt;</span>
+    <span class=nt>&lt;name&gt;</span>maoudia-app<span class=nt>&lt;/name&gt;</span>
+    <span class=nt>&lt;description&gt;</span>MAOUDIA APP<span class=nt>&lt;/description&gt;</span>
+
+    <span class=nt>&lt;properties&gt;</span>
+        <span class=nt>&lt;maven.compiler.source&gt;</span>21<span class=nt>&lt;/maven.compiler.source&gt;</span>
+        <span class=nt>&lt;maven.compiler.target&gt;</span>21<span class=nt>&lt;/maven.compiler.target&gt;</span>
+        <span class=nt>&lt;project.build.sourceEncoding&gt;</span>UTF-8<span class=nt>&lt;/project.build.sourceEncoding&gt;</span>
+    <span class=nt>&lt;/properties&gt;</span>
+
+    <span class=nt>&lt;dependencies&gt;</span>
+        <span class=nt>&lt;dependency&gt;</span>
+            <span class=nt>&lt;groupId&gt;</span>org.springframework.boot<span class=nt>&lt;/groupId&gt;</span>
+            <span class=nt>&lt;artifactId&gt;</span>spring-boot-starter-webflux<span class=nt>&lt;/artifactId&gt;</span>
+        <span class=nt>&lt;/dependency&gt;</span>
+        <span class=nt>&lt;dependency&gt;</span>
+            <span class=nt>&lt;groupId&gt;</span>org.springframework.boot<span class=nt>&lt;/groupId&gt;</span>
+            <span class=nt>&lt;artifactId&gt;</span>spring-boot-starter-test<span class=nt>&lt;/artifactId&gt;</span>
+            <span class=nt>&lt;scope&gt;</span>test<span class=nt>&lt;/scope&gt;</span>
+        <span class=nt>&lt;/dependency&gt;</span>
+        <span class=nt>&lt;dependency&gt;</span>
+            <span class=nt>&lt;groupId&gt;</span>io.projectreactor<span class=nt>&lt;/groupId&gt;</span>
+            <span class=nt>&lt;artifactId&gt;</span>reactor-test<span class=nt>&lt;/artifactId&gt;</span>
+            <span class=nt>&lt;scope&gt;</span>test<span class=nt>&lt;/scope&gt;</span>
+        <span class=nt>&lt;/dependency&gt;</span>
+    <span class=nt>&lt;/dependencies&gt;</span>
+
+    <span class=nt>&lt;build&gt;</span>
+        <span class=nt>&lt;plugins&gt;</span>
+            <span class=nt>&lt;plugin&gt;</span>
+                <span class=nt>&lt;groupId&gt;</span>org.springframework.boot<span class=nt>&lt;/groupId&gt;</span>
+                <span class=nt>&lt;artifactId&gt;</span>spring-boot-maven-plugin<span class=nt>&lt;/artifactId&gt;</span>
+            <span class=nt>&lt;/plugin&gt;</span>
+        <span class=nt>&lt;/plugins&gt;</span>
+    <span class=nt>&lt;/build&gt;</span>
+<span class=nt>&lt;/project&gt;</span>
+</pre></td></tr></tbody></table></code></pre></div></div></div></div></div><div class=sect1><h2 id=_domain_model>4. Domain Model</h2><div class=sectionbody><div class=sect2><h3 id=_user_record>4.1. User Record</h3><div class=listingblock><div class=title>User.java</div><div class=content><pre class="rouge highlight"><code data-lang=java><table class=linenotable><tbody><tr><td class="linenos gl"><pre class=lineno>1
+2
+3
+4
+5
+6
+7
+</pre></td><td class=code><pre><span class=kn>package</span> <span class=nn>com.maoudia</span><span class=o>;</span>
+
+<span class=kd>public</span> <span class=n>record</span> <span class=nf>User</span><span class=o>(</span>
+        <span class=nc>String</span> <span class=n>username</span><span class=o>,</span>
+        <span class=nc>String</span> <span class=n>firstName</span><span class=o>,</span>
+        <span class=nc>String</span> <span class=n>lastName</span><span class=o>,</span>
+        <span class=kt>int</span> <span class=n>age</span><span class=o>)</span> <span class=o>{}</span>
+</pre></td></tr></tbody></table></code></pre></div></div></div><div class=sect2><h3 id=_userrepository_interface>4.2. UserRepository Interface</h3><div class=listingblock><div class=title>UserRepository.java</div><div class=content><pre class="rouge highlight"><code data-lang=java><table class=linenotable><tbody><tr><td class="linenos gl"><pre class=lineno>1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class=code><pre><span class=kn>package</span> <span class=nn>com.maoudia</span><span class=o>;</span>
+
+<span class=kn>import</span> <span class=nn>reactor.core.publisher.Flux</span><span class=o>;</span>
+
+<span class=kd>public</span> <span class=kd>interface</span> <span class=nc>UserRepository</span> <span class=o>{</span>
+
+    <span class=nc>Flux</span><span class=o>&lt;</span><span class=nc>User</span><span class=o>&gt;</span> <span class=nf>searchByUsername</span><span class=o>(</span><span class=nc>String</span> <span class=n>username</span><span class=o>);</span>
+<span class=o>}</span>
+</pre></td></tr></tbody></table></code></pre></div></div></div></div></div><div class=sect1><h2 id=_implementation>5. Implementation</h2><div class=sectionbody><div class=sect2><h3 id=_fake_repository_implementation>5.1. Fake Repository Implementation</h3><div class=paragraph><p>This implementation simulates a real repository with random latency to demonstrate async behavior:</p></div><div class=listingblock><div class=title>FakeUserRepository.java</div><div class=content><pre class="rouge highlight"><code data-lang=java><table class=linenotable><tbody><tr><td class="linenos gl"><pre class=lineno> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+</pre></td><td class=code><pre><span class=kn>package</span> <span class=nn>com.maoudia</span><span class=o>;</span>
+
+<span class=kn>import</span> <span class=nn>org.springframework.stereotype.Component</span><span class=o>;</span>
+<span class=kn>import</span> <span class=nn>reactor.core.publisher.Flux</span><span class=o>;</span>
+<span class=kn>import</span> <span class=nn>reactor.core.scheduler.Schedulers</span><span class=o>;</span>
+
+<span class=kn>import</span> <span class=nn>java.time.Duration</span><span class=o>;</span>
+<span class=kn>import</span> <span class=nn>java.util.Arrays</span><span class=o>;</span>
+<span class=kn>import</span> <span class=nn>java.util.List</span><span class=o>;</span>
+<span class=kn>import</span> <span class=nn>java.util.Random</span><span class=o>;</span>
+
+<span class=nd>@Component</span>
+<span class=kd>public</span> <span class=kd>class</span> <span class=nc>FakeUserRepository</span> <span class=kd>implements</span> <span class=nc>UserRepository</span> <span class=o>{</span>
+    <span class=kd>private</span> <span class=kd>static</span> <span class=kd>final</span> <span class=nc>Random</span> <span class=n>random</span> <span class=o>=</span> <span class=k>new</span> <span class=nc>Random</span><span class=o>();</span>
+
+    <span class=nd>@Override</span>
+    <span class=kd>public</span> <span class=nc>Flux</span><span class=o>&lt;</span><span class=nc>User</span><span class=o>&gt;</span> <span class=nf>searchByUsername</span><span class=o>(</span><span class=nc>String</span> <span class=n>username</span><span class=o>)</span> <span class=o>{</span> <i class=conum data-value=1></i><b>(1)</b>
+        <span class=nc>List</span><span class=o>&lt;</span><span class=nc>User</span><span class=o>&gt;</span> <span class=n>users</span> <span class=o>=</span> <span class=nc>Arrays</span><span class=o>.</span><span class=na>asList</span><span class=o>(</span>
+                <span class=k>new</span> <span class=nf>User</span><span class=o>(</span><span class=s>&#34;user1&#34;</span><span class=o>,</span> <span class=s>&#34;John&#34;</span><span class=o>,</span> <span class=s>&#34;Doe&#34;</span><span class=o>,</span> <span class=mi>30</span><span class=o>),</span>
+                <span class=k>new</span> <span class=nf>User</span><span class=o>(</span><span class=s>&#34;user2&#34;</span><span class=o>,</span> <span class=s>&#34;Jane&#34;</span><span class=o>,</span> <span class=s>&#34;Smith&#34;</span><span class=o>,</span> <span class=mi>25</span><span class=o>),</span>
+                <span class=k>new</span> <span class=nf>User</span><span class=o>(</span><span class=s>&#34;user3&#34;</span><span class=o>,</span> <span class=s>&#34;Alice&#34;</span><span class=o>,</span> <span class=s>&#34;Johnson&#34;</span><span class=o>,</span> <span class=mi>35</span><span class=o>),</span>
+                <span class=k>new</span> <span class=nf>User</span><span class=o>(</span><span class=s>&#34;user4&#34;</span><span class=o>,</span> <span class=s>&#34;Michael&#34;</span><span class=o>,</span> <span class=s>&#34;Brown&#34;</span><span class=o>,</span> <span class=mi>40</span><span class=o>),</span>
+                <span class=k>new</span> <span class=nf>User</span><span class=o>(</span><span class=s>&#34;user5&#34;</span><span class=o>,</span> <span class=s>&#34;Emma&#34;</span><span class=o>,</span> <span class=s>&#34;Wilson&#34;</span><span class=o>,</span> <span class=mi>28</span><span class=o>)</span>
+        <span class=o>);</span>
+
+        <span class=k>return</span> <span class=nc>Flux</span><span class=o>.</span><span class=na>fromIterable</span><span class=o>(</span><span class=n>users</span><span class=o>)</span>
+                <span class=o>.</span><span class=na>filter</span><span class=o>(</span><span class=n>user</span> <span class=o>-&gt;</span> <span class=n>user</span><span class=o>.</span><span class=na>username</span><span class=o>().</span><span class=na>startsWith</span><span class=o>(</span><span class=n>username</span><span class=o>))</span> <i class=conum data-value=2></i><b>(2)</b>
+                <span class=o>.</span><span class=na>delayElements</span><span class=o>(</span><span class=nc>Duration</span><span class=o>.</span><span class=na>ofMillis</span><span class=o>(</span><span class=n>random</span><span class=o>.</span><span class=na>nextInt</span><span class=o>(</span><span class=mi>1000</span><span class=o>)</span> <span class=o>+</span> <span class=mi>1</span><span class=o>),</span> <span class=nc>Schedulers</span><span class=o>.</span><span class=na>boundedElastic</span><span class=o>());</span> <i class=conum data-value=3></i><b>(3)</b>
+    <span class=o>}</span>
+<span class=o>}</span>
+</pre></td></tr></tbody></table></code></pre></div></div><div class="colist arabic"><table><tbody><tr><td><i class=conum data-value=1></i><b>1</b></td><td>Searches for users by username, returning a reactive stream.</td></tr><tr><td><i class=conum data-value=2></i><b>2</b></td><td>Filters users whose usernames start with the provided search term.</td></tr><tr><td><i class=conum data-value=3></i><b>3</b></td><td>Introduces random latency (up to 1 second) to simulate real-world async operations.</td></tr></tbody></table></div></div><div class=sect2><h3 id=_userservice_with_disposable_swap>5.2. UserService with Disposable.Swap</h3><div class=paragraph><p>This service demonstrates the usage of <code>Disposable.Swap</code> for managing user search operations:</p></div><div class=listingblock><div class=title>UserService.java</div><div class=content><pre class="rouge highlight"><code data-lang=java><table class=linenotable><tbody><tr><td class="linenos gl"><pre class=lineno> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+</pre></td><td class=code><pre><span class=kn>package</span> <span class=nn>com.maoudia</span><span class=o>;</span>
+
+<span class=kn>import</span> <span class=nn>jakarta.annotation.PreDestroy</span><span class=o>;</span>
+<span class=kn>import</span> <span class=nn>org.slf4j.Logger</span><span class=o>;</span>
+<span class=kn>import</span> <span class=nn>org.slf4j.LoggerFactory</span><span class=o>;</span>
+<span class=kn>import</span> <span class=nn>org.springframework.stereotype.Service</span><span class=o>;</span>
+<span class=kn>import</span> <span class=nn>reactor.core.Disposable</span><span class=o>;</span>
+<span class=kn>import</span> <span class=nn>reactor.core.Disposables</span><span class=o>;</span>
+<span class=kn>import</span> <span class=nn>reactor.core.scheduler.Schedulers</span><span class=o>;</span>
+
+<span class=kn>import</span> <span class=nn>java.util.UUID</span><span class=o>;</span>
+
+<span class=nd>@Service</span>
+<span class=kd>public</span> <span class=kd>class</span> <span class=nc>UserService</span> <span class=o>{</span>
+    <span class=kd>private</span> <span class=kd>static</span> <span class=kd>final</span> <span class=nc>Logger</span> <span class=no>LOGGER</span> <span class=o>=</span> <span class=nc>LoggerFactory</span><span class=o>.</span><span class=na>getLogger</span><span class=o>(</span><span class=nc>UserService</span><span class=o>.</span><span class=na>class</span><span class=o>);</span>
+
+    <span class=kd>private</span> <span class=kd>final</span> <span class=nc>UserRepository</span> <span class=n>userRepository</span><span class=o>;</span>
+    <span class=kd>private</span> <span class=kd>final</span> <span class=nc>Disposable</span><span class=o>.</span><span class=na>Swap</span> <span class=n>disposableSwap</span><span class=o>;</span> <i class=conum data-value=1></i><b>(1)</b>
+
+    <span class=kd>public</span> <span class=nf>UserService</span><span class=o>(</span><span class=nc>UserRepository</span> <span class=n>userRepository</span><span class=o>)</span> <span class=o>{</span>
+        <span class=k>this</span><span class=o>.</span><span class=na>userRepository</span> <span class=o>=</span> <span class=n>userRepository</span><span class=o>;</span>
+        <span class=k>this</span><span class=o>.</span><span class=na>disposableSwap</span> <span class=o>=</span> <span class=nc>Disposables</span><span class=o>.</span><span class=na>swap</span><span class=o>();</span> <i class=conum data-value=2></i><b>(2)</b>
+    <span class=o>}</span>
+
+    <span class=kd>public</span> <span class=nc>Disposable</span> <span class=nf>searchUsers</span><span class=o>(</span><span class=nc>String</span> <span class=n>query</span><span class=o>)</span> <span class=o>{</span> <i class=conum data-value=3></i><b>(3)</b>
+        <span class=nc>Disposable</span> <span class=n>nextDisposable</span> <span class=o>=</span> <span class=k>this</span><span class=o>.</span><span class=na>userRepository</span><span class=o>.</span><span class=na>searchByUsername</span><span class=o>(</span><span class=n>query</span><span class=o>)</span>
+                <span class=o>.</span><span class=na>doOnCancel</span><span class=o>(()</span> <span class=o>-&gt;</span> <span class=no>LOGGER</span><span class=o>.</span><span class=na>warn</span><span class=o>(</span><span class=s>&#34;User search for &#39;{}&#39; cancelled&#34;</span><span class=o>,</span> <span class=n>query</span><span class=o>))</span> <i class=conum data-value=4></i><b>(4)</b>
+                <span class=o>.</span><span class=na>doOnSubscribe</span><span class=o>(</span><span class=n>s</span> <span class=o>-&gt;</span> <span class=no>LOGGER</span><span class=o>.</span><span class=na>info</span><span class=o>(</span><span class=s>&#34;User search for &#39;{}&#39; subscribed: {}&#34;</span><span class=o>,</span> <span class=n>query</span><span class=o>,</span> <span class=no>UUID</span><span class=o>.</span><span class=na>randomUUID</span><span class=o>()))</span> <i class=conum data-value=5></i><b>(5)</b>
+                <span class=o>.</span><span class=na>subscribeOn</span><span class=o>(</span><span class=nc>Schedulers</span><span class=o>.</span><span class=na>boundedElastic</span><span class=o>())</span> <i class=conum data-value=6></i><b>(6)</b>
+                <span class=o>.</span><span class=na>subscribe</span><span class=o>(</span>
+                        <span class=n>user</span> <span class=o>-&gt;</span> <span class=no>LOGGER</span><span class=o>.</span><span class=na>info</span><span class=o>(</span><span class=s>&#34;User search &#39;{}&#39; found: {}&#34;</span><span class=o>,</span> <span class=n>query</span><span class=o>,</span> <span class=n>user</span><span class=o>.</span><span class=na>username</span><span class=o>()),</span>
+                        <span class=n>error</span> <span class=o>-&gt;</span> <span class=no>LOGGER</span><span class=o>.</span><span class=na>error</span><span class=o>(</span><span class=s>&#34;Error during User search for &#39;{}&#39;&#34;</span><span class=o>,</span> <span class=n>query</span><span class=o>,</span> <span class=n>error</span><span class=o>),</span>
+                        <span class=o>()</span> <span class=o>-&gt;</span> <span class=no>LOGGER</span><span class=o>.</span><span class=na>info</span><span class=o>(</span><span class=s>&#34;User search for &#39;{}&#39; completed&#34;</span><span class=o>,</span> <span class=n>query</span><span class=o>)</span>
+                <span class=o>);</span>
+
+        <span class=n>disposableSwap</span><span class=o>.</span><span class=na>update</span><span class=o>(</span><span class=n>nextDisposable</span><span class=o>);</span> <i class=conum data-value=7></i><b>(7)</b>
+
+        <span class=k>return</span> <span class=n>disposableSwap</span><span class=o>;</span>
+    <span class=o>}</span>
+
+    <span class=nd>@PreDestroy</span> <i class=conum data-value=8></i><b>(8)</b>
+    <span class=kd>public</span> <span class=kt>void</span> <span class=nf>cleanUp</span><span class=o>()</span> <span class=o>{</span>
+        <span class=k>if</span> <span class=o>(!</span><span class=k>this</span><span class=o>.</span><span class=na>disposableSwap</span><span class=o>.</span><span class=na>isDisposed</span><span class=o>())</span> <span class=o>{</span>
+            <span class=k>this</span><span class=o>.</span><span class=na>disposableSwap</span><span class=o>.</span><span class=na>dispose</span><span class=o>();</span>
+            <span class=no>LOGGER</span><span class=o>.</span><span class=na>info</span><span class=o>(</span><span class=s>&#34;Disposed of disposableSwap&#34;</span><span class=o>);</span>
+        <span class=o>}</span>
+    <span class=o>}</span>
+<span class=o>}</span>
+</pre></td></tr></tbody></table></code></pre></div></div><div class="colist arabic"><table><tbody><tr><td><i class=conum data-value=1></i><b>1</b></td><td>Declares a <code>Disposable.Swap</code> instance to manage search operations.</td></tr><tr><td><i class=conum data-value=2></i><b>2</b></td><td>Initializes the swap container in the constructor.</td></tr><tr><td><i class=conum data-value=3></i><b>3</b></td><td>Performs asynchronous user search and returns the disposable.</td></tr><tr><td><i class=conum data-value=4></i><b>4</b></td><td>Logs when a search operation is cancelled.</td></tr><tr><td><i class=conum data-value=5></i><b>5</b></td><td>Logs when a search operation is subscribed with a unique ID.</td></tr><tr><td><i class=conum data-value=6></i><b>6</b></td><td>Executes the search on the bounded elastic scheduler for blocking operations.</td></tr><tr><td><i class=conum data-value=7></i><b>7</b></td><td>Atomically replaces the previous disposable with the new one, disposing the old one.</td></tr><tr><td><i class=conum data-value=8></i><b>8</b></td><td>Ensures proper cleanup when the service bean is destroyed.</td></tr></tbody></table></div></div><div class=sect2><h3 id=_how_disposable_swap_works>5.3. How Disposable.Swap Works</h3><div class=paragraph><p>When <code>searchUsers()</code> is called multiple times:</p></div><div class="olist arabic"><ol class=arabic><li><p>First call creates a disposable for "user1" search</p></li><li><p>Second call creates a disposable for "user3" search and <strong>automatically disposes</strong> the "user1" search</p></li><li><p>Third call creates a disposable for "user" search and <strong>automatically disposes</strong> the "user3" search</p></li></ol></div><div class=paragraph><p>Only the most recent search remains active. Previous searches are cancelled automatically.</p></div></div></div></div><div class=sect1><h2 id=_testing>6. Testing</h2><div class=sectionbody><div class=sect2><h3 id=_single_search_test>6.1. Single Search Test</h3><div class=listingblock><div class=title>UserServiceTest.java (excerpt)</div><div class=content><pre class="rouge highlight"><code data-lang=java><table class=linenotable><tbody><tr><td class="linenos gl"><pre class=lineno>1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre></td><td class=code><pre><span class=nd>@Test</span>
+<span class=nd>@DisplayName</span><span class=o>(</span><span class=s>&#34;Single search for users by username&#34;</span><span class=o>)</span>
+<span class=kt>void</span> <span class=nf>singleSearchUsersByUsername</span><span class=o>()</span> <span class=o>{</span>
+    <span class=nc>Disposable</span> <span class=n>disposable</span> <span class=o>=</span> <span class=n>userService</span><span class=o>.</span><span class=na>searchUsers</span><span class=o>(</span><span class=s>&#34;user1&#34;</span><span class=o>);</span>
+
+    <span class=nc>Assertions</span><span class=o>.</span><span class=na>assertThat</span><span class=o>(</span><span class=n>disposable</span><span class=o>)</span>
+            <span class=o>.</span><span class=na>isNotNull</span><span class=o>()</span>
+            <span class=o>.</span><span class=na>isInstanceOf</span><span class=o>(</span><span class=nc>Disposable</span><span class=o>.</span><span class=na>Swap</span><span class=o>.</span><span class=na>class</span><span class=o>);</span>
+<span class=o>}</span>
+</pre></td></tr></tbody></table></code></pre></div></div></div><div class=sect2><h3 id=_multiple_searches_test>6.2. Multiple Searches Test</h3><div class=paragraph><p>This test demonstrates how <code>Disposable.Swap</code> automatically disposes previous searches:</p></div><div class=listingblock><div class=title>UserServiceTest.java (excerpt)</div><div class=content><pre class="rouge highlight"><code data-lang=java><table class=linenotable><tbody><tr><td class="linenos gl"><pre class=lineno> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+</pre></td><td class=code><pre><span class=nd>@Test</span>
+<span class=nd>@DisplayName</span><span class=o>(</span><span class=s>&#34;Multiple searches for users by username&#34;</span><span class=o>)</span>
+<span class=kt>void</span> <span class=nf>multipleSearchUsersByUsername</span><span class=o>()</span> <span class=o>{</span>
+    <span class=nc>Disposable</span> <span class=n>disposable1</span> <span class=o>=</span> <span class=n>userService</span><span class=o>.</span><span class=na>searchUsers</span><span class=o>(</span><span class=s>&#34;user5&#34;</span><span class=o>);</span> <i class=conum data-value=1></i><b>(1)</b>
+    <span class=nc>Disposable</span><span class=o>.</span><span class=na>Swap</span> <span class=n>disposableSwap1</span> <span class=o>=</span> <span class=o>(</span><span class=nc>Disposable</span><span class=o>.</span><span class=na>Swap</span><span class=o>)</span> <span class=n>disposable1</span><span class=o>;</span>
+    <span class=n>disposable1</span> <span class=o>=</span> <span class=n>disposableSwap1</span><span class=o>.</span><span class=na>get</span><span class=o>();</span> <i class=conum data-value=2></i><b>(2)</b>
+
+    <span class=nc>Disposable</span> <span class=n>disposable2</span> <span class=o>=</span> <span class=n>userService</span><span class=o>.</span><span class=na>searchUsers</span><span class=o>(</span><span class=s>&#34;user3&#34;</span><span class=o>);</span> <i class=conum data-value=3></i><b>(3)</b>
+    <span class=nc>Disposable</span><span class=o>.</span><span class=na>Swap</span> <span class=n>disposableSwap2</span> <span class=o>=</span> <span class=o>(</span><span class=nc>Disposable</span><span class=o>.</span><span class=na>Swap</span><span class=o>)</span> <span class=n>disposable2</span><span class=o>;</span>
+    <span class=n>disposable2</span> <span class=o>=</span> <span class=n>disposableSwap2</span><span class=o>.</span><span class=na>get</span><span class=o>();</span>
+
+    <span class=nc>Disposable</span> <span class=n>disposable3</span> <span class=o>=</span> <span class=n>userService</span><span class=o>.</span><span class=na>searchUsers</span><span class=o>(</span><span class=s>&#34;user&#34;</span><span class=o>);</span> <i class=conum data-value=4></i><b>(4)</b>
+
+    <span class=nc>Assertions</span><span class=o>.</span><span class=na>assertThat</span><span class=o>(</span><span class=n>disposable1</span><span class=o>.</span><span class=na>isDisposed</span><span class=o>()).</span><span class=na>isTrue</span><span class=o>();</span> <i class=conum data-value=5></i><b>(5)</b>
+    <span class=nc>Assertions</span><span class=o>.</span><span class=na>assertThat</span><span class=o>(</span><span class=n>disposable2</span><span class=o>.</span><span class=na>isDisposed</span><span class=o>()).</span><span class=na>isTrue</span><span class=o>();</span>
+
+    <span class=nc>Assertions</span><span class=o>.</span><span class=na>assertThat</span><span class=o>(</span><span class=n>disposable3</span><span class=o>)</span>
+            <span class=o>.</span><span class=na>isNotNull</span><span class=o>()</span>
+            <span class=o>.</span><span class=na>isInstanceOf</span><span class=o>(</span><span class=nc>Disposable</span><span class=o>.</span><span class=na>Swap</span><span class=o>.</span><span class=na>class</span><span class=o>);</span>
+<span class=o>}</span>
+</pre></td></tr></tbody></table></code></pre></div></div><div class="colist arabic"><table><tbody><tr><td><i class=conum data-value=1></i><b>1</b></td><td>First search for "user5" - creates disposable1.</td></tr><tr><td><i class=conum data-value=2></i><b>2</b></td><td>Extract the inner disposable from the swap container.</td></tr><tr><td><i class=conum data-value=3></i><b>3</b></td><td>Second search for "user3" - creates disposable2 and disposes disposable1.</td></tr><tr><td><i class=conum data-value=4></i><b>4</b></td><td>Third search for "user" - creates disposable3 and disposes disposable2.</td></tr><tr><td><i class=conum data-value=5></i><b>5</b></td><td>Verify that previous disposables are disposed, only the last one remains active.</td></tr></tbody></table></div></div><div class=sect2><h3 id=_cleanup_test>6.3. Cleanup Test</h3><div class=listingblock><div class=title>UserServiceTest.java (excerpt)</div><div class=content><pre class="rouge highlight"><code data-lang=java><table class=linenotable><tbody><tr><td class="linenos gl"><pre class=lineno>1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre></td><td class=code><pre><span class=nd>@Test</span>
+<span class=nd>@DisplayName</span><span class=o>(</span><span class=s>&#34;Clean up resources&#34;</span><span class=o>)</span>
+<span class=kt>void</span> <span class=nf>cleanUpResources</span><span class=o>()</span> <span class=o>{</span>
+    <span class=nc>Disposable</span> <span class=n>disposable</span> <span class=o>=</span> <span class=n>userService</span><span class=o>.</span><span class=na>searchUsers</span><span class=o>(</span><span class=s>&#34;user1&#34;</span><span class=o>);</span>
+
+    <span class=n>userService</span><span class=o>.</span><span class=na>cleanUp</span><span class=o>();</span>
+
+    <span class=nc>Assertions</span><span class=o>.</span><span class=na>assertThat</span><span class=o>(</span><span class=n>disposable</span><span class=o>.</span><span class=na>isDisposed</span><span class=o>()).</span><span class=na>isTrue</span><span class=o>();</span>
+<span class=o>}</span>
+</pre></td></tr></tbody></table></code></pre></div></div></div></div></div><div class=sect1><h2 id=_use_cases_and_best_practices>7. Use Cases and Best Practices</h2><div class=sectionbody><div class=sect2><h3 id=_when_to_use_each_type>7.1. When to Use Each Type</h3><div class=sect3><h4 id=_use_disposable_when>7.1.1. Use Disposable When</h4><div class=ulist><ul><li><p>Managing a single subscription or resource</p></li><li><p>Simple cleanup scenarios</p></li><li><p>One-time operations</p></li></ul></div><div class=listingblock><div class=content><pre class="rouge highlight"><code data-lang=java><span class=nc>Disposable</span> <span class=n>subscription</span> <span class=o>=</span> <span class=n>flux</span><span class=o>.</span><span class=na>subscribe</span><span class=o>();</span>
+<span class=n>subscription</span><span class=o>.</span><span class=na>dispose</span><span class=o>();</span></code></pre></div></div></div><div class=sect3><h4 id=_use_disposable_composite_when>7.1.2. Use Disposable.Composite When</h4><div class=ulist><ul><li><p>Managing multiple independent subscriptions</p></li><li><p>Grouping related resources</p></li><li><p>Bulk cleanup operations</p></li></ul></div><div class=listingblock><div class=content><pre class="rouge highlight"><code data-lang=java><span class=nc>Disposable</span><span class=o>.</span><span class=na>Composite</span> <span class=n>composite</span> <span class=o>=</span> <span class=nc>Disposables</span><span class=o>.</span><span class=na>composite</span><span class=o>(</span>
+    <span class=n>subscription1</span><span class=o>,</span>
+    <span class=n>subscription2</span><span class=o>,</span>
+    <span class=n>subscription3</span>
+<span class=o>);</span>
+<span class=n>composite</span><span class=o>.</span><span class=na>dispose</span><span class=o>();</span></code></pre></div></div></div><div class=sect3><h4 id=_use_disposable_swap_when>7.1.3. Use Disposable.Swap When</h4><div class=ulist><ul><li><p>Replacing active subscriptions dynamically</p></li><li><p>Search-as-you-type scenarios</p></li><li><p>Real-time data switching</p></li><li><p>Session management</p></li></ul></div><div class=listingblock><div class=content><pre class="rouge highlight"><code data-lang=java><span class=nc>Disposable</span><span class=o>.</span><span class=na>Swap</span> <span class=n>swap</span> <span class=o>=</span> <span class=nc>Disposables</span><span class=o>.</span><span class=na>swap</span><span class=o>();</span>
+<span class=n>swap</span><span class=o>.</span><span class=na>update</span><span class=o>(</span><span class=n>newSubscription</span><span class=o>);</span></code></pre></div></div></div></div><div class=sect2><h3 id=_best_practices>7.2. Best Practices</h3><div class=sect3><h4 id=_always_clean_up_resources>7.2.1. Always Clean Up Resources</h4><div class=paragraph><p>Use <code>@PreDestroy</code> or implement <code>DisposableBean</code> to ensure cleanup:</p></div><div class=listingblock><div class=content><pre class="rouge highlight"><code data-lang=java><span class=nd>@PreDestroy</span>
+<span class=kd>public</span> <span class=kt>void</span> <span class=nf>cleanUp</span><span class=o>()</span> <span class=o>{</span>
+    <span class=k>if</span> <span class=o>(!</span><span class=n>disposable</span><span class=o>.</span><span class=na>isDisposed</span><span class=o>())</span> <span class=o>{</span>
+        <span class=n>disposable</span><span class=o>.</span><span class=na>dispose</span><span class=o>();</span>
+    <span class=o>}</span>
+<span class=o>}</span></code></pre></div></div></div><div class=sect3><h4 id=_check_disposal_status>7.2.2. Check Disposal Status</h4><div class=paragraph><p>Before disposing, check if already disposed to avoid errors:</p></div><div class=listingblock><div class=content><pre class="rouge highlight"><code data-lang=java><span class=k>if</span> <span class=o>(!</span><span class=n>disposable</span><span class=o>.</span><span class=na>isDisposed</span><span class=o>())</span> <span class=o>{</span>
+    <span class=n>disposable</span><span class=o>.</span><span class=na>dispose</span><span class=o>();</span>
+<span class=o>}</span></code></pre></div></div></div><div class=sect3><h4 id=_use_appropriate_schedulers>7.2.3. Use Appropriate Schedulers</h4><div class=paragraph><p>Choose schedulers based on operation type:</p></div><div class=listingblock><div class=content><pre class="rouge highlight"><code data-lang=java><span class=o>.</span><span class=na>subscribeOn</span><span class=o>(</span><span class=nc>Schedulers</span><span class=o>.</span><span class=na>boundedElastic</span><span class=o>())</span>
+<span class=o>.</span><span class=na>publishOn</span><span class=o>(</span><span class=nc>Schedulers</span><span class=o>.</span><span class=na>parallel</span><span class=o>())</span></code></pre></div></div></div><div class=sect3><h4 id=_add_logging>7.2.4. Add Logging</h4><div class=paragraph><p>Include logging for debugging and monitoring:</p></div><div class=listingblock><div class=content><pre class="rouge highlight"><code data-lang=java><span class=o>.</span><span class=na>doOnSubscribe</span><span class=o>(</span><span class=n>s</span> <span class=o>-&gt;</span> <span class=n>log</span><span class=o>.</span><span class=na>info</span><span class=o>(</span><span class=s>&#34;Subscribed&#34;</span><span class=o>))</span>
+<span class=o>.</span><span class=na>doOnCancel</span><span class=o>(()</span> <span class=o>-&gt;</span> <span class=n>log</span><span class=o>.</span><span class=na>warn</span><span class=o>(</span><span class=s>&#34;Cancelled&#34;</span><span class=o>))</span>
+<span class=o>.</span><span class=na>doOnComplete</span><span class=o>(()</span> <span class=o>-&gt;</span> <span class=n>log</span><span class=o>.</span><span class=na>info</span><span class=o>(</span><span class=s>&#34;Completed&#34;</span><span class=o>))</span></code></pre></div></div></div><div class=sect3><h4 id=_handle_errors_gracefully>7.2.5. Handle Errors Gracefully</h4><div class=paragraph><p>Always provide error handlers:</p></div><div class=listingblock><div class=content><pre class="rouge highlight"><code data-lang=java><span class=o>.</span><span class=na>subscribe</span><span class=o>(</span>
+    <span class=n>value</span> <span class=o>-&gt;</span> <span class=n>process</span><span class=o>(</span><span class=n>value</span><span class=o>),</span>
+    <span class=n>error</span> <span class=o>-&gt;</span> <span class=n>log</span><span class=o>.</span><span class=na>error</span><span class=o>(</span><span class=s>&#34;Error&#34;</span><span class=o>,</span> <span class=n>error</span><span class=o>),</span>
+    <span class=o>()</span> <span class=o>-&gt;</span> <span class=n>log</span><span class=o>.</span><span class=na>info</span><span class=o>(</span><span class=s>&#34;Complete&#34;</span><span class=o>)</span>
+<span class=o>)</span></code></pre></div></div></div></div></div></div><div class=sect1><h2 id=_common_patterns>8. Common Patterns</h2><div class=sectionbody><div class=sect2><h3 id=_search_as_you_type>8.1. Search-as-You-Type</h3><div class=paragraph><p>Perfect use case for <code>Disposable.Swap</code>:</p></div><div class=listingblock><div class=content><pre class="rouge highlight"><code data-lang=java><span class=kd>public</span> <span class=kd>class</span> <span class=nc>SearchService</span> <span class=o>{</span>
+    <span class=kd>private</span> <span class=kd>final</span> <span class=nc>Disposable</span><span class=o>.</span><span class=na>Swap</span> <span class=n>searchSwap</span> <span class=o>=</span> <span class=nc>Disposables</span><span class=o>.</span><span class=na>swap</span><span class=o>();</span>
+
+    <span class=kd>public</span> <span class=kt>void</span> <span class=nf>search</span><span class=o>(</span><span class=nc>String</span> <span class=n>query</span><span class=o>)</span> <span class=o>{</span>
+        <span class=nc>Disposable</span> <span class=n>search</span> <span class=o>=</span> <span class=n>repository</span><span class=o>.</span><span class=na>search</span><span class=o>(</span><span class=n>query</span><span class=o>)</span>
+            <span class=o>.</span><span class=na>subscribe</span><span class=o>(</span><span class=n>result</span> <span class=o>-&gt;</span> <span class=n>display</span><span class=o>(</span><span class=n>result</span><span class=o>));</span>
+
+        <span class=n>searchSwap</span><span class=o>.</span><span class=na>update</span><span class=o>(</span><span class=n>search</span><span class=o>);</span>
+    <span class=o>}</span>
+<span class=o>}</span></code></pre></div></div></div><div class=sect2><h3 id=_multi_resource_management>8.2. Multi-Resource Management</h3><div class=paragraph><p>Use <code>Disposable.Composite</code> for managing multiple resources:</p></div><div class=listingblock><div class=content><pre class="rouge highlight"><code data-lang=java><span class=kd>public</span> <span class=kd>class</span> <span class=nc>DataService</span> <span class=o>{</span>
+    <span class=kd>private</span> <span class=kd>final</span> <span class=nc>Disposable</span><span class=o>.</span><span class=na>Composite</span> <span class=n>subscriptions</span> <span class=o>=</span> <span class=nc>Disposables</span><span class=o>.</span><span class=na>composite</span><span class=o>();</span>
+
+    <span class=kd>public</span> <span class=kt>void</span> <span class=nf>start</span><span class=o>()</span> <span class=o>{</span>
+        <span class=n>subscriptions</span><span class=o>.</span><span class=na>add</span><span class=o>(</span><span class=n>dataFeed1</span><span class=o>.</span><span class=na>subscribe</span><span class=o>());</span>
+        <span class=n>subscriptions</span><span class=o>.</span><span class=na>add</span><span class=o>(</span><span class=n>dataFeed2</span><span class=o>.</span><span class=na>subscribe</span><span class=o>());</span>
+        <span class=n>subscriptions</span><span class=o>.</span><span class=na>add</span><span class=o>(</span><span class=n>dataFeed3</span><span class=o>.</span><span class=na>subscribe</span><span class=o>());</span>
+    <span class=o>}</span>
+
+    <span class=nd>@PreDestroy</span>
+    <span class=kd>public</span> <span class=kt>void</span> <span class=nf>stop</span><span class=o>()</span> <span class=o>{</span>
+        <span class=n>subscriptions</span><span class=o>.</span><span class=na>dispose</span><span class=o>();</span>
+    <span class=o>}</span>
+<span class=o>}</span></code></pre></div></div></div><div class=sect2><h3 id=_session_management>8.3. Session Management</h3><div class=paragraph><p>Replace sessions dynamically with <code>Disposable.Swap</code>:</p></div><div class=listingblock><div class=content><pre class="rouge highlight"><code data-lang=java><span class=kd>public</span> <span class=kd>class</span> <span class=nc>SessionManager</span> <span class=o>{</span>
+    <span class=kd>private</span> <span class=kd>final</span> <span class=nc>Disposable</span><span class=o>.</span><span class=na>Swap</span> <span class=n>sessionSwap</span> <span class=o>=</span> <span class=nc>Disposables</span><span class=o>.</span><span class=na>swap</span><span class=o>();</span>
+
+    <span class=kd>public</span> <span class=kt>void</span> <span class=nf>switchSession</span><span class=o>(</span><span class=nc>String</span> <span class=n>sessionId</span><span class=o>)</span> <span class=o>{</span>
+        <span class=nc>Disposable</span> <span class=n>session</span> <span class=o>=</span> <span class=n>sessionService</span><span class=o>.</span><span class=na>connect</span><span class=o>(</span><span class=n>sessionId</span><span class=o>)</span>
+            <span class=o>.</span><span class=na>subscribe</span><span class=o>();</span>
+
+        <span class=n>sessionSwap</span><span class=o>.</span><span class=na>update</span><span class=o>(</span><span class=n>session</span><span class=o>);</span>
+    <span class=o>}</span>
+<span class=o>}</span></code></pre></div></div></div></div></div><div class=sect1><h2 id=_troubleshooting>9. Troubleshooting</h2><div class=sectionbody><div class=sect2><h3 id=_memory_leaks>9.1. Memory Leaks</h3><div class=paragraph><p>If you notice memory leaks:</p></div><div class=ulist><ul><li><p>Ensure all disposables are disposed in <code>@PreDestroy</code> methods</p></li><li><p>Check for forgotten subscriptions</p></li><li><p>Use memory profilers to identify leaked subscriptions</p></li></ul></div></div><div class=sect2><h3 id=_race_conditions>9.2. Race Conditions</h3><div class=paragraph><p>When using <code>Disposable.Swap</code>:</p></div><div class=ulist><ul><li><p>The <code>update()</code> method is thread-safe and atomic</p></li><li><p>Previous disposable is disposed before the new one is set</p></li><li><p>No manual synchronization needed</p></li></ul></div></div><div class=sect2><h3 id=_disposed_too_early>9.3. Disposed Too Early</h3><div class=paragraph><p>If operations are cancelled unexpectedly:</p></div><div class=ulist><ul><li><p>Check if parent component is being destroyed</p></li><li><p>Verify disposal isn’t called prematurely</p></li><li><p>Add logging to track disposal lifecycle</p></li></ul></div></div></div></div><div class=sect1><h2 id=_performance_considerations>10. Performance Considerations</h2><div class=sectionbody><div class=sect2><h3 id=_thread_pools>10.1. Thread Pools</h3><div class=ulist><ul><li><p>Use <code>Schedulers.boundedElastic()</code> for blocking operations (I/O, database)</p></li><li><p>Use <code>Schedulers.parallel()</code> for CPU-intensive operations</p></li><li><p>Avoid creating custom schedulers unnecessarily</p></li></ul></div></div><div class=sect2><h3 id=_memory_overhead>10.2. Memory Overhead</h3><div class=ulist><ul><li><p><code>Disposable.Swap</code> has minimal memory overhead (single reference)</p></li><li><p><code>Disposable.Composite</code> overhead scales with number of disposables</p></li><li><p>Dispose promptly to free resources</p></li></ul></div></div><div class=sect2><h3 id=_cancellation_speed>10.3. Cancellation Speed</h3><div class=ulist><ul><li><p>Cancellation is immediate for <code>Disposable.Swap</code></p></li><li><p><code>Disposable.Composite</code> disposes all children in sequence</p></li><li><p>Consider timeout strategies for long-running operations</p></li></ul></div></div></div></div><div class=sect1><h2 id=_conclusion>11. Conclusion</h2><div class=sectionbody><div class=paragraph><p>Proper management of reactive resources is crucial for building robust Spring Boot applications with Project Reactor. Understanding when and how to use <code>Disposable</code>, <code>Disposable.Composite</code>, and <code>Disposable.Swap</code> enables you to:</p></div><div class=ulist><ul><li><p>Prevent memory leaks through proper resource cleanup</p></li><li><p>Dynamically switch between active operations seamlessly</p></li><li><p>Manage multiple subscriptions efficiently</p></li><li><p>Build responsive applications with search-as-you-type and real-time features</p></li></ul></div><div class=paragraph><p>Key takeaways:</p></div><div class=ulist><ul><li><p>Use <code>Disposable</code> for single subscriptions</p></li><li><p>Use <code>Disposable.Composite</code> for managing multiple related resources</p></li><li><p>Use <code>Disposable.Swap</code> for dynamic replacement of active operations</p></li><li><p>Always clean up resources with <code>@PreDestroy</code></p></li><li><p>Add proper logging and error handling</p></li></ul></div><div class=paragraph><p>The complete source code is available on <a href=https://gist.github.com/aoudiamoncef/92846f1a08ece240a387b291bcc15889>GitHub Gist</a>.</p></div></div></div><div class=sect1><h2 id=_resources>12. Resources</h2><div class=sectionbody><div class=ulist><ul><li><p><a href=https://projectreactor.io/docs/core/release/api/reactor/core/Disposable.html>Project Reactor Disposable API</a></p></li><li><p><a href=https://projectreactor.io/docs/core/release/reference/#_cancelling_a_subscribe_with_its_disposable>Reactor Reference: Cancelling a Subscribe</a></p></li><li><p><a href=https://www.baeldung.com/spring-shutdown-callbacks>Spring Shutdown Callbacks</a></p></li><li><p><a href=https://projectreactor.io/docs/core/release/reference/>Project Reactor Reference Guide</a></p></li></ul></div></div></div></div><div class=footer><div class=tags><i class="fa fa-tags"></i><div class=links><a href=https://www.maoudia.com/tags/java/>Java</a>
+<a href=https://www.maoudia.com/tags/spring-boot/>Spring Boot</a>
+<a href=https://www.maoudia.com/tags/reactor/>Reactor</a>
+<a href=https://www.maoudia.com/tags/reactive-programming/>Reactive Programming</a>
+<a href=https://www.maoudia.com/tags/resource-management/>Resource Management</a></div></div></div></article></div><div id=webmentions-container><script src=https://www.maoudia.com/js/webmention.min.js integrity=sha384-jpBjl7uFXhBwC/Pl3XF47lKziQiVigVJCtlg1xu0m3tqSlKzWyv5DzHnIQWWTakS data-id=webmention-container crossorigin=anonymous async></script><div id=webmentions></div></div><div id=comments-container><script src=https://giscus.app/client.js data-repo=maoudia/discussions.maoudia.com data-repo-id=R_kgDOGX153A data-category=General data-category-id=DIC_kwDOGX153M4B_2Vz data-mapping=og:title data-reactions-enabled=1 data-emit-metadata data-theme=light data-input-position=bottom data-loading=lazy data-lang=en crossorigin=anonymous async></script><div id=giscus></div></div></div><footer><div class=container><div class=categories><a href=/categories/ alt=Categories><strong>Categories</strong></a><ul><li><a href=/categories/tutorial alt=Tutorial>Tutorial
+(5)</a></li><li><a href=/categories/reactive-programming alt="Reactive programming">Reactive programming
+(3)</a></li></ul></div><div class=series><a href=/series/><strong>Series</strong></a><ul><li><a href=/series/mongodb-reactive-cli>Mongodb reactive CLI
+(1)</a></li></ul></div><div class=right><div class=external-profiles><strong>Find me on</strong>
+<a href=https://twitter.com/aoudiamoncef title="Moncef AOUDIA Twitter" target=_blank rel="noopener noreferrer"><i class="fab fa-twitter"></i></a>
+<a href=https://github.com/aoudiamoncef title="Moncef AOUDIA Github" target=_blank rel="noopener noreferrer"><i class="fab fa-github"></i></a>
+<a href=https://gitlab.com/aoudiamoncef title="Moncef AOUDIA Gitlab" target=_blank rel="noopener noreferrer"><i class="fab fa-gitlab"></i></a>
+<a href=https://www.linkedin.com/in/moncef-aoudia-7723b311b title="Moncef AOUDIA Linkedin" target=_blank rel="noopener noreferrer"><i class="fab fa-linkedin"></i></a>
+<a href=mailto:mf.aoudia@gmail.com title="Moncef AOUDIA Gmail" target=_blank rel="noopener noreferrer"><i class="fas fa-envelope"></i></a>
+<a href=https://www.clubhouse.com/@aoudiamoncef title="Moncef AOUDIA Clubhouse" target=_blank rel="noopener noreferrer"><i class="far fa-copyright"></i></a>
+<a href=https://discordapp.com/users/365160200900182026 title="Moncef AOUDIA Discord" target=_blank rel="noopener noreferrer"><i class="fab fa-discord"></i></a>
+<a href=https://getpocket.com/@701dbpd1T08b8g7f59Ab790A73g1T0G2725K38yf75eym1w2di86eN27V2dIJ51a title="Moncef AOUDIA Pocket" target=_blank rel="noopener noreferrer"><i class="fab fa-get-pocket"></i></a>
+<a href=https://dev.to/aoudiamoncef title="Moncef AOUDIA DEV.TO" target=_blank rel="noopener noreferrer"><i class="fab fa-dev"></i></a>
+<a href=https://medium.com/@aoudiamoncef title="Moncef AOUDIA Medium" target=_blank rel="noopener noreferrer"><i class="fab fa-medium-m"></i></a>
+<a href=https://aoudiamoncef.hashnode.dev title="Moncef AOUDIA Hashnode" target=_blank rel="noopener noreferrer"><i class="fas fa-h-square"></i></a>
+<a href=https://stackoverflow.com/users/8126192/moncef-aoudia title="Moncef AOUDIA Stackoverflow" target=_blank rel="noopener noreferrer"><i class="fab fa-stack-overflow"></i></a>
+<a href=https://www.quora.com/profile/Moncef-AOUDIA title="Moncef AOUDIA Quora" target=_blank rel="noopener noreferrer"><i class="fab fa-quora"></i></a>
+<a href=https://www.reddit.com/user/aoudiamoncef title="Moncef AOUDIA Reddit" target=_blank rel="noopener noreferrer"><i class="fab fa-reddit"></i></a>
+<a href=https://slides.com/aoudiamoncef title="Moncef AOUDIA Slides" target=_blank rel="noopener noreferrer"><i class="fas fa-sliders-h"></i></a>
+<a href=https://speakerdeck.com/aoudiamoncef title="Moncef AOUDIA SpeakerDeck" target=_blank rel="noopener noreferrer"><i class="fab fa-speaker-deck"></i></a>
+<a href=/index.xml title="Moncef AOUDIA RSS" target=_blank rel="noopener noreferrer"><i class="fas fa-rss"></i></a></div><div class=languages><strong>Other languages</strong>
+<a href=https://www.maoudia.com/ class=active>en</a>
+<span>| </span><a href=https://www.maoudia.com/fr/>fr</a></div></div></div></footer><div class=credits><div class=container><div class=copyright><a href=https://creativecommons.org/licenses/by-sa/4.0 target=_blank rel=noopener>&copy;
+2025
+Moncef AOUDIA</a></div><div class=author><a href=https://github.com/Lednerb/bilberry-hugo-theme target=_blank rel=noopener>Bilberry Hugo Theme</a></div></div></div><script type=text/javascript src=https://www.maoudia.com/js/theme.min.js crossorigin=anonymous defer></script><div id=activate-algolia-search class=hidden><input type=hidden id=algolia-search-appId>
+<input type=hidden id=algolia-search-apiKey>
+<input type=hidden id=algolia-search-indexName>
+<input type=hidden id=algolia-search-noSearchResults value="Nothing found.">
+<input type=hidden id=algolia-search-currentLanguageOnly></div><script src=https://www.maoudia.com/js/vanilla-back-to-top.min.js integrity=sha384-vPjvei7c1a3IpCr0kkDEOMRmlCHcv8REJw1B2eKJM55swier62xiYRVistfMKEUj crossorigin=anonymous></script><script>addBackToTop({diameter:48,backgroundColor:"transparent",textColor:"rgb(45, 54, 66)"})</script></body></html>
