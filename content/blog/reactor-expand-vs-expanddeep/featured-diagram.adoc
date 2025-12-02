@@ -1,0 +1,46 @@
+= Featured Image Diagram
+:imagesdir: /images/blog/reactor-expand-vs-expanddeep
+:imagesoutdir: static/images/blog/reactor-expand-vs-expanddeep
+
+[mermaid,format=svg,id=reactor-expand-expanddeep-overview]
+----
+%%{init: {'theme':'neutral', 'themeVariables': { 'fontSize':'16px', 'fontFamily':'Arial'}}}%%
+graph LR
+    Title["<b>Reactor Traversal</b>"]
+
+    Title --> BFS_Label["<b>expand()</b><br/>Breadth-First"]
+    Title --> DFS_Label["<b>expandDeep()</b><br/>Depth-First"]
+
+    BFS_Label --> B_Root["A"]
+    B_Root --> B_L1A["B"]
+    B_Root --> B_L1B["C"]
+    B_L1A --> B_L2A["D"]
+    B_L1A --> B_L2B["E"]
+    B_L1B --> B_L2C["F"]
+    B_L2C --> B_Info["Order: A→B→C→D→E→F"]
+
+    DFS_Label --> D_Root["A"]
+    D_Root --> D_Branch1["B"]
+    D_Branch1 --> D_Deep1["D"]
+    D_Deep1 --> D_Deep2["E"]
+    D_Deep2 --> D_Back["←"]
+    D_Back --> D_Branch2["C"]
+    D_Branch2 --> D_Deep3["F"]
+    D_Deep3 --> D_Info["Order: A→B→D→E→C→F"]
+
+    classDef titleStyle fill:#1e293b,stroke:#0f172a,color:#fff,stroke-width:3px,font-size:20px
+    classDef labelStyle fill:#6366f1,stroke:#4f46e5,color:#fff,stroke-width:2px
+    classDef rootStyle fill:#2563eb,stroke:#1e40af,color:#fff,stroke-width:2px
+    classDef dirStyle fill:#10b981,stroke:#059669,color:#fff,stroke-width:2px
+    classDef fileStyle fill:#f59e0b,stroke:#d97706,color:#fff,stroke-width:2px
+    classDef infoStyle fill:#f3f4f6,stroke:#9ca3af,color:#111,stroke-width:2px
+    classDef backStyle fill:#ef4444,stroke:#dc2626,color:#fff,stroke-width:2px
+
+    class Title titleStyle
+    class BFS_Label,DFS_Label labelStyle
+    class B_Root,D_Root rootStyle
+    class B_L1A,B_L1B,D_Branch1,D_Branch2 dirStyle
+    class B_L2A,B_L2B,B_L2C,D_Deep1,D_Deep2,D_Deep3 fileStyle
+    class B_Info,D_Info infoStyle
+    class D_Back backStyle
+----

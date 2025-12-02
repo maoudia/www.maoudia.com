@@ -29,6 +29,7 @@ ifdef::env-github[]
 :imagesdir: ../../static/images/bulk-update-with-spring-data-mongodb-reactive
 endif::[]
 
+[.lead]
 In order to update documents in a MongoDB collection, we often use update requests, if the volume of data is too large,
 it could lead to performance issues and overconsumption of hardware resources.
 

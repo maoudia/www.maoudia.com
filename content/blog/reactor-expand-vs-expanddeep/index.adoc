@@ -1,0 +1,578 @@
++++
+title = "Reactor Expand vs ExpandDeep: Directory Traversal Strategies"
+date = 2024-04-10T00:00:00+02:00
+description = "Understand the difference between breadth-first and depth-first traversal using Reactor's expand and expandDeep operators for reactive directory exploration."
+author = "Moncef AOUDIA"
+showAuthor = false
+showReadingTime = true
+readingtime = 8
+
+tags = ["Java", "Reactor", "Reactive Programming", "Project Reactor", "File System"]
+categories = ["Tutorial", "Reactive Programming"]
+slug = "reactor-expand-vs-expanddeep"
+type = "article"
+featuredImage = "/images/blog/reactor-expand-vs-expanddeep/featured-image-en.svg"
+[twitter]
+    card = "summary_large_image"
+    site = "@AoudiaMoncef"
+    creator = "@AoudiaMoncef"
+    title = "Reactor Expand vs ExpandDeep: Directory Traversal Strategies"
+    description = "Understand the difference between breadth-first and depth-first traversal using Reactor's expand and expandDeep operators for reactive directory exploration."
++++
+
+:toc: macro
+:toc-title: Table of contents
+:toclevels: 1
+:source-highlighter: rouge
+:rouge-style: github
+:rouge-linenums-mode: inline
+:imagesdir: /images/blog/reactor-expand-vs-expanddeep
+:imagesoutdir: static/images/blog/reactor-expand-vs-expanddeep
+ifdef::env-github[]
+:imagesdir: ../../static/blog/images/reactor-expand-vs-expanddeep
+:imagesoutdir: ../../static/blog/images/reactor-expand-vs-expanddeep
+endif::[]
+
+[.lead]
+When exploring directory structures in a reactive programming environment, the strategies of breadth-first and depth-first traversal play a crucial role. This guide explores how to use Reactor's `expand` and `expandDeep` operators to traverse and emit paths in a reactive stream.
+
+<!--more-->
+
+toc::[]
+
+== Overview
+
+Project Reactor provides two powerful operators for recursive exploration: `expand` (breadth-first) and `expandDeep` (depth-first). These operators are particularly useful when working with hierarchical structures like file systems, where you need to traverse directories and process files reactively.
+
+The `ReactorFileUtils` class demonstrates practical implementations of both strategies for exploring directory structures in a non-blocking, reactive manner.
+
+== Traversal Strategies
+
+=== Breadth-First Traversal
+
+Breadth-first traversal explores a tree structure level by level, processing all nodes at the current depth before moving to the next level.
+
+[mermaid,format=svg,id=breadth-first-tree]
+----
+%%{init: {'theme':'neutral', 'themeVariables': { 'fontSize':'18px'}}}%%
+graph TB
+    A["A<br/>(Level 0)"]
+    B["B<br/>(Level 1)"]
+    C["C<br/>(Level 1)"]
+    D["D<br/>(Level 2)"]
+    E["E<br/>(Level 2)"]
+    F["F<br/>(Level 2)"]
+    G["G<br/>(Level 2)"]
+
+    A --> B
+    A --> C
+    B --> D
+    B --> E
+    C --> F
+    C --> G
+
+    Order["<b>Traversal Order:</b><br/>A → B → C → D → E → F → G"]
+
+    classDef level0 fill:#2563eb,stroke:#1e40af,color:#fff,stroke-width:3px
+    classDef level1 fill:#10b981,stroke:#059669,color:#fff,stroke-width:2px
+    classDef level2 fill:#f59e0b,stroke:#d97706,color:#fff,stroke-width:2px
+    classDef info fill:#f3f4f6,stroke:#9ca3af,color:#111,stroke-width:2px
+
+    class A level0
+    class B,C level1
+    class D,E,F,G level2
+    class Order info
+----
+
+==== Characteristics
+
+* *Starting Point:* Begins with the root directory path
+* *Exploration:* Checks if the path is a directory, lists immediate child paths, and emits them level by level
+* *Processing Order:* Processes all immediate neighbors before moving deeper
+* *Use Case:* Useful when you need to process directories closest to the root first
+
+==== Example
+
+For a directory structure `A → B, C → D, E`, the exploration order is:
+
+1. A (root)
+2. B, C (level 1)
+3. D, E (level 2)
+
+=== Depth-First Traversal
+
+Depth-first traversal explores a tree structure by going as deep as possible along each branch before backtracking.
+
+[mermaid,format=svg,id=depth-first-tree]
+----
+%%{init: {'theme':'neutral', 'themeVariables': { 'fontSize':'18px'}}}%%
+graph TB
+    A["A<br/>(Start)"]
+    B["B<br/>(Branch 1)"]
+    C["C<br/>(Branch 2)"]
+    D["D<br/>(Deep 1)"]
+    E["E<br/>(Deep 2)"]
+    F["F<br/>(Deep 3)"]
+    G["G<br/>(Deep 4)"]
+
+    A --> B
+    A --> C
+    B --> D
+    B --> E
+    C --> F
+    C --> G
+
+    Order["<b>Traversal Order:</b><br/>A → B → D → E → C → F → G"]
+
+    classDef root fill:#2563eb,stroke:#1e40af,color:#fff,stroke-width:3px
+    classDef branch fill:#7B68EE,stroke:#5C4DB8,color:#fff,stroke-width:2px
+    classDef deep fill:#f59e0b,stroke:#d97706,color:#fff,stroke-width:2px
+    classDef info fill:#f3f4f6,stroke:#9ca3af,color:#111,stroke-width:2px
+
+    class A root
+    class B,C branch
+    class D,E,F,G deep
+    class Order info
+----
+
+==== Characteristics
+
+* *Starting Point:* Starts with the root directory path
+* *Exploration:* Checks if the path is a directory, lists immediate child paths, and recursively explores each branch completely
+* *Processing Order:* Goes as deep as possible before backtracking
+* *Use Case:* Useful for fully exploring specific branches before moving on
+
+==== Example
+
+For a directory structure `A → B, C → D, E`, the exploration order is:
+
+1. A (root)
+2. B (first branch)
+3. D, E (explore B's children completely)
+4. C (backtrack and move to second branch)
+
+== Project Setup
+
+=== Requirements
+
+* link:https://adoptium.net/[`OpenJDK 21.0.x or higher`]
+* link:https://maven.apache.org/[`Maven 3.6.x or higher`]
+* link:https://projectreactor.io/[`Project Reactor 3.6.x`]
+
+=== Maven Configuration
+
+[source,xml,indent=0,linenums=true]
+.pom.xml
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.maoudia.lib</groupId>
+    <artifactId>app</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>maoudia-lib</name>
+    <description>MAOUDIA LIB</description>
+
+    <properties>
+        <java.version>21</java.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>io.projectreactor</groupId>
+            <artifactId>reactor-core</artifactId>
+            <version>3.6.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.projectreactor</groupId>
+            <artifactId>reactor-test</artifactId>
+            <version>3.6.2</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>
+----
+
+== Implementation
+
+=== ReactorFileUtils Class
+
+This utility class provides reactive file operations using Project Reactor.
+
+[source,java,indent=0,linenums=true]
+.ReactorFileUtils.java
+----
+package com.maoudia;
+
+import jakarta.validation.constraints.NotNull;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.util.annotation.NonNull;
+
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
+public class ReactorFileUtils {
+
+    @NotNull
+    public static Flux<Path> expand(@NonNull Path path) { <!--1-->
+        return Mono.justOrEmpty(path)
+                .filter(Files::isDirectory)
+                .expand(ReactorFileUtils::listPaths);
+    }
+
+    @NotNull
+    public static Flux<Path> expandDeep(@NonNull Path path) { <!--2-->
+        return Mono.justOrEmpty(path)
+                .filter(Files::isDirectory)
+                .expandDeep(ReactorFileUtils::listPaths);
+    }
+
+    @NotNull
+    public static Flux<Path> listPaths(@NonNull Path path) { <!--3-->
+        return Mono.justOrEmpty(path)
+                .filter(Files::isDirectory)
+                .mapNotNull(directory -> directory.toFile().listFiles())
+                .flatMapMany(Flux::fromArray)
+                .map(File::toPath);
+    }
+}
+----
+
+<1> Breadth-first traversal: explores directories level by level using `expand` operator.
+<2> Depth-first traversal: explores directories deeply along each branch using `expandDeep` operator.
+<3> Lists all paths within a directory and emits them as a reactive stream.
+
+=== Understanding the Implementation
+
+==== expand Method
+
+The `expand` method implements breadth-first traversal:
+
+[source,java,indent=0]
+----
+return Mono.justOrEmpty(path)
+    .filter(Files::isDirectory)
+    .expand(ReactorFileUtils::listPaths);
+----
+
+* Creates a `Mono` from the input path
+* Filters to ensure it's a directory
+* Uses `expand` to recursively list paths, processing each level completely before moving deeper
+
+==== expandDeep Method
+
+The `expandDeep` method implements depth-first traversal:
+
+[source,java,indent=0]
+----
+return Mono.justOrEmpty(path)
+    .filter(Files::isDirectory)
+    .expandDeep(ReactorFileUtils::listPaths);
+----
+
+* Creates a `Mono` from the input path
+* Filters to ensure it's a directory
+* Uses `expandDeep` to recursively explore each branch fully before backtracking
+
+==== listPaths Method
+
+The `listPaths` method provides the expansion logic:
+
+[source,java,indent=0]
+----
+return Mono.justOrEmpty(path)
+    .filter(Files::isDirectory)
+    .mapNotNull(directory -> directory.toFile().listFiles())
+    .flatMapMany(Flux::fromArray)
+    .map(File::toPath);
+----
+
+* Creates a `Mono` from the path
+* Filters directories only
+* Lists all files in the directory
+* Converts the array to a `Flux`
+* Maps each `File` to a `Path`
+
+== Testing
+
+=== Test Structure
+
+The tests use `StepVerifier` from `reactor-test` to verify the traversal order:
+
+[source,java,indent=0,linenums=true]
+.ReactorFileUtilsTest.java
+----
+package com.maoudia;
+
+import org.junit.jupiter.api.Test;
+import reactor.core.publisher.Flux;
+import reactor.test.StepVerifier;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+class ReactorFileUtilsTest {
+
+    private static final Path ROOT_DIRECTORY = Paths.get("src/test/resources");
+
+    @Test
+    void expand_ValidPath_ReturnsExpectedPaths() { <!--1-->
+        Flux<Path> pathFlux = ReactorFileUtils.expand(ROOT_DIRECTORY);
+
+        StepVerifier.create(pathFlux)
+                .expectNextMatches(path -> path.endsWith("resources"))
+                .expectNextMatches(path -> path.endsWith("file2.txt"))
+                .expectNextMatches(path -> path.endsWith("file1.txt"))
+                .expectNextMatches(path -> path.endsWith("subdirectory"))
+                .expectNextMatches(path -> path.endsWith("emptydirectory"))
+                .expectNextMatches(path -> path.endsWith("subfile1.txt"))
+                .expectNextMatches(path -> path.endsWith("subfile2.txt"))
+                .expectNextMatches(path -> path.endsWith("subsubdirectory"))
+                .expectNextMatches(path -> path.endsWith("subsubfile1.txt"))
+                .expectNextMatches(path -> path.endsWith("subsubfile2.txt"))
+                .verifyComplete();
+    }
+
+    @Test
+    void expand_NullPath_ReturnsEmptyFlux() { <!--2-->
+        Flux<Path> pathFlux = ReactorFileUtils.expand(null);
+
+        StepVerifier.create(pathFlux)
+                .verifyComplete();
+    }
+
+    @Test
+    void expandDeep_ValidPath_ReturnsExpectedPaths() { <!--3-->
+        Flux<Path> pathFlux = ReactorFileUtils.expandDeep(ROOT_DIRECTORY);
+
+        StepVerifier.create(pathFlux)
+                .expectNextMatches(path -> path.endsWith("resources"))
+                .expectNextMatches(path -> path.endsWith("file2.txt"))
+                .expectNextMatches(path -> path.endsWith("file1.txt"))
+                .expectNextMatches(path -> path.endsWith("subdirectory"))
+                .expectNextMatches(path -> path.endsWith("subfile1.txt"))
+                .expectNextMatches(path -> path.endsWith("subfile2.txt"))
+                .expectNextMatches(path -> path.endsWith("subsubdirectory"))
+                .expectNextMatches(path -> path.endsWith("subsubfile1.txt"))
+                .expectNextMatches(path -> path.endsWith("subsubfile2.txt"))
+                .expectNextMatches(path -> path.endsWith("emptydirectory"))
+                .verifyComplete();
+    }
+
+    @Test
+    void expandDeep_NullPath_ReturnsEmptyFlux() { <!--4-->
+        Flux<Path> pathFlux = ReactorFileUtils.expand(null);
+
+        StepVerifier.create(pathFlux)
+                .verifyComplete();
+    }
+
+    @Test
+    void listFiles_ValidDirectory_ReturnsExpectedPaths() { <!--5-->
+        Flux<Path> pathFlux = ReactorFileUtils.listPaths(ROOT_DIRECTORY);
+
+        StepVerifier.create(pathFlux)
+                .expectNextMatches(path -> path.endsWith("file2.txt"))
+                .expectNextMatches(path -> path.endsWith("file1.txt"))
+                .expectNextMatches(path -> path.endsWith("subdirectory"))
+                .expectNextMatches(path -> path.endsWith("emptydirectory"))
+                .verifyComplete();
+    }
+
+    @Test
+    void listFiles_NullPath_ReturnsEmptyFlux() { <!--6-->
+        Flux<Path> pathFlux = ReactorFileUtils.listPaths(null);
+
+        StepVerifier.create(pathFlux)
+                .verifyComplete();
+    }
+}
+----
+
+<1> Tests breadth-first traversal, verifying that paths are emitted level by level.
+<2> Tests null path handling for `expand` method, expecting an empty flux.
+<3> Tests depth-first traversal, verifying that paths are emitted branch by branch.
+<4> Tests null path handling for `expandDeep` method, expecting an empty flux.
+<5> Tests listing immediate children of a directory without recursion.
+<6> Tests null path handling for `listPaths` method, expecting an empty flux.
+
+=== Test Directory Structure
+
+The tests assume the following directory structure in `src/test/resources`:
+
+[source,text]
+----
+resources/
+├── file1.txt
+├── file2.txt
+├── emptydirectory/
+└── subdirectory/
+    ├── subfile1.txt
+    ├── subfile2.txt
+    └── subsubdirectory/
+        ├── subsubfile1.txt
+        └── subsubfile2.txt
+----
+
+=== Observing Traversal Differences
+
+Notice the difference in traversal order between the two tests:
+
+**Breadth-First (expand):**
+----
+resources → file2.txt → file1.txt → subdirectory → emptydirectory
+         → subfile1.txt → subfile2.txt → subsubdirectory
+         → subsubfile1.txt → subsubfile2.txt
+----
+
+**Depth-First (expandDeep):**
+----
+resources → file2.txt → file1.txt → subdirectory
+         → subfile1.txt → subfile2.txt → subsubdirectory
+         → subsubfile1.txt → subsubfile2.txt → emptydirectory
+----
+
+The key difference: `emptydirectory` appears earlier in breadth-first (same level as `subdirectory`) but later in depth-first (after fully exploring `subdirectory`).
+
+== Use Cases and Recommendations
+
+=== When to Use Breadth-First (expand)
+
+* *Finding files at specific depths:* When you need to process all files at a certain level before going deeper
+* *Memory efficiency:* When exploring very deep hierarchies where depth-first might cause stack issues
+* *Immediate neighbor processing:* When you need to process files closest to the root first
+* *Load balancing:* When distributing work across multiple levels
+
+=== When to Use Depth-First (expandDeep)
+
+* *Complete branch exploration:* When you need to fully process one directory tree before moving to siblings
+* *Resource cleanup:* When processing requires completing an entire branch before starting another
+* *Path-dependent operations:* When operations depend on completing parent-child relationships
+* *Search optimization:* When looking for specific files and want to explore paths completely
+
+== Best Practices
+
+=== Error Handling
+
+Add proper error handling to the reactive chain:
+
+[source,java,indent=0]
+----
+ReactorFileUtils.expand(path)
+    .onErrorResume(IOException.class, e -> {
+        log.error("Failed to traverse directory", e);
+        return Flux.empty();
+    })
+    .subscribe();
+----
+
+=== Backpressure Management
+
+For large directory structures, consider using backpressure operators:
+
+[source,java,indent=0]
+----
+ReactorFileUtils.expand(path)
+    .limitRate(100)
+    .onBackpressureBuffer(1000)
+    .subscribe();
+----
+
+=== Resource Management
+
+Ensure proper resource cleanup when working with file streams:
+
+[source,java,indent=0]
+----
+ReactorFileUtils.expand(path)
+    .doOnCancel(() -> log.info("Traversal cancelled"))
+    .doFinally(signalType -> log.info("Traversal completed: {}", signalType))
+    .subscribe();
+----
+
+=== Filtering and Transformation
+
+Combine traversal with filtering and transformation:
+
+[source,java,indent=0]
+----
+ReactorFileUtils.expand(path)
+    .filter(p -> p.toString().endsWith(".txt"))
+    .map(Path::getFileName)
+    .subscribe(System.out::println);
+----
+
+== Performance Considerations
+
+=== Memory Usage
+
+* *Breadth-first:* Uses more memory as it needs to keep track of all nodes at the current level
+* *Depth-first:* Uses less memory but may have deeper recursion stacks
+
+=== Processing Speed
+
+* *Breadth-first:* Better for parallel processing of same-level items
+* *Depth-first:* Better for sequential processing of complete branches
+
+=== Cancellation
+
+Both strategies support cancellation through Reactor's subscription mechanism:
+
+[source,java,indent=0]
+----
+Disposable subscription = ReactorFileUtils.expand(path)
+    .subscribe(System.out::println);
+
+subscription.dispose();
+----
+
+== Comparison Summary
+
+[cols="1,2,2"]
+|===
+|Aspect |Breadth-First (expand) |Depth-First (expandDeep)
+
+|Traversal Order
+|Level by level
+|Branch by branch
+
+|Processing
+|Immediate neighbors first
+|Complete branch exploration
+
+|Memory Usage
+|Higher (stores level nodes)
+|Lower (recursive depth)
+
+|Use Case
+|Level-based operations
+|Branch-based operations
+
+|Best For
+|Finding files at specific depths
+|Complete directory processing
+|===
+
+== Conclusion
+
+Understanding the difference between breadth-first and depth-first traversal is crucial for efficient reactive directory exploration. Project Reactor's `expand` and `expandDeep` operators provide powerful tools for implementing these strategies in a non-blocking, reactive manner.
+
+Key takeaways:
+
+* Use `expand` (breadth-first) when you need to process directories level by level
+* Use `expandDeep` (depth-first) when you need to fully explore branches before moving on
+* Both strategies integrate seamlessly with Reactor's reactive programming model
+* Choose the appropriate strategy based on your specific use case and requirements
+
+The complete source code is available on https://gist.github.com/aoudiamoncef/87e33e2e21592d8cebc78ffa17c87438[GitHub Gist].
+
+== Resources
+
+* https://www.vinsguru.com/flux-expand-vs-expanddeep/[Flux Expand vs ExpandDeep Tutorial]
+* https://projectreactor.io/docs/core/release/reference/[Project Reactor Reference Guide]
+* https://javadoc.io/doc/io.projectreactor/reactor-core/latest/index.html[Reactor Core Javadoc]
+* https://projectreactor.io/docs/test/release/api/[Reactor Test Documentation]

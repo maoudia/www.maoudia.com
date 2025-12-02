@@ -1,0 +1,36 @@
+= Featured Image Diagram
+:imagesdir: /images/blog/spring-boot-error-server-configuration
+:imagesoutdir: static/images/blog/spring-boot-error-server-configuration
+
+[mermaid,format=svg,id=spring-boot-error-config-overview]
+----
+%%{init: {'theme':'neutral', 'themeVariables': { 'fontSize':'16px', 'fontFamily':'Arial'}}}%%
+graph LR
+    Title["<b>Spring Boot Error Configuration</b>"]
+
+    Title --> Dev["<b>Development</b><br/>local, test, dev"]
+    Title --> QA["<b>QA/Staging</b><br/>qa, staging"]
+    Title --> Prod["<b>Production</b><br/>prod"]
+
+    Dev --> DevConf["✓ Binding Errors<br/>✓ Exception<br/>✓ Message<br/>✓ Stack Trace"]
+    DevConf --> DevOut["Full Details<br/>for Debugging"]
+
+    QA --> QAConf["? Binding Errors<br/>✓ Exception<br/>? Message<br/>? Stack Trace"]
+    QAConf --> QAOut["Conditional Details<br/>with ?trace=true"]
+
+    Prod --> ProdConf["✗ All Details<br/>✗ Whitelabel Page"]
+    ProdConf --> ProdOut["Minimal Info<br/>for Security"]
+
+    classDef titleStyle fill:#1e293b,stroke:#0f172a,color:#fff,stroke-width:3px,font-size:20px
+    classDef envStyle fill:#6366f1,stroke:#4f46e5,color:#fff,stroke-width:2px
+    classDef devStyle fill:#10b981,stroke:#059669,color:#fff,stroke-width:2px
+    classDef qaStyle fill:#f59e0b,stroke:#d97706,color:#fff,stroke-width:2px
+    classDef prodStyle fill:#ef4444,stroke:#dc2626,color:#fff,stroke-width:2px
+    classDef infoStyle fill:#f3f4f6,stroke:#9ca3af,color:#111,stroke-width:2px
+
+    class Title titleStyle
+    class Dev,QA,Prod envStyle
+    class DevConf,DevOut devStyle
+    class QAConf,QAOut qaStyle
+    class ProdConf,ProdOut prodStyle
+----

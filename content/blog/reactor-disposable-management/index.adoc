@@ -1,0 +1,721 @@
++++
+title = "Reactor Disposable Management: Composite and Swap"
+date = 2024-05-20T00:00:00+02:00
+description = "Learn how to manage resources and subscriptions in reactive applications using Reactor's Disposable, Disposable.Composite, and Disposable.Swap."
+author = "Moncef AOUDIA"
+showAuthor = false
+showReadingTime = true
+readingtime = 10
+tags = ["Java", "Spring Boot", "Reactor", "Reactive Programming", "Resource Management"]
+categories = ["Tutorial", "Reactive Programming"]
+slug = "reactor-disposable-management"
+type = "article"
+featuredImage = "/images/blog/reactor-disposable-management/featured-image-en.svg"
+[twitter]
+    card = "summary_large_image"
+    site = "@AoudiaMoncef"
+    creator = "@AoudiaMoncef"
+    title = "Reactor Disposable Management: Composite and Swap"
+    description = "Learn how to manage resources and subscriptions in reactive applications using Reactor's Disposable, Disposable.Composite, and Disposable.Swap."
++++
+
+:toc: macro
+:toc-title: Table of contents
+:toclevels: 1
+:source-highlighter: rouge
+:rouge-style: github
+:rouge-linenums-mode: inline
+:imagesdir: /images/blog/reactor-disposable-management
+:imagesoutdir: static/images/blog/reactor-disposable-management
+ifdef::env-github[]
+:imagesdir: ../../static/images/blog/reactor-disposable-management
+:imagesoutdir: ../../static/images/blog/reactor-disposable-management
+endif::[]
+
+[.lead]
+Reactor Disposable provides a mechanism for managing resources, subscriptions, or actions in a reactive application. This guide explores three main types: `Disposable`, `Disposable.Composite`, and `Disposable.Swap`, with practical examples using Spring Boot.
+
+<!--more-->
+
+toc::[]
+
+== Overview
+
+In reactive programming, proper resource management is crucial to prevent memory leaks and ensure clean shutdown of applications. Project Reactor provides the `Disposable` interface and its variants to manage the lifecycle of reactive streams and associated resources.
+
+This tutorial demonstrates practical usage of these disposables in a Spring Boot application with a user search service that manages asynchronous operations.
+
+== Types of Disposables
+
+=== Disposable
+
+Represents a single resource that can be disposed of when it's no longer needed, typically used for cleanup purposes.
+
+[mermaid,format=svg,id=disposable-single-resource]
+----
+%%{init: {'theme':'neutral', 'themeVariables': { 'fontSize':'18px'}}}%%
+graph LR
+    A["<b>Disposable</b><br/>Single Resource Management"] --> B[Create Subscription]
+    B --> C[Active ✓]
+    C --> D[dispose]
+    D --> E[Released ❌]
+
+    classDef typeStyle fill:#2563eb,stroke:#1e40af,color:#fff,stroke-width:3px
+    classDef activeStyle fill:#10b981,stroke:#059669,color:#fff,stroke-width:2px
+    classDef disposedStyle fill:#ef4444,stroke:#dc2626,color:#fff,stroke-width:2px
+    classDef neutralStyle fill:#f3f4f6,stroke:#9ca3af,color:#111,stroke-width:2px
+
+    class A typeStyle
+    class C activeStyle
+    class E disposedStyle
+    class B,D neutralStyle
+----
+
+==== Real-World Usage
+
+* *Messaging Application:* Manage subscriptions to message queues. When a user subscribes to a topic, create a disposable subscription. When they unsubscribe, call `dispose()` to release resources.
+
+* *File Processing System:* Manage file streams. When a file is opened for processing, create a disposable stream. When processing completes or an error occurs, dispose the stream to release system resources.
+
+==== Example
+
+[source,java,indent=0]
+----
+Disposable subscription = flux
+    .subscribe(
+        value -> System.out.println(value),
+        error -> System.err.println(error),
+        () -> System.out.println("Complete")
+    );
+
+subscription.dispose();
+----
+
+=== Disposable.Composite
+
+Represents a collection of disposables that can be managed as a single unit, allowing for the disposal of multiple resources at once.
+
+[mermaid,format=svg,id=disposable-composite-multiple-resources]
+----
+%%{init: {'theme':'neutral', 'themeVariables': { 'fontSize':'18px'}}}%%
+graph TB
+    A["<b>Disposable.Composite</b><br/>Multiple Resources Management"]
+    A --> B[Subscription 1 ✓]
+    A --> C[Subscription 2 ✓]
+    A --> D[Subscription 3 ✓]
+    B --> E[dispose all]
+    C --> E
+    D --> E
+    E --> F[All Released ❌]
+
+    classDef typeStyle fill:#7B68EE,stroke:#5C4DB8,color:#fff,stroke-width:3px
+    classDef activeStyle fill:#10b981,stroke:#059669,color:#fff,stroke-width:2px
+    classDef disposedStyle fill:#ef4444,stroke:#dc2626,color:#fff,stroke-width:2px
+    classDef neutralStyle fill:#f3f4f6,stroke:#9ca3af,color:#111,stroke-width:2px
+
+    class A typeStyle
+    class B,C,D activeStyle
+    class F disposedStyle
+    class E neutralStyle
+----
+
+==== Real-World Usage
+
+* *Financial Trading Application:* Manage multiple subscriptions to market data feeds, trade execution services, and risk management systems. Dispose of all subscriptions together when the trading system shuts down.
+
+* *IoT System:* Manage multiple sensor readings or device connections. Dispose of all connections together when the IoT device is turned off or removed from the network.
+
+==== Example
+
+[source,java,indent=0]
+----
+Disposable.Composite composite = Disposables.composite();
+
+composite.add(subscription1);
+composite.add(subscription2);
+composite.add(subscription3);
+
+composite.dispose();
+----
+
+=== Disposable.Swap
+
+Allows for the dynamic replacement of one disposable with another, enabling seamless transitions between different resources or actions.
+
+[mermaid,format=svg,id=disposable-swap-dynamic-replacement]
+----
+%%{init: {'theme':'neutral', 'themeVariables': { 'fontSize':'18px'}}}%%
+graph LR
+    A["<b>Disposable.Swap</b><br/>Dynamic Replacement"] --> B[Subscription 1 ✓]
+    B --> C[update]
+    C --> D[Sub 1: Disposed ❌]
+    C --> E[Subscription 2 ✓]
+    E --> F[update]
+    F --> G[Sub 2: Disposed ❌]
+    F --> H[Subscription 3 ✓]
+
+    classDef typeStyle fill:#50C878,stroke:#3AA05E,color:#fff,stroke-width:3px
+    classDef activeStyle fill:#10b981,stroke:#059669,color:#fff,stroke-width:2px
+    classDef disposedStyle fill:#ef4444,stroke:#dc2626,color:#fff,stroke-width:2px
+    classDef neutralStyle fill:#f3f4f6,stroke:#9ca3af,color:#111,stroke-width:2px
+
+    class A typeStyle
+    class B,E,H activeStyle
+    class D,G disposedStyle
+    class C,F neutralStyle
+----
+
+==== Real-World Usage
+
+* *Chat Application:* Manage connections to chat servers. When a user switches chat rooms, replace the current connection with a new one using `Disposable.Swap`, enabling seamless room transitions.
+
+* *Gaming Server:* Manage player sessions. When a player logs in or joins a game, create a disposable session. Replace sessions smoothly as players move between games.
+
+==== Disposable.Swap vs switchMap
+
+[cols="1,2,2"]
+|===
+|Aspect |switchMap |Disposable.Swap
+
+|Control
+|Automatic switching
+|Manual control
+
+|Cancellation
+|Handled automatically
+|Requires explicit handling
+
+|Use Case
+|Stream transformation
+|Resource management
+
+|Complexity
+|Simpler for stream operations
+|More control for resources
+|===
+
+* *`switchMap`:* Automatically switches between Publishers, discarding previous ones, without user intervention for cancellation handling.
+* *`Disposable.Swap`:* Allows manual cancellation handling for seamless replacement of disposables, providing more control over resource lifecycle.
+
+== Project Setup
+
+=== Requirements
+
+* link:https://adoptium.net/[`OpenJDK 21.0.x`]
+* link:https://maven.apache.org/[`Maven 3.9.x`]
+* link:https://docs.spring.io/spring-boot/docs/current/reference/html/[`Spring Boot 3.2.x`]
+
+=== Maven Configuration
+
+[source,xml,indent=0,linenums=true]
+.pom.xml
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.2.2</version>
+        <relativePath/>
+    </parent>
+    <groupId>com.maoudia</groupId>
+    <artifactId>app</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>maoudia-app</name>
+    <description>MAOUDIA APP</description>
+
+    <properties>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.projectreactor</groupId>
+            <artifactId>reactor-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+</project>
+----
+
+== Domain Model
+
+=== User Record
+
+[source,java,indent=0,linenums=true]
+.User.java
+----
+package com.maoudia;
+
+public record User(
+        String username,
+        String firstName,
+        String lastName,
+        int age) {}
+----
+
+=== UserRepository Interface
+
+[source,java,indent=0,linenums=true]
+.UserRepository.java
+----
+package com.maoudia;
+
+import reactor.core.publisher.Flux;
+
+public interface UserRepository {
+
+    Flux<User> searchByUsername(String username);
+}
+----
+
+== Implementation
+
+=== Fake Repository Implementation
+
+This implementation simulates a real repository with random latency to demonstrate async behavior:
+
+[source,java,indent=0,linenums=true]
+.FakeUserRepository.java
+----
+package com.maoudia;
+
+import org.springframework.stereotype.Component;
+import reactor.core.publisher.Flux;
+import reactor.core.scheduler.Schedulers;
+
+import java.time.Duration;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
+
+@Component
+public class FakeUserRepository implements UserRepository {
+    private static final Random random = new Random();
+
+    @Override
+    public Flux<User> searchByUsername(String username) { <!--1-->
+        List<User> users = Arrays.asList(
+                new User("user1", "John", "Doe", 30),
+                new User("user2", "Jane", "Smith", 25),
+                new User("user3", "Alice", "Johnson", 35),
+                new User("user4", "Michael", "Brown", 40),
+                new User("user5", "Emma", "Wilson", 28)
+        );
+
+        return Flux.fromIterable(users)
+                .filter(user -> user.username().startsWith(username)) <!--2-->
+                .delayElements(Duration.ofMillis(random.nextInt(1000) + 1), Schedulers.boundedElastic()); <!--3-->
+    }
+}
+----
+
+<1> Searches for users by username, returning a reactive stream.
+<2> Filters users whose usernames start with the provided search term.
+<3> Introduces random latency (up to 1 second) to simulate real-world async operations.
+
+=== UserService with Disposable.Swap
+
+This service demonstrates the usage of `Disposable.Swap` for managing user search operations:
+
+[source,java,indent=0,linenums=true]
+.UserService.java
+----
+package com.maoudia;
+
+import jakarta.annotation.PreDestroy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import reactor.core.Disposable;
+import reactor.core.Disposables;
+import reactor.core.scheduler.Schedulers;
+
+import java.util.UUID;
+
+@Service
+public class UserService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
+
+    private final UserRepository userRepository;
+    private final Disposable.Swap disposableSwap; <!--1-->
+
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+        this.disposableSwap = Disposables.swap(); <!--2-->
+    }
+
+    public Disposable searchUsers(String query) { <!--3-->
+        Disposable nextDisposable = this.userRepository.searchByUsername(query)
+                .doOnCancel(() -> LOGGER.warn("User search for '{}' cancelled", query)) <!--4-->
+                .doOnSubscribe(s -> LOGGER.info("User search for '{}' subscribed: {}", query, UUID.randomUUID())) <!--5-->
+                .subscribeOn(Schedulers.boundedElastic()) <!--6-->
+                .subscribe(
+                        user -> LOGGER.info("User search '{}' found: {}", query, user.username()),
+                        error -> LOGGER.error("Error during User search for '{}'", query, error),
+                        () -> LOGGER.info("User search for '{}' completed", query)
+                );
+
+        disposableSwap.update(nextDisposable); <!--7-->
+
+        return disposableSwap;
+    }
+
+    @PreDestroy <!--8-->
+    public void cleanUp() {
+        if (!this.disposableSwap.isDisposed()) {
+            this.disposableSwap.dispose();
+            LOGGER.info("Disposed of disposableSwap");
+        }
+    }
+}
+----
+
+<1> Declares a `Disposable.Swap` instance to manage search operations.
+<2> Initializes the swap container in the constructor.
+<3> Performs asynchronous user search and returns the disposable.
+<4> Logs when a search operation is cancelled.
+<5> Logs when a search operation is subscribed with a unique ID.
+<6> Executes the search on the bounded elastic scheduler for blocking operations.
+<7> Atomically replaces the previous disposable with the new one, disposing the old one.
+<8> Ensures proper cleanup when the service bean is destroyed.
+
+=== How Disposable.Swap Works
+
+When `searchUsers()` is called multiple times:
+
+1. First call creates a disposable for "user1" search
+2. Second call creates a disposable for "user3" search and **automatically disposes** the "user1" search
+3. Third call creates a disposable for "user" search and **automatically disposes** the "user3" search
+
+Only the most recent search remains active. Previous searches are cancelled automatically.
+
+== Testing
+
+=== Single Search Test
+
+[source,java,indent=0,linenums=true]
+.UserServiceTest.java (excerpt)
+----
+@Test
+@DisplayName("Single search for users by username")
+void singleSearchUsersByUsername() {
+    Disposable disposable = userService.searchUsers("user1");
+
+    Assertions.assertThat(disposable)
+            .isNotNull()
+            .isInstanceOf(Disposable.Swap.class);
+}
+----
+
+=== Multiple Searches Test
+
+This test demonstrates how `Disposable.Swap` automatically disposes previous searches:
+
+[source,java,indent=0,linenums=true]
+.UserServiceTest.java (excerpt)
+----
+@Test
+@DisplayName("Multiple searches for users by username")
+void multipleSearchUsersByUsername() {
+    Disposable disposable1 = userService.searchUsers("user5"); <!--1-->
+    Disposable.Swap disposableSwap1 = (Disposable.Swap) disposable1;
+    disposable1 = disposableSwap1.get(); <!--2-->
+
+    Disposable disposable2 = userService.searchUsers("user3"); <!--3-->
+    Disposable.Swap disposableSwap2 = (Disposable.Swap) disposable2;
+    disposable2 = disposableSwap2.get();
+
+    Disposable disposable3 = userService.searchUsers("user"); <!--4-->
+
+    Assertions.assertThat(disposable1.isDisposed()).isTrue(); <!--5-->
+    Assertions.assertThat(disposable2.isDisposed()).isTrue();
+
+    Assertions.assertThat(disposable3)
+            .isNotNull()
+            .isInstanceOf(Disposable.Swap.class);
+}
+----
+
+<1> First search for "user5" - creates disposable1.
+<2> Extract the inner disposable from the swap container.
+<3> Second search for "user3" - creates disposable2 and disposes disposable1.
+<4> Third search for "user" - creates disposable3 and disposes disposable2.
+<5> Verify that previous disposables are disposed, only the last one remains active.
+
+=== Cleanup Test
+
+[source,java,indent=0,linenums=true]
+.UserServiceTest.java (excerpt)
+----
+@Test
+@DisplayName("Clean up resources")
+void cleanUpResources() {
+    Disposable disposable = userService.searchUsers("user1");
+
+    userService.cleanUp();
+
+    Assertions.assertThat(disposable.isDisposed()).isTrue();
+}
+----
+
+== Use Cases and Best Practices
+
+=== When to Use Each Type
+
+==== Use Disposable When
+
+* Managing a single subscription or resource
+* Simple cleanup scenarios
+* One-time operations
+
+[source,java,indent=0]
+----
+Disposable subscription = flux.subscribe();
+subscription.dispose();
+----
+
+==== Use Disposable.Composite When
+
+* Managing multiple independent subscriptions
+* Grouping related resources
+* Bulk cleanup operations
+
+[source,java,indent=0]
+----
+Disposable.Composite composite = Disposables.composite(
+    subscription1,
+    subscription2,
+    subscription3
+);
+composite.dispose();
+----
+
+==== Use Disposable.Swap When
+
+* Replacing active subscriptions dynamically
+* Search-as-you-type scenarios
+* Real-time data switching
+* Session management
+
+[source,java,indent=0]
+----
+Disposable.Swap swap = Disposables.swap();
+swap.update(newSubscription);
+----
+
+=== Best Practices
+
+==== Always Clean Up Resources
+
+Use `@PreDestroy` or implement `DisposableBean` to ensure cleanup:
+
+[source,java,indent=0]
+----
+@PreDestroy
+public void cleanUp() {
+    if (!disposable.isDisposed()) {
+        disposable.dispose();
+    }
+}
+----
+
+==== Check Disposal Status
+
+Before disposing, check if already disposed to avoid errors:
+
+[source,java,indent=0]
+----
+if (!disposable.isDisposed()) {
+    disposable.dispose();
+}
+----
+
+==== Use Appropriate Schedulers
+
+Choose schedulers based on operation type:
+
+[source,java,indent=0]
+----
+.subscribeOn(Schedulers.boundedElastic())
+.publishOn(Schedulers.parallel())
+----
+
+==== Add Logging
+
+Include logging for debugging and monitoring:
+
+[source,java,indent=0]
+----
+.doOnSubscribe(s -> log.info("Subscribed"))
+.doOnCancel(() -> log.warn("Cancelled"))
+.doOnComplete(() -> log.info("Completed"))
+----
+
+==== Handle Errors Gracefully
+
+Always provide error handlers:
+
+[source,java,indent=0]
+----
+.subscribe(
+    value -> process(value),
+    error -> log.error("Error", error),
+    () -> log.info("Complete")
+)
+----
+
+== Common Patterns
+
+=== Search-as-You-Type
+
+Perfect use case for `Disposable.Swap`:
+
+[source,java,indent=0]
+----
+public class SearchService {
+    private final Disposable.Swap searchSwap = Disposables.swap();
+
+    public void search(String query) {
+        Disposable search = repository.search(query)
+            .subscribe(result -> display(result));
+
+        searchSwap.update(search);
+    }
+}
+----
+
+=== Multi-Resource Management
+
+Use `Disposable.Composite` for managing multiple resources:
+
+[source,java,indent=0]
+----
+public class DataService {
+    private final Disposable.Composite subscriptions = Disposables.composite();
+
+    public void start() {
+        subscriptions.add(dataFeed1.subscribe());
+        subscriptions.add(dataFeed2.subscribe());
+        subscriptions.add(dataFeed3.subscribe());
+    }
+
+    @PreDestroy
+    public void stop() {
+        subscriptions.dispose();
+    }
+}
+----
+
+=== Session Management
+
+Replace sessions dynamically with `Disposable.Swap`:
+
+[source,java,indent=0]
+----
+public class SessionManager {
+    private final Disposable.Swap sessionSwap = Disposables.swap();
+
+    public void switchSession(String sessionId) {
+        Disposable session = sessionService.connect(sessionId)
+            .subscribe();
+
+        sessionSwap.update(session);
+    }
+}
+----
+
+== Troubleshooting
+
+=== Memory Leaks
+
+If you notice memory leaks:
+
+* Ensure all disposables are disposed in `@PreDestroy` methods
+* Check for forgotten subscriptions
+* Use memory profilers to identify leaked subscriptions
+
+=== Race Conditions
+
+When using `Disposable.Swap`:
+
+* The `update()` method is thread-safe and atomic
+* Previous disposable is disposed before the new one is set
+* No manual synchronization needed
+
+=== Disposed Too Early
+
+If operations are cancelled unexpectedly:
+
+* Check if parent component is being destroyed
+* Verify disposal isn't called prematurely
+* Add logging to track disposal lifecycle
+
+== Performance Considerations
+
+=== Thread Pools
+
+* Use `Schedulers.boundedElastic()` for blocking operations (I/O, database)
+* Use `Schedulers.parallel()` for CPU-intensive operations
+* Avoid creating custom schedulers unnecessarily
+
+=== Memory Overhead
+
+* `Disposable.Swap` has minimal memory overhead (single reference)
+* `Disposable.Composite` overhead scales with number of disposables
+* Dispose promptly to free resources
+
+=== Cancellation Speed
+
+* Cancellation is immediate for `Disposable.Swap`
+* `Disposable.Composite` disposes all children in sequence
+* Consider timeout strategies for long-running operations
+
+== Conclusion
+
+Proper management of reactive resources is crucial for building robust Spring Boot applications with Project Reactor. Understanding when and how to use `Disposable`, `Disposable.Composite`, and `Disposable.Swap` enables you to:
+
+* Prevent memory leaks through proper resource cleanup
+* Dynamically switch between active operations seamlessly
+* Manage multiple subscriptions efficiently
+* Build responsive applications with search-as-you-type and real-time features
+
+Key takeaways:
+
+* Use `Disposable` for single subscriptions
+* Use `Disposable.Composite` for managing multiple related resources
+* Use `Disposable.Swap` for dynamic replacement of active operations
+* Always clean up resources with `@PreDestroy`
+* Add proper logging and error handling
+
+The complete source code is available on https://gist.github.com/aoudiamoncef/92846f1a08ece240a387b291bcc15889[GitHub Gist].
+
+== Resources
+
+* https://projectreactor.io/docs/core/release/api/reactor/core/Disposable.html[Project Reactor Disposable API]
+* https://projectreactor.io/docs/core/release/reference/#_cancelling_a_subscribe_with_its_disposable[Reactor Reference: Cancelling a Subscribe]
+* https://www.baeldung.com/spring-shutdown-callbacks[Spring Shutdown Callbacks]
+* https://projectreactor.io/docs/core/release/reference/[Project Reactor Reference Guide]
