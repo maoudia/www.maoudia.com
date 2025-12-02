@@ -1,0 +1,61 @@
+= Featured Image Diagram
+:imagesdir: /images/page/homelab
+:imagesoutdir: static/images/page/homelab
+
+[mermaid,format=svg,id=homelab-featured]
+----
+%%{init: {'theme':'neutral', 'themeVariables': { 'fontSize':'16px', 'fontFamily':'Arial'}}}%%
+graph LR
+    Title["<b>Personal Homelab</b><br/>HA & Cloud-Native"]
+
+    subgraph Physical["<b>Physical</b>"]
+        HW[Dell T330<br/>2x Lenovo M715Q<br/>Ubiquiti UDM]
+    end
+
+    subgraph Virtual["<b>Proxmox HA</b>"]
+        PVE[3 Nodes<br/>TrueNAS]
+    end
+
+    subgraph K8S["<b>K3S Cluster</b>"]
+        CONTROL[3 Masters + KubeVIP]
+        WORK[3 Workers + Longhorn]
+    end
+
+    subgraph Platform["<b>Platform</b>"]
+        CICD[ArgoCD GitOps]
+        NET[Traefik + MetalLB]
+    end
+
+    subgraph Obs["<b>PLG Stack</b>"]
+        MON[Prometheus<br/>Loki<br/>Grafana]
+    end
+
+    subgraph Apps["<b>Applications</b>"]
+        SVC[Authentik SSO<br/>Plex<br/>Nextcloud<br/>PostgreSQL HA]
+    end
+
+    Title --> Physical
+    Physical --> Virtual
+    Virtual --> K8S
+    K8S --> Platform
+    K8S --> Obs
+    Platform --> Apps
+
+    CONTROL -.-> WORK
+
+    classDef titleStyle fill:#1e293b,stroke:#0f172a,color:#fff,stroke-width:3px
+    classDef physicalStyle fill:#FF6B6B,stroke:#C92A2A,color:#fff,stroke-width:2px
+    classDef virtualStyle fill:#E26D0E,stroke:#C25C0A,color:#fff,stroke-width:2px
+    classDef k8sStyle fill:#326CE5,stroke:#1E4FA3,color:#fff,stroke-width:2px
+    classDef platformStyle fill:#6C5CE7,stroke:#5849BE,color:#fff,stroke-width:2px
+    classDef monitorStyle fill:#FFA500,stroke:#FF8C00,color:#fff,stroke-width:2px
+    classDef appStyle fill:#10b981,stroke:#059669,color:#fff,stroke-width:2px
+
+    class Title titleStyle
+    class HW physicalStyle
+    class PVE virtualStyle
+    class CONTROL,WORK k8sStyle
+    class CICD,NET platformStyle
+    class MON monitorStyle
+    class SVC appStyle
+----

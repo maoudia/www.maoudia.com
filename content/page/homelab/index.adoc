@@ -1,0 +1,721 @@
++++
+title = "Homelab"
+date = "2023-01-01T00:00:00"
+publishDate = "2023-01-01T00:00:00"
+excludeFromTopNav = false
+showPublishDate = false
+showLastModificationDate = true
+showReadingTime = true
+slug = "homelab"
+description = "My personal homelab infrastructure for learning and experimentation"
+featuredImage = "/images/page/homelab/featured-image-en.svg"
+[twitter]
+    card = "summary_large_image"
+    site = "@AoudiaMoncef"
+    creator = "@AoudiaMoncef"
+    title = "Homelab Infrastructure"
+    description = "Personal homelab setup with Proxmox, K3S, and various services"
+    image = "https://www.maoudia.com/images/page/homelab/featured-image-en.svg"
++++
+
+:toc: macro
+:toc-title: Table of contents
+:toclevels: 1
+:source-highlighter: rouge
+:rouge-style: github
+:rouge-linenums-mode: inline
+:imagesdir: /images/page/homelab
+:imagesoutdir: static/images/page/homelab
+ifdef::env-github[]
+:imagesdir: ../../static/images/page/homelab
+:imagesoutdir: ../../static/images/page/homelab
+endif::[]
+
+[.lead]
+My personal homelab infrastructure project, running since January 2023. A space for experimentation, learning, and developing IT skills without professional constraints.
+
+<!--more-->
+
+toc::[]
+
+== Overview
+
+The homelab project provides a complete infrastructure for experimenting with enterprise-grade technologies, developing applications, and learning modern DevOps practices.
+
+== Hardware Infrastructure
+
+The foundation of this homelab consists of three physical machines connected through a professional-grade network infrastructure. The setup prioritizes high availability, energy efficiency, and quiet operation suitable for a home environment.
+
+The Dell PowerEdge T330 serves as the primary compute node, while two Lenovo ThinkCentre M715Q mini PCs provide additional compute capacity in a compact form factor. All machines are connected through a Ubiquiti UDM PRO SE, which handles network management, VPN services, and advanced firewall capabilities.
+
+[mermaid,format=svg,id=homelab-hardware]
+----
+%%{init: {'theme':'neutral', 'themeVariables': { 'fontSize':'16px'}}}%%
+graph TB
+    subgraph Internet["Internet"]
+        ISP[Internet Service Provider]
+    end
+
+    subgraph Network["Network Layer"]
+        LB[Orange Livebox 6<br/>WAN Gateway]
+        UDM[Ubiquiti UDM PRO SE<br/>Network Manager<br/>VPN Server]
+    end
+
+    subgraph Compute["Compute Resources"]
+        DELL[Dell PowerEdge T330<br/>Proxmox Host 1<br/>Modified for Silent Operation]
+        LENOVO1[Lenovo ThinkCentre M715Q<br/>Proxmox Host 2]
+        LENOVO2[Lenovo ThinkCentre M715Q<br/>Proxmox Host 3]
+    end
+
+    ISP --> LB
+    LB --> UDM
+    UDM --> DELL
+    UDM --> LENOVO1
+    UDM --> LENOVO2
+
+    classDef internetStyle fill:#FF6B6B,stroke:#C92A2A,color:#fff,stroke-width:2px
+    classDef networkStyle fill:#4ECDC4,stroke:#0D7377,color:#fff,stroke-width:2px
+    classDef computeStyle fill:#95E1D3,stroke:#38A3A5,color:#000,stroke-width:2px
+
+    class ISP internetStyle
+    class LB,UDM networkStyle
+    class DELL,LENOVO1,LENOVO2 computeStyle
+----
+
+=== Hardware Specifications
+
+==== Dell PowerEdge T330
+* Enterprise-grade server
+* Custom modifications for silent operation
+* Primary compute node
+* Running Proxmox hypervisor
+
+==== Lenovo ThinkCentre M715Q (x2)
+* Compact mini PCs
+* Energy-efficient compute nodes
+* Running Proxmox hypervisor
+* Part of HA cluster
+
+==== Network Equipment
+* **Ubiquiti UDM PRO SE**: Professional network management, VPN server, firewall
+* **Orange Livebox 6**: ISP gateway with DMZ configuration
+
+== Network Architecture
+
+Security and network segmentation are critical components of this homelab. The network architecture implements enterprise best practices with multiple VLANs for isolation, a DMZ for public-facing services, and VPN access for secure remote administration.
+
+The design separates management traffic (Proxmox hosts, Dell iDRAC) from service traffic (K3S cluster, TrueNAS, Portainer), ensuring that administrative interfaces are never directly exposed. All external access is filtered through the firewall, and internal access to management systems requires VPN authentication via WireGuard.
+
+[mermaid,format=svg,id=homelab-network]
+----
+%%{init: {'theme':'neutral', 'themeVariables': { 'fontSize':'14px'}}}%%
+graph LR
+    WAN[Internet/WAN] --> FW{Firewall}
+
+    FW --> DMZ[DMZ<br/>Public Services]
+    FW --> VPN[WireGuard VPN]
+
+    VPN --> MGMT[Management VLAN<br/>iDRAC + Proxmox]
+    VPN --> SVC[Services VLAN<br/>K3S + TrueNAS + Portainer]
+
+    classDef wanStyle fill:#FF6B6B,stroke:#C92A2A,color:#fff,stroke-width:2px
+    classDef fwStyle fill:#F38181,stroke:#D63031,color:#fff,stroke-width:2px
+    classDef dmzStyle fill:#FFA500,stroke:#FF8C00,color:#fff,stroke-width:2px
+    classDef vpnStyle fill:#6C5CE7,stroke:#5849BE,color:#fff,stroke-width:2px
+    classDef mgmtStyle fill:#4ECDC4,stroke:#0D7377,color:#fff,stroke-width:2px
+    classDef serviceStyle fill:#95E1D3,stroke:#38A3A5,color:#000,stroke-width:2px
+
+    class WAN wanStyle
+    class FW fwStyle
+    class DMZ dmzStyle
+    class VPN vpnStyle
+    class MGMT mgmtStyle
+    class SVC serviceStyle
+----
+
+=== Network Features
+
+* **VLANs**: Segmented network for security and organization
+* **Firewall Rules**: Custom rules for traffic control
+* **VPN Server**: WireGuard for secure remote access
+* **DMZ**: Isolated zone for publicly exposed services
+* **Network Management**: Centralized control via Ubiquiti UDM PRO SE
+
+== Proxmox Cluster
+
+The virtualization layer is built on a 3-node Proxmox VE cluster, providing high availability and resource pooling across all physical hosts. This configuration ensures that if one node fails, virtual machines automatically migrate to healthy nodes without service interruption.
+
+Infrastructure as Code principles are applied using Terraform with the Proxmox Provider, allowing VM creation and configuration to be version-controlled and reproducible. Shared storage is provided by a TrueNAS SCALE VM, offering NFS and iSCSI protocols for VM disks and data storage. This architecture enables live migration of VMs between hosts and provides a solid foundation for the Kubernetes cluster running on top.
+
+[mermaid,format=svg,id=homelab-proxmox-cluster]
+----
+%%{init: {'theme':'neutral', 'themeVariables': { 'fontSize':'16px'}}}%%
+graph TB
+    subgraph Cluster["Proxmox HA Cluster"]
+        subgraph Node1["Dell PowerEdge T330"]
+            PVE1[Proxmox VE 1<br/>Cluster Node 1]
+            VM1[VMs]
+            CT1[Containers]
+        end
+
+        subgraph Node2["Lenovo M715Q #1"]
+            PVE2[Proxmox VE 2<br/>Cluster Node 2]
+            VM2[VMs]
+            CT2[Containers]
+        end
+
+        subgraph Node3["Lenovo M715Q #2"]
+            PVE3[Proxmox VE 3<br/>Cluster Node 3]
+            VM3[VMs]
+            CT3[Containers]
+        end
+    end
+
+    subgraph Storage["Network Storage"]
+        TRUENAS[TrueNAS SCALE<br/>NFS/iSCSI]
+    end
+
+    subgraph IaC["Infrastructure as Code"]
+        TERRAFORM[Terraform<br/>Proxmox Provider]
+    end
+
+    TERRAFORM --> PVE1
+    TERRAFORM --> PVE2
+    TERRAFORM --> PVE3
+
+    PVE1 <-.HA Sync.-> PVE2
+    PVE2 <-.HA Sync.-> PVE3
+    PVE3 <-.HA Sync.-> PVE1
+
+    VM1 --> TRUENAS
+    VM2 --> TRUENAS
+    VM3 --> TRUENAS
+
+    classDef proxmoxStyle fill:#E26D0E,stroke:#C25C0A,color:#fff,stroke-width:2px
+    classDef vmStyle fill:#95E1D3,stroke:#38A3A5,color:#000,stroke-width:2px
+    classDef storageStyle fill:#4ECDC4,stroke:#0D7377,color:#fff,stroke-width:2px
+    classDef iacStyle fill:#6C5CE7,stroke:#5849BE,color:#fff,stroke-width:2px
+
+    class PVE1,PVE2,PVE3 proxmoxStyle
+    class VM1,VM2,VM3,CT1,CT2,CT3 vmStyle
+    class TRUENAS storageStyle
+    class TERRAFORM iacStyle
+----
+
+=== Cluster Features
+
+* **High Availability**: 3-node cluster with automatic failover
+* **Infrastructure as Code**: VM provisioning with Terraform
+* **Network Storage**: Shared storage via TrueNAS SCALE
+* **Resource Pooling**: Distributed compute resources
+* **Live Migration**: Move VMs between nodes without downtime
+
+== Kubernetes (K3S) Architecture
+
+K3S, a lightweight Kubernetes distribution, forms the container orchestration layer of this homelab. The cluster features a highly available control plane with three master nodes synchronized through KubeVIP, which provides a virtual IP for seamless failover and load balancing of API server requests.
+
+The entire cluster deployment is automated using Ansible playbooks, from initial node provisioning to K3S installation and configuration. Applications are deployed using Helm charts and managed through ArgoCD following GitOps principles—all application configurations are stored in Git repositories, and ArgoCD continuously synchronizes the desired state to the cluster. Longhorn provides distributed block storage for persistent volumes, while MetalLB enables LoadBalancer services on bare-metal, and Traefik handles ingress traffic and TLS termination.
+
+[mermaid,format=svg,id=homelab-k3s-architecture]
+----
+%%{init: {'theme':'neutral', 'themeVariables': { 'fontSize':'16px'}}}%%
+graph TB
+    subgraph K3S["K3S Cluster - High Availability"]
+        subgraph Control["Control Plane"]
+            MASTER1[Master Node 1]
+            MASTER2[Master Node 2]
+            MASTER3[Master Node 3]
+            KUBEVIP[KubeVIP<br/>VIP Management]
+        end
+
+        subgraph Workers["Worker Nodes"]
+            WORKER1[Worker 1]
+            WORKER2[Worker 2]
+            WORKER3[Worker 3]
+        end
+    end
+
+    subgraph Storage["Storage Layer"]
+        LONGHORN[Longhorn<br/>Distributed Storage]
+    end
+
+    subgraph Ingress["Ingress & Load Balancing"]
+        TRAEFIK[Traefik<br/>Ingress Controller]
+        METALLB[MetalLB<br/>Load Balancer]
+    end
+
+    subgraph Deployment["Deployment Tools"]
+        ANSIBLE[Ansible<br/>Cluster Provisioning]
+        ARGOCD[ArgoCD<br/>GitOps CD]
+        HELM[Helm Charts]
+    end
+
+    ANSIBLE --> Control
+    ANSIBLE --> Workers
+
+    MASTER1 <-.Cluster Sync.-> MASTER2
+    MASTER2 <-.Cluster Sync.-> MASTER3
+    MASTER3 <-.Cluster Sync.-> MASTER1
+
+    KUBEVIP --> MASTER1
+    KUBEVIP --> MASTER2
+    KUBEVIP --> MASTER3
+
+    Control --> Workers
+    Workers --> LONGHORN
+    Workers --> TRAEFIK
+    Workers --> METALLB
+
+    ARGOCD --> Workers
+    HELM --> ARGOCD
+
+    classDef controlStyle fill:#326CE5,stroke:#1E4FA3,color:#fff,stroke-width:2px
+    classDef workerStyle fill:#95E1D3,stroke:#38A3A5,color:#000,stroke-width:2px
+    classDef storageStyle fill:#FF9F1C,stroke:#E07A00,color:#fff,stroke-width:2px
+    classDef ingressStyle fill:#4ECDC4,stroke:#0D7377,color:#fff,stroke-width:2px
+    classDef deployStyle fill:#6C5CE7,stroke:#5849BE,color:#fff,stroke-width:2px
+
+    class MASTER1,MASTER2,MASTER3,KUBEVIP controlStyle
+    class WORKER1,WORKER2,WORKER3 workerStyle
+    class LONGHORN storageStyle
+    class TRAEFIK,METALLB ingressStyle
+    class ANSIBLE,ARGOCD,HELM deployStyle
+----
+
+=== Kubernetes Components
+
+==== Core Infrastructure
+* **K3S**: Lightweight Kubernetes distribution
+* **KubeVIP**: Virtual IP for HA control plane
+* **MetalLB**: Bare-metal load balancer
+* **Traefik**: Ingress controller and reverse proxy
+
+==== Storage
+* **Longhorn**: Distributed block storage for persistent volumes
+
+==== Deployment & Management
+* **Ansible**: Automated cluster provisioning and configuration
+* **ArgoCD**: GitOps continuous delivery
+* **Helm**: Application package management
+* **Sealed Secrets**: Encrypted secrets management
+
+==== Networking
+* **Reflector**: ConfigMap and Secret replication
+* **Cert-Manager**: Automated TLS certificate management
+
+== Application Deployment Flow
+
+The homelab implements modern CI/CD practices using GitOps methodology. Developed applications follow a structured pipeline from code commit to production deployment. This workflow ensures consistency, traceability, and enables rapid iteration while maintaining deployment standards.
+
+Code changes pushed to Git repositories trigger CI pipelines that build container images and push them to a container registry. ArgoCD monitors Git repositories containing Helm chart configurations and automatically synchronizes any changes to the K3S cluster. This declarative approach means the cluster state always matches what's defined in Git, providing a single source of truth. All deployments are automatically integrated with the observability stack, sending logs to Loki and metrics to Prometheus for comprehensive monitoring via Grafana dashboards.
+
+[mermaid,format=svg,id=homelab-deployment-flow]
+----
+%%{init: {'theme':'neutral', 'themeVariables': { 'fontSize':'16px'}}}%%
+graph LR
+    subgraph Development["Development"]
+        DEV[Developer]
+        GIT[Git Repository]
+    end
+
+    subgraph CI["CI Pipeline"]
+        BUILD[Build & Test]
+        IMAGE[Container Image]
+        REGISTRY[Container Registry]
+    end
+
+    subgraph CD["Continuous Deployment"]
+        ARGOCD[ArgoCD<br/>GitOps]
+        HELM[Helm Charts]
+    end
+
+    subgraph K8S["K3S Cluster"]
+        DEPLOY[Deployment]
+        SERVICE[Service]
+        INGRESS[Traefik Ingress]
+    end
+
+    subgraph Monitoring["Observability"]
+        LOGS[Logs - Loki]
+        METRICS[Metrics - Prometheus]
+        VIZ[Visualization - Grafana]
+    end
+
+    DEV --> GIT
+    GIT --> BUILD
+    BUILD --> IMAGE
+    IMAGE --> REGISTRY
+    REGISTRY --> ARGOCD
+    HELM --> ARGOCD
+    ARGOCD --> DEPLOY
+    DEPLOY --> SERVICE
+    SERVICE --> INGRESS
+
+    DEPLOY --> LOGS
+    DEPLOY --> METRICS
+    LOGS --> VIZ
+    METRICS --> VIZ
+
+    classDef devStyle fill:#95E1D3,stroke:#38A3A5,color:#000,stroke-width:2px
+    classDef ciStyle fill:#6C5CE7,stroke:#5849BE,color:#fff,stroke-width:2px
+    classDef cdStyle fill:#FF6B6B,stroke:#C92A2A,color:#fff,stroke-width:2px
+    classDef k8sStyle fill:#326CE5,stroke:#1E4FA3,color:#fff,stroke-width:2px
+    classDef monStyle fill:#FFA500,stroke:#FF8C00,color:#fff,stroke-width:2px
+
+    class DEV,GIT devStyle
+    class BUILD,IMAGE,REGISTRY ciStyle
+    class ARGOCD,HELM cdStyle
+    class DEPLOY,SERVICE,INGRESS k8sStyle
+    class LOGS,METRICS,VIZ monStyle
+----
+
+== Monitoring & Observability Stack (PLG)
+
+Comprehensive observability is crucial for maintaining a complex infrastructure. The PLG stack (Prometheus, Loki, Grafana) provides end-to-end visibility into the entire homelab, from physical Proxmox hosts to containerized applications running in the K3S cluster.
+
+Promtail agents collect logs from all sources and forward them to Loki for aggregation, while Prometheus scrapes metrics from exporters on every component. Grafana serves as the unified interface, combining logs and metrics in cohesive dashboards that provide real-time insights into system health and performance. UptimeKuma monitors service availability and provides status pages, while Rancher and OpenLens offer specialized Kubernetes cluster management interfaces for operational tasks.
+
+[mermaid,format=svg,id=homelab-monitoring-stack]
+----
+%%{init: {'theme':'neutral', 'themeVariables': { 'fontSize':'16px'}}}%%
+graph TB
+    subgraph Sources["Data Sources"]
+        K3S[K3S Cluster<br/>Applications]
+        PROXMOX[Proxmox Hosts]
+        SERVICES[Services & VMs]
+    end
+
+    subgraph Collection["Collection Layer"]
+        PROMTAIL[Promtail<br/>Log Collector]
+        PROM[Prometheus<br/>Metrics Collector]
+    end
+
+    subgraph Storage["Storage Layer"]
+        LOKI[Loki<br/>Log Aggregation]
+        PROMDB[(Prometheus DB<br/>Time Series)]
+    end
+
+    subgraph Visualization["Visualization & Alerting"]
+        GRAFANA[Grafana<br/>Dashboards]
+        UPTIME[UptimeKuma<br/>Service Monitoring]
+    end
+
+    subgraph Management["Management Tools"]
+        RANCHER[Rancher<br/>K8S Management]
+        OPENLENS[OpenLens<br/>K8S IDE]
+    end
+
+    K3S --> PROMTAIL
+    PROXMOX --> PROMTAIL
+    SERVICES --> PROMTAIL
+
+    K3S --> PROM
+    PROXMOX --> PROM
+    SERVICES --> PROM
+
+    PROMTAIL --> LOKI
+    PROM --> PROMDB
+
+    LOKI --> GRAFANA
+    PROMDB --> GRAFANA
+
+    K3S --> UPTIME
+    SERVICES --> UPTIME
+
+    K3S --> RANCHER
+    K3S --> OPENLENS
+
+    classDef sourceStyle fill:#95E1D3,stroke:#38A3A5,color:#000,stroke-width:2px
+    classDef collectStyle fill:#4ECDC4,stroke:#0D7377,color:#fff,stroke-width:2px
+    classDef storageStyle fill:#6C5CE7,stroke:#5849BE,color:#fff,stroke-width:2px
+    classDef vizStyle fill:#FFA500,stroke:#FF8C00,color:#fff,stroke-width:2px
+    classDef mgmtStyle fill:#326CE5,stroke:#1E4FA3,color:#fff,stroke-width:2px
+
+    class K3S,PROXMOX,SERVICES sourceStyle
+    class PROMTAIL,PROM collectStyle
+    class LOKI,PROMDB storageStyle
+    class GRAFANA,UPTIME vizStyle
+    class RANCHER,OPENLENS mgmtStyle
+----
+
+=== Monitoring Components
+
+==== PLG Stack (Prometheus, Loki, Grafana)
+* **Prometheus**: Metrics collection and time-series database
+* **Loki**: Log aggregation and querying
+* **Grafana**: Unified visualization and dashboards
+
+==== Additional Tools
+* **UptimeKuma**: Service uptime monitoring and status pages
+* **Rancher**: Kubernetes cluster management interface
+* **OpenLens**: Kubernetes IDE for cluster inspection
+
+== Services & Applications
+
+The homelab hosts a diverse collection of self-hosted applications spanning authentication, media, productivity, databases, and network services. Each service is carefully selected to provide practical functionality while offering learning opportunities in system administration and cloud-native deployment.
+
+Authentik serves as the central identity provider, enabling Single Sign-On (SSO) across all applications for streamlined authentication. High-availability database clusters (PostgreSQL and Redis) provide robust data persistence, while media services like Plex and PhotoPrism deliver personal streaming and photo management. Pi-hole offers network-wide ad blocking and DNS management, and management dashboards like Heimdall and Portainer simplify day-to-day operations across the entire infrastructure.
+
+[mermaid,format=svg,id=homelab-services]
+----
+%%{init: {'theme':'neutral', 'themeVariables': { 'fontSize':'16px'}}}%%
+graph TB
+    subgraph Auth["Authentication & Security"]
+        AUTHENTIK[Authentik<br/>SSO/Identity Provider]
+        PIHOLE[Pi-hole<br/>DNS & Ad Blocking]
+    end
+
+    subgraph Media["Media Services"]
+        PLEX[Plex<br/>Media Server]
+        PHOTOPRISM[PhotoPrism<br/>Photo Management]
+    end
+
+    subgraph Productivity["Productivity"]
+        NEXTCLOUD[Nextcloud<br/>File Sync & Share]
+        SYNCTHING[Syncthing<br/>P2P File Sync]
+    end
+
+    subgraph Data["Data Services"]
+        POSTGRES[PostgreSQL HA<br/>Database Cluster]
+        REDIS[Redis HA<br/>Cache Cluster]
+        SUPABASE[Supabase<br/>Backend as a Service]
+    end
+
+    subgraph Network["Network Services"]
+        UNIFI[Unifi Network<br/>Controller]
+        WIREGUARD[WireGuard<br/>VPN]
+    end
+
+    subgraph Management["Management Dashboards"]
+        HEIMDAL[Heimdall<br/>Application Dashboard]
+        PORTAINER[Portainer<br/>Docker Management]
+    end
+
+    AUTHENTIK --> Media
+    AUTHENTIK --> Productivity
+    AUTHENTIK --> Data
+
+    PIHOLE --> Network
+
+    classDef authStyle fill:#F38181,stroke:#D63031,color:#fff,stroke-width:2px
+    classDef mediaStyle fill:#95E1D3,stroke:#38A3A5,color:#000,stroke-width:2px
+    classDef prodStyle fill:#4ECDC4,stroke:#0D7377,color:#fff,stroke-width:2px
+    classDef dataStyle fill:#6C5CE7,stroke:#5849BE,color:#fff,stroke-width:2px
+    classDef netStyle fill:#FFA500,stroke:#FF8C00,color:#fff,stroke-width:2px
+    classDef mgmtStyle fill:#326CE5,stroke:#1E4FA3,color:#fff,stroke-width:2px
+
+    class AUTHENTIK,PIHOLE authStyle
+    class PLEX,PHOTOPRISM mediaStyle
+    class NEXTCLOUD,SYNCTHING prodStyle
+    class POSTGRES,REDIS,SUPABASE dataStyle
+    class UNIFI,WIREGUARD netStyle
+    class HEIMDAL,PORTAINER mgmtStyle
+----
+
+=== Service Categories
+
+==== Authentication & Security
+* **Authentik**: Single Sign-On and identity management
+* **Pi-hole**: Network-wide ad blocking and DNS
+
+==== Media Services
+* **Plex**: Personal media streaming server
+* **PhotoPrism**: AI-powered photo management
+
+==== Productivity & Collaboration
+* **Nextcloud**: Self-hosted cloud storage and collaboration
+* **Syncthing**: Decentralized file synchronization
+
+==== Data Services
+* **PostgreSQL HA**: High-availability database cluster
+* **Redis HA**: Distributed caching solution
+* **Supabase**: Open-source Firebase alternative
+
+==== Network Services
+* **Unifi Network**: Network controller for Ubiquiti equipment
+* **WireGuard**: Modern VPN solution
+
+==== Management
+* **Heimdall**: Application dashboard and launcher
+* **Portainer**: Docker container management interface
+
+== Technology Stack
+
+=== Infrastructure Layer
+[cols="2,3"]
+|===
+|Category |Technologies
+
+|Hypervisor
+|Proxmox VE
+
+|Container Orchestration
+|K3S (Kubernetes)
+
+|Infrastructure as Code
+|Terraform, Ansible
+
+|Network Management
+|Ubiquiti UDM PRO SE, VLANs
+
+|Storage
+|TrueNAS SCALE, Longhorn
+|===
+
+=== Platform Layer
+[cols="2,3"]
+|===
+|Category |Technologies
+
+|GitOps & CD
+|ArgoCD
+
+|Package Management
+|Helm
+
+|Ingress & Load Balancing
+|Traefik, MetalLB, KubeVIP
+
+|Service Mesh
+|Traefik
+
+|Secrets Management
+|Sealed Secrets
+
+|Certificate Management
+|Cert-Manager
+|===
+
+=== Observability Layer
+[cols="2,3"]
+|===
+|Category |Technologies
+
+|Metrics
+|Prometheus
+
+|Logs
+|Loki, Promtail
+
+|Visualization
+|Grafana
+
+|Uptime Monitoring
+|UptimeKuma
+
+|Cluster Management
+|Rancher, OpenLens
+|===
+
+=== Application Layer
+[cols="2,3"]
+|===
+|Category |Technologies
+
+|Authentication
+|Authentik
+
+|Databases
+|PostgreSQL HA, Redis HA
+
+|Backend Services
+|Supabase
+
+|Media
+|Plex, PhotoPrism
+
+|Productivity
+|Nextcloud, Syncthing
+
+|Network Services
+|Pi-hole, WireGuard, Unifi Network
+
+|Container Management
+|Portainer
+
+|Application Dashboard
+|Heimdall
+|===
+
+== Mission & Objectives
+
+=== Core Missions
+
+==== Network Infrastructure
+* Configure VLANs for network segmentation
+* Implement firewall rules for security
+* Deploy VPN server for secure remote access
+* Setup DMZ on ISP gateway for public services
+
+==== Hardware Customization
+* Modify Dell PowerEdge T330 for silent operation
+* Optimize cooling and acoustics for home environment
+
+==== Virtualization Platform
+* Install Proxmox hypervisor on all 3 machines
+* Configure high-availability cluster
+* Implement automated failover mechanisms
+
+==== Infrastructure as Code
+* Provision VMs using Terraform with Proxmox Provider
+* Automate infrastructure deployment and management
+
+==== Kubernetes Deployment
+* Install K3S high-availability cluster using Ansible
+* Configure master and worker nodes
+* Implement distributed storage with Longhorn
+
+==== Application Deployment
+* Deploy all services using Helm charts
+* Implement GitOps with ArgoCD for continuous delivery
+* Automate application lifecycle management
+
+==== Storage Management
+* Deploy TrueNAS SCALE VM for network storage
+* Configure NFS and iSCSI for shared storage
+* Implement backup strategies
+
+==== Observability & Monitoring
+* Deploy PLG stack (Prometheus, Loki, Grafana)
+* Collect logs and metrics from all services
+* Create dashboards for system visibility
+
+==== Container Management
+* Setup Portainer VM for Docker Compose stacks
+* Manage containerized applications outside Kubernetes
+
+== Project Timeline
+
+* **January 2023**: Project inception
+* **Ongoing**: Continuous learning and experimentation
+* **Location**: Lille, Hauts-de-France, France
+
+== Learning Outcomes
+
+This homelab project provides hands-on experience with:
+
+* Enterprise-grade virtualization and clustering
+* Kubernetes orchestration and management
+* Infrastructure as Code practices
+* GitOps methodology
+* Network security and segmentation
+* Monitoring and observability
+* High availability and fault tolerance
+* Storage management and backup strategies
+* CI/CD pipelines and automation
+
+== Future Enhancements
+
+Potential areas for expansion:
+
+* Implement service mesh (Istio/Linkerd)
+* Add more observability tools (Jaeger for tracing)
+* Explore edge computing scenarios
+* Implement disaster recovery procedures
+* Add GPU passthrough for AI/ML workloads
+* Expand multi-cluster management
+* Implement backup and restore automation
+
+== Conclusion
+
+This homelab serves as a comprehensive platform for learning modern infrastructure technologies, developing practical DevOps skills, and hosting personal applications in a professional-grade environment. The project demonstrates proficiency in virtualization, containerization, automation, and cloud-native technologies.
