@@ -15,6 +15,7 @@
     "author": "Moncef AOUDIA",
     "license": "MIT",
     "dependencies": {
+        "@mermaid-js/mermaid-cli": "^11.4.1",
         "clean-webpack-plugin": "4.0.0",
         "copy-webpack-plugin": "9.0.1",
         "webpack": "5.53.0",

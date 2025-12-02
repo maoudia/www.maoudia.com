@@ -49,6 +49,7 @@ disableAliases = false
       "icons" = "font"
       "source-highlighter" = "rouge"
       "rouge-style" = "monokai-sublime"
+      "mmdc" = "./node_modules/.bin/mmdc"
 
 [frontmatter]
   date = ["date", "publishDate", "lastmod"]
