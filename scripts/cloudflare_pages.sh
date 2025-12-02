@@ -7,6 +7,9 @@ cd ..
 echo "Installing Asciidoctor plugins"
 gem install asciidoctor asciidoctor-html5s asciidoctor-rouge asciidoctor-diagram
 
+echo "Installing Node.js dependencies (including Mermaid CLI)"
+npm install
+
 echo "Updating to latest theme submodule"
 git submodule update --init --recursive --remote
 
