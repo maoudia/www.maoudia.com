@@ -1,0 +1,35 @@
+= Featured Image Diagram
+:imagesdir: /images/blog/spring-boot-logback-async-logging
+:imagesoutdir: static/images/blog/spring-boot-logback-async-logging
+ifdef::env-github[]
+:imagesdir: ../../static/images/blog/spring-boot-logback-async-logging
+:imagesoutdir: ../../static/images/blog/spring-boot-logback-async-logging
+endif::[]
+
+[mermaid,format=svg,id=spring-boot-async-logging-featured]
+----
+%%{init: {'theme':'neutral', 'themeVariables': { 'fontSize':'16px', 'fontFamily':'Arial'}}}%%
+graph LR
+    subgraph Sync["<b>Synchronous Logging</b>"]
+        direction LR
+        ST["Application<br/>Thread"] -->|Log Event| SL["Logger"]
+        SL -->|Write I/O<br/><b>⏱️ BLOCKS</b>| SO["Disk/<br/>Console"]
+        SO -->|Return| ST
+    end
+
+    Sync -.->|VS| Async
+
+    subgraph Async["<b>Asynchronous Logging</b>"]
+        direction LR
+        AT["Application<br/>Thread"] -->|Log Event| AQ["Blocking<br/>Queue"]
+        AQ -.->|Immediate<br/><b>✓ NON-BLOCKING</b>| AT
+        AQ -->|Dequeue| AW["Worker<br/>Thread"]
+        AW -->|Write I/O| AO["Disk/<br/>Console"]
+    end
+
+    classDef syncStyle fill:#ef4444,stroke:#dc2626,color:#fff,stroke-width:2px
+    classDef asyncStyle fill:#10b981,stroke:#059669,color:#fff,stroke-width:2px
+
+    class ST,SL,SO syncStyle
+    class AT,AQ,AW,AO asyncStyle
+----

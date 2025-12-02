@@ -1,0 +1,52 @@
+= Featured Image Diagram
+:imagesdir: /images/blog/reactor-disposable-management
+:imagesoutdir: static/images/blog/reactor-disposable-management
+
+[mermaid,format=svg,id=reactor-disposable-overview]
+----
+%%{init: {'theme':'neutral', 'themeVariables': { 'fontSize':'20px', 'fontFamily':'Arial'}}}%%
+graph TB
+    Title["<b>Reactor Disposable Management</b><br/>Resource Lifecycle Control"]
+
+    subgraph Single["<b>Disposable</b> - Single Resource"]
+        S1[Create] --> S2[Active ✓]
+        S2 --> S3[dispose]
+        S3 --> S4[Released ❌]
+    end
+
+    subgraph Multiple["<b>Disposable.Composite</b> - Multiple Resources"]
+        M1[Resource 1 ✓]
+        M2[Resource 2 ✓]
+        M3[Resource 3 ✓]
+        M1 --> M4[dispose all]
+        M2 --> M4
+        M3 --> M4
+        M4 --> M5[All Released ❌]
+    end
+
+    subgraph Swap["<b>Disposable.Swap</b> - Dynamic Replacement"]
+        W1[Current ✓] --> W2[update]
+        W2 --> W3[Old ❌]
+        W2 --> W4[New ✓]
+        W4 --> W5[update]
+        W5 --> W6[Previous ❌]
+        W5 --> W7[Latest ✓]
+    end
+
+    Title --> Single
+    Title --> Multiple
+    Title --> Swap
+
+    classDef titleStyle fill:#1e293b,stroke:#0f172a,color:#fff,stroke-width:4px,font-size:24px
+    classDef singleStyle fill:#2563eb,stroke:#1e40af,color:#fff,stroke-width:2px
+    classDef multipleStyle fill:#7B68EE,stroke:#5C4DB8,color:#fff,stroke-width:2px
+    classDef swapStyle fill:#50C878,stroke:#3AA05E,color:#fff,stroke-width:2px
+    classDef activeStyle fill:#10b981,stroke:#059669,color:#fff,stroke-width:2px
+    classDef disposedStyle fill:#ef4444,stroke:#dc2626,color:#fff,stroke-width:2px
+    classDef neutralStyle fill:#f3f4f6,stroke:#9ca3af,color:#111,stroke-width:2px
+
+    class Title titleStyle
+    class S2,M1,M2,M3,W1,W4,W7 activeStyle
+    class S4,M5,W3,W6 disposedStyle
+    class S1,S3,M4,W2,W5 neutralStyle
+----

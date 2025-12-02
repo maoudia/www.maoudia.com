@@ -29,6 +29,7 @@ ifdef::env-github[]
 :imagesdir: ../../static/images/bulk-update-with-spring-data-mongodb-reactive
 endif::[]
 
+[.lead]
 Afin de mettre à jour les documents d'une collection MongoDB, on passe souvent par des requêtes de mise à jour, si le volume des données est conséquent,
 cela peut conduire à des problèmes de performance et une surconsommation des ressources matérielles.
 

@@ -1,0 +1,411 @@
++++
+title = "Spring Boot Logback Async Logging"
+date = 2024-03-15T00:00:00+02:00
+description = "Learn how to configure asynchronous logging with Logback in Spring Boot for improved performance, reduced latency, and better scalability."
+author = "Moncef AOUDIA"
+showAuthor = false
+showReadingTime = true
+readingtime = 7
+tags = ["Java", "Spring Boot", "Logback", "Logging", "Performance", "Best Practices"]
+categories = ["Tutorial"]
+slug = "spring-boot-logback-async-logging"
+type = "article"
+featuredImage = "/images/blog/spring-boot-logback-async-logging/featured-image-en.svg"
+[twitter]
+    card = "summary_large_image"
+    site = "@AoudiaMoncef"
+    creator = "@AoudiaMoncef"
+    title = "Spring Boot Logback Async Logging"
+    description = "Learn how to configure asynchronous logging with Logback in Spring Boot for improved performance, reduced latency, and better scalability."
++++
+
+:toc: macro
+:source-highlighter: rouge
+:rouge-style: github
+:rouge-linenums-mode: inline
+:imagesdir: /images/blog/spring-boot-logback-async-logging
+:imagesoutdir: static/images/blog/spring-boot-logback-async-logging
+ifdef::env-github[]
+:imagesdir: ../../static/images/spring-boot-logback-async-logging
+:imagesoutdir: ../../static/images/spring-boot-logback-async-logging
+endif::[]
+
+[.lead]
+This guide demonstrates configuring asynchronous logging with Logback in a Spring Boot application. This approach provides improved performance, reduced latency, scalability, and fault tolerance.
+
+By leveraging existing Spring logging configuration properties, we can customize the logging behavior according to your application's requirements seamlessly based on the environment variables declared in Spring Boot's default Logback configuration.
+
+<!--more-->
+
+toc::[]
+
+== Overview
+
+Asynchronous logging is a powerful technique that offloads the logging operations to a separate thread, preventing the main application threads from blocking on I/O operations. This is particularly beneficial for high-throughput applications where logging can become a bottleneck.
+
+The `AsyncAppender` in Logback wraps both console and file appenders to enable asynchronous logging, enhancing performance and fault tolerance. It uses a blocking queue to buffer log events and processes them asynchronously.
+
+[IMPORTANT]
+====
+Contrary to the default Spring Boot configuration, file logging (ASYNC_FILE) is enabled in this setup even if `logging.file.name` or `logging.file.path` are not explicitly configured.
+====
+
+== Synchronous vs Asynchronous Logging
+
+Understanding the fundamental difference between synchronous and asynchronous logging is crucial for making the right choice for your application.
+
+[mermaid,format=svg,role="center"]
+----
+%%{init: {'theme':'neutral', 'themeVariables': { 'fontSize':'16px', 'fontFamily':'Arial'}}}%%
+graph TB
+    subgraph Sync["<b>Synchronous Logging</b>"]
+        direction TB
+        ST["Application Thread"]
+        ST -->|1. Log Event| SL["Logger"]
+        SL -->|2. Write to Disk/Console| SO["I/O Operation<br/><b>⏱️ BLOCKS THREAD</b>"]
+        SO -->|3. Wait for completion| SL
+        SL -->|4. Return control| ST
+
+        SyncMetrics["<b>Characteristics:</b><br/>❌ Thread blocked during I/O<br/>❌ Higher latency<br/>❌ Lower throughput<br/>❌ Simple implementation"]
+    end
+
+    subgraph Async["<b>Asynchronous Logging</b>"]
+        direction TB
+        AT["Application Thread"]
+        AT -->|1. Log Event| AQ["Blocking Queue<br/>(Buffer)"]
+        AQ -.->|2. Immediate return<br/><b>✓ NON-BLOCKING</b>| AT
+        AQ -->|3. Dequeue| AW["Worker Thread"]
+        AW -->|4. Write to Disk/Console| AO["I/O Operation"]
+
+        AsyncMetrics["<b>Characteristics:</b><br/>✓ Non-blocking operation<br/>✓ Reduced latency<br/>✓ Higher throughput<br/>✓ Better scalability"]
+    end
+
+    classDef syncStyle fill:#ef4444,stroke:#dc2626,color:#fff,stroke-width:2px
+    classDef asyncStyle fill:#10b981,stroke:#059669,color:#fff,stroke-width:2px
+    classDef metricsStyle fill:#f3f4f6,stroke:#9ca3af,color:#111,stroke-width:1px
+
+    class ST,SL,SO syncStyle
+    class AT,AQ,AW,AO asyncStyle
+    class SyncMetrics,AsyncMetrics metricsStyle
+----
+
+=== Key Differences
+
+[cols="1,2,2", options="header"]
+|===
+|Aspect |Synchronous Logging |Asynchronous Logging
+
+|*Thread Behavior*
+|Application thread blocks until log is written
+|Application thread returns immediately
+
+|*Performance Impact*
+|Direct impact on request processing time
+|Minimal impact on request processing
+
+|*Latency*
+|Higher latency due to I/O blocking
+|Lower latency, I/O handled separately
+
+|*Throughput*
+|Limited by I/O operations
+|Higher throughput, decoupled from I/O
+
+|*Complexity*
+|Simple, straightforward
+|More complex, requires queue management
+
+|*Use Case*
+|Low-volume logging, simple applications
+|High-volume logging, performance-critical apps
+|===
+
+== Benefits of Async Logging
+
+=== Improved Performance
+
+Asynchronous logging reduces the time the application thread spends on logging operations by delegating them to a separate thread.
+
+=== Reduced Latency
+
+Main application threads are not blocked waiting for log operations to complete, resulting in lower response times.
+
+=== Scalability
+
+Better resource utilization allows the application to handle more concurrent requests.
+
+=== Fault Tolerance
+
+If the logging system experiences temporary issues, the application continues to function normally while log events are queued.
+
+== AsyncAppender Configuration Parameters
+
+Logback's `AsyncAppender` provides several configuration parameters to fine-tune its behavior:
+
+=== queueSize
+
+* *Default Value:* `256`
+* *Description:* Maximum capacity of the blocking queue that buffers log events.
+* *Usage:* Increase for high-volume logging scenarios, but be mindful of memory consumption.
+
+=== discardingThreshold
+
+* *Default Value:* `20%` of queue size
+* *Description:* By default, drops events of level TRACE, DEBUG, and INFO when the queue has 20% capacity remaining. Set to `0` to keep all events.
+* *Usage:* Prevents queue overflow by discarding low-priority events when the queue is nearly full.
+
+=== includeCallerData
+
+* *Default Value:* `false`
+* *Description:* Controls whether to extract caller data (class name, method name, line number).
+* *Usage:* Set to `true` only if you need caller information, as extracting this data is expensive and impacts performance.
+
+=== maxFlushTime
+
+* *Default Value:* Not set
+* *Description:* Maximum time in milliseconds the AsyncAppender waits for the queue to flush during application shutdown.
+* *Usage:* Ensures log events are not lost during graceful shutdown.
+
+=== neverBlock
+
+* *Default Value:* `false`
+* *Description:* When `false`, the appender blocks on a full queue. When `true`, it drops the message instead.
+* *Usage:* Set to `true` if you prefer dropping log events over blocking application threads.
+
+== Project Setup
+
+=== Requirements
+
+* link:https://adoptium.net/[`OpenJDK 11.0.x or higher`]
+* link:https://maven.apache.org/[`Maven 3.6.x or higher`]
+* link:https://docs.spring.io/spring-boot/docs/current/reference/html/[`Spring Boot 2.x or 3.x`]
+
+== Configuration
+
+=== Application Properties
+
+Configure basic logging properties in `application.yml`:
+
+[source,yml,indent=0,linenums=true]
+.application.yml
+----
+logging:
+  file:
+    name: tutorial
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSSZZ} %magenta([%thread]) [%logger{36}] %highlight(%level) %cyan([%class{0}.%method:%line]) - %message%n%xException}"
+----
+
+This configuration:
+
+* Sets the log file name to `tutorial`
+* Customizes the console log pattern with colors and detailed information including timestamp, thread, logger name, log level, class/method/line, and message
+
+=== Logback Configuration
+
+Create `logback-spring.xml` in `src/main/resources`:
+
+[source,xml,indent=0,linenums=true]
+.logback-spring.xml
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="true" scan="true" >
+    <statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener" />
+
+    <include resource="org/springframework/boot/logging/logback/defaults.xml" /> <!--1-->
+    <property name="LOG_FILE" value="${LOG_FILE:-${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}}/spring.log}"/> <!--2-->
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml" /> <!--3-->
+    <include resource="org/springframework/boot/logging/logback/file-appender.xml" /> <!--4-->
+
+    <appender name="ASYNC_CONSOLE" class="ch.qos.logback.classic.AsyncAppender"> <!--5-->
+        <appender-ref ref="CONSOLE" />
+        <queueSize>256</queueSize>
+        <includeCallerData>false</includeCallerData>
+        <neverBlock>false</neverBlock>
+    </appender>
+    <appender name="ASYNC_FILE" class="ch.qos.logback.classic.AsyncAppender"> <!--6-->
+        <appender-ref ref="FILE"/>
+    </appender>
+
+    <root level="INFO"> <!--7-->
+        <appender-ref ref="ASYNC_CONSOLE" />
+        <appender-ref ref="ASYNC_FILE" />
+    </root>
+</configuration>
+----
+
+<1> Include Spring Boot's default Logback configurations, providing access to predefined properties and converters.
+<2> Define the log file location with fallback values: `LOG_FILE` → `LOG_PATH` → `LOG_TEMP` → `java.io.tmpdir` → `/tmp/spring.log`.
+<3> Include Spring Boot's default console appender configuration.
+<4> Include Spring Boot's default file appender configuration.
+<5> Configure the async console appender wrapping the standard `CONSOLE` appender with all available parameters shown.
+<6> Configure the async file appender wrapping the standard `FILE` appender using default parameter values.
+<7> Set the root logger level to INFO and attach both async appenders.
+
+[NOTE]
+====
+The `debug="true"` and `scan="true"` attributes in the configuration element enable:
+
+* *debug:* Prints Logback's internal status information to help troubleshoot configuration issues.
+* *scan:* Automatically reloads the configuration file when it changes (useful during development).
+====
+
+== Understanding Spring Boot Logging Defaults
+
+Spring Boot provides a well-structured default Logback configuration that you can leverage and extend. The key files include:
+
+=== defaults.xml
+
+Contains conversion rules, patterns, and property definitions used by Spring Boot. Available at:
+
+https://github.com/spring-projects/spring-boot/blob/3.5.x/spring-boot-project/spring-boot/src/main/resources/org/springframework/boot/logging/logback/defaults.xml
+
+=== base.xml
+
+Provides the base configuration including console and file appenders. Available at:
+
+https://github.com/spring-projects/spring-boot/blob/3.5.x/spring-boot-project/spring-boot/src/main/resources/org/springframework/boot/logging/logback/base.xml
+
+=== DefaultLogbackConfiguration.java
+
+The Java source that programmatically configures Logback when no custom configuration is provided. Available at:
+
+https://github.com/spring-projects/spring-boot/blob/3.5.x/spring-boot-project/spring-boot/src/main/java/org/springframework/boot/logging/logback/DefaultLogbackConfiguration.java
+
+== Use Cases and Recommendations
+
+=== Development Environment
+
+For development, you might want to disable async logging or use only console logging for immediate feedback:
+
+[source,xml,indent=0]
+----
+<root level="DEBUG">
+    <appender-ref ref="CONSOLE" />
+</root>
+----
+
+=== Production Environment
+
+In production, enable both async console and file logging with appropriate queue sizes:
+
+[source,xml,indent=0]
+----
+<appender name="ASYNC_CONSOLE" class="ch.qos.logback.classic.AsyncAppender">
+    <appender-ref ref="CONSOLE" />
+    <queueSize>512</queueSize>
+    <neverBlock>true</neverBlock>
+</appender>
+
+<appender name="ASYNC_FILE" class="ch.qos.logback.classic.AsyncAppender">
+    <appender-ref ref="FILE"/>
+    <queueSize>512</queueSize>
+    <includeCallerData>false</includeCallerData>
+</appender>
+
+<root level="INFO">
+    <appender-ref ref="ASYNC_CONSOLE" />
+    <appender-ref ref="ASYNC_FILE" />
+</root>
+----
+
+=== High-Throughput Applications
+
+For applications with very high logging volume:
+
+* Increase `queueSize` to 1024 or higher
+* Set `neverBlock` to `true` to prevent application threads from blocking
+* Consider setting `discardingThreshold` to a higher value to drop low-priority logs earlier
+* Keep `includeCallerData` as `false` for maximum performance
+
+== Best Practices
+
+=== Monitor Queue Size
+
+Monitor the async appender queue to ensure it's not frequently reaching capacity. If it does, consider:
+
+* Increasing the queue size
+* Reducing log volume by adjusting log levels
+* Optimizing the underlying appender performance
+
+=== Graceful Shutdown
+
+Ensure your application allows time for the async appender to flush remaining log events during shutdown. Configure `maxFlushTime` appropriately:
+
+[source,xml,indent=0]
+----
+<appender name="ASYNC_FILE" class="ch.qos.logback.classic.AsyncAppender">
+    <appender-ref ref="FILE"/>
+    <maxFlushTime>5000</maxFlushTime>
+</appender>
+----
+
+=== Avoid includeCallerData in Production
+
+Extracting caller data is expensive. Only enable it if absolutely necessary:
+
+[source,xml,indent=0]
+----
+<includeCallerData>false</includeCallerData>
+----
+
+=== Use Appropriate Log Levels
+
+Set proper log levels for different packages to avoid overwhelming the async queue:
+
+[source,xml,indent=0]
+----
+<logger name="com.myapp.verbose.package" level="WARN"/>
+<logger name="org.springframework" level="INFO"/>
+<logger name="org.hibernate" level="WARN"/>
+----
+
+== Troubleshooting
+
+=== Logs Not Appearing
+
+If logs are not appearing, check:
+
+* The `queueSize` might be too small and events are being discarded
+* Set `debug="true"` in the configuration to see Logback's internal status
+* Verify the log file path is writable
+
+=== Performance Issues
+
+If async logging doesn't improve performance:
+
+* Ensure `includeCallerData` is `false`
+* Increase `queueSize` if the queue is frequently full
+* Consider using `neverBlock="true"` to prevent thread blocking
+* Check if the underlying appender (file I/O) is the bottleneck
+
+=== Lost Log Events
+
+If you're losing log events:
+
+* Increase `queueSize`
+* Set `discardingThreshold="0"` to keep all events
+* Configure `maxFlushTime` to ensure events are flushed during shutdown
+* Consider using `neverBlock="false"` to block rather than drop events
+
+== Conclusion
+
+Asynchronous logging with Logback in Spring Boot provides significant performance benefits for high-throughput applications. By properly configuring the `AsyncAppender`, you can:
+
+* Reduce application latency by offloading logging to separate threads
+* Improve throughput by preventing main threads from blocking on I/O
+* Maintain fault tolerance with configurable queue management
+* Customize behavior based on environment-specific requirements
+
+The configuration demonstrated here leverages Spring Boot's default Logback setup while adding async capabilities, making it easy to integrate into existing applications.
+
+The complete source code is available on https://gist.github.com/aoudiamoncef/8863b4efacad7497120fdd83ef216d43[GitHub Gist].
+
+== Resources
+
+* https://logback.qos.ch/manual/appenders.html#AsyncAppender[Logback Manual: AsyncAppender]
+* https://logback.qos.ch/performance.html[Logback Performance Optimization]
+* https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#features.logging[Spring Boot Documentation: Logging Features]
+* https://github.com/spring-projects/spring-boot/blob/3.5.x/spring-boot-project/spring-boot/src/main/resources/org/springframework/boot/logging/logback/base.xml[Spring Boot Default Logback Configuration]
+* https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#howto.logging.logback.file-only-output[Spring Boot Documentation: File-Only Output]
+* https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#features.logging.custom-log-configuration[Spring Boot Documentation: Custom Log Configuration]

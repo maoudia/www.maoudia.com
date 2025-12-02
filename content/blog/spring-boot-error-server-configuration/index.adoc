@@ -9,7 +9,8 @@ readingtime = 6
 tags = ["Java", "Spring Boot", "Error Handling", "Configuration", "Best Practices"]
 categories = ["Tutorial"]
 slug = "spring-boot-error-server-configuration"
-type = "code"
+type = "article"
+featuredImage = "/images/blog/spring-boot-error-server-configuration/featured-image-en.svg"
 [twitter]
     card = "summary_large_image"
     site = "@AoudiaMoncef"
@@ -21,13 +22,17 @@ type = "code"
 :toc: macro
 :toc-title: Table of contents
 :toclevels: 1
-:imagesdir: /images/code/spring-boot-error-server-configuration
+:source-highlighter: rouge
+:rouge-style: github
+:rouge-linenums-mode: inline
+:imagesdir: /images/blog/spring-boot-error-server-configuration
+:imagesoutdir: static/images/blog/spring-boot-error-server-configuration
 ifdef::env-github[]
 :imagesdir: ../../static/images/spring-boot-error-server-configuration
+:imagesoutdir: ../../static/images/spring-boot-error-server-configuration
 endif::[]
 
 [.lead]
-
 Spring Boot provides flexible error handling configuration options that allow you to control what information is exposed in error responses. This is crucial for maintaining security in production while providing detailed debugging information in development environments.
 
 This tutorial showcases varying error response behaviors across different deployment profiles using a REST controller that intentionally throws errors for demonstration purposes.

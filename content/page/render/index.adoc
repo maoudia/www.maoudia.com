@@ -1,0 +1,618 @@
++++
+title = "Render"
+date = "2021-05-19T08:30:00"
+publishDate = "2021-05-19T08:30:00"
+excludeFromTopNav = false
+showPublishDate = false
+showLastModificationDate = false
+showReadingTime = false
+slug = "render"
+[twitter]
+    card = "summary_large_image"
+    site = "@AoudiaMoncef"
+    creator = "@AoudiaMoncef"
+    title = "Moncef AOUDIA"
+    description = "Here are the software and hardware I use."
+    image = "https://www.maoudia.com/images/banners/banner-1200x600.png"
++++
+:imagesdir: /images/diagrams
+:imagesoutdir: static/images/diagrams
+
+[.lead]
+This guide will help you understand and implement support for users with multiple authentication identities in the OSRD project's Editoast service.
+
+== Understanding the Authentication System
+
+=== Current Architecture
+
+[mermaid]
+----
+graph TB
+    subgraph "External Auth Providers"
+        OIDC[OIDC Provider]
+        SAML[SAML Provider]
+        Mock[Mock Auth Dev]
+    end
+
+    subgraph "OSRD System"
+        Gateway[Gateway<br/>Adds x-osrd-user header]
+        Editoast[Editoast Service]
+        OpenFGA[OpenFGA<br/>Authorization Service]
+
+        subgraph "PostgreSQL Database"
+            SubjectTable[authn_subject<br/>Base entity]
+            UserTable[authn_user<br/>User info + identity]
+            GroupTable[authn_group<br/>Groups]
+        end
+    end
+
+    OIDC --> Gateway
+    SAML --> Gateway
+    Mock --> Gateway
+
+    Gateway -->|"Header: provider/userid"| Editoast
+    Editoast --> OpenFGA
+    Editoast --> SubjectTable
+    SubjectTable --> UserTable
+    SubjectTable --> GroupTable
+----
+
+=== Current Database Schema
+
+[mermaid]
+----
+erDiagram
+    authn_subject {
+        bigserial id PK
+    }
+
+    authn_user {
+        bigint id PK,FK
+        varchar(255) identity_id UK
+        text name
+    }
+
+    authn_group {
+        bigint id PK,FK
+        text name
+    }
+
+    authn_subject ||--o| authn_user : "is a"
+    authn_subject ||--o| authn_group : "is a"
+----
+
+=== The Problem
+
+Currently, each user can only have ONE identity (e.g., `oidc/john.doe`). If the same person authenticates through different providers, they appear as different users:
+
+* `oidc/john.doe` → User ID 1
+* `saml/jdoe@company.com` → User ID 2 (different user!)
+
+We need to allow the same user to authenticate through multiple providers while maintaining a single user account.
+
+== Solution Design
+
+=== New Database Schema
+
+[mermaid]
+----
+erDiagram
+    authn_subject {
+        bigserial id PK
+    }
+
+    authn_user {
+        bigint id PK,FK
+        text name
+    }
+
+    authn_user_identity {
+        bigserial id PK
+        bigint user_id FK
+        varchar(255) identity UK
+    }
+
+    authn_group {
+        bigint id PK,FK
+        text name
+    }
+
+    authn_subject ||--o| authn_user : "is a"
+    authn_subject ||--o| authn_group : "is a"
+    authn_user ||--o{ authn_user_identity : "has many"
+----
+
+=== Key Changes
+
+1. **Remove** `identity_id` column from `authn_user`
+2. **Create** new `authn_user_identity` table
+3. **Migrate** existing identities to the new table
+4. **Update** all code that queries by identity
+
+== Implementation Plan
+
+=== Step 1: Database Migration
+
+Create migration file: `editoast/migrations/2024-XX-XX-XXXXXX_multiple_user_identities/up.sql`
+
+[source,sql]
+----
+-- Create new identity table
+CREATE TABLE authn_user_identity (
+    id BIGSERIAL PRIMARY KEY,
+    user_id BIGINT NOT NULL REFERENCES authn_user(id) ON DELETE CASCADE,
+    identity VARCHAR(255) NOT NULL UNIQUE
+);
+
+-- Create index for performance
+CREATE INDEX idx_user_identity_user_id ON authn_user_identity(user_id);
+CREATE INDEX idx_user_identity_identity ON authn_user_identity(identity);
+
+-- Migrate existing data
+INSERT INTO authn_user_identity (user_id, identity)
+SELECT id, identity_id
+FROM authn_user
+WHERE identity_id IS NOT NULL;
+
+-- Drop old column
+ALTER TABLE authn_user DROP COLUMN identity_id;
+
+-- Make name required (as per workshop notes)
+ALTER TABLE authn_user ALTER COLUMN name SET NOT NULL;
+----
+
+Down migration: `editoast/migrations/2024-XX-XX-XXXXXX_multiple_user_identities/down.sql`
+
+[source,sql]
+----
+-- Re-add identity_id column
+ALTER TABLE authn_user ADD COLUMN identity_id VARCHAR(255);
+
+-- Migrate back (take first identity per user)
+UPDATE authn_user u
+SET identity_id = (
+    SELECT identity
+    FROM authn_user_identity
+    WHERE user_id = u.id
+    ORDER BY id
+    LIMIT 1
+);
+
+-- Add unique constraint
+ALTER TABLE authn_user ADD CONSTRAINT authn_user_identity_id_key UNIQUE(identity_id);
+
+-- Drop identity table
+DROP TABLE authn_user_identity;
+
+-- Revert name to optional
+ALTER TABLE authn_user ALTER COLUMN name DROP NOT NULL;
+----
+
+=== Step 2: Update Database Models
+
+Update `editoast/database/src/tables.rs`:
+
+[source,rust]
+----
+// Add new table definition
+table! {
+    authn_user_identity (id) {
+        id -> Bigint,
+        user_id -> Bigint,
+        identity -> Varchar,
+    }
+}
+
+// Update authn_user table - remove identity_id
+table! {
+    authn_user (id) {
+        id -> Bigint,
+        name -> Text,  // Now required
+    }
+}
+
+// Add joinable relationship
+diesel::joinable!(authn_user_identity -> authn_user (user_id));
+
+// Update allow_tables_to_appear_in_same_query
+diesel::allow_tables_to_appear_in_same_query!(
+    authn_subject,
+    authn_user,
+    authn_user_identity,  // Add this
+    authn_group,
+    // ... other tables
+);
+----
+
+=== Step 3: Update StorageDriver Implementation
+
+Modify `editoast/src/models/auth_driver.rs`:
+
+[source,rust]
+----
+impl StorageDriver for PgAuthDriver {
+    async fn get_user_info_by_identity(
+        &self,
+        user_identity: &UserIdentity,
+    ) -> Result<Option<User>, Self::Error> {
+        let conn = self.pool.get().await?;
+
+        // Join with identity table
+        let info = authn_user::table
+            .inner_join(authn_user_identity::table)
+            .select((authn_user::id, authn_user::name))
+            .filter(authn_user_identity::identity.eq(&user_identity))
+            .first::<(i64, String)>(conn.write().await.deref_mut())
+            .await
+            .optional()?;
+
+        let Some((id, name)) = info else {
+            return Ok(None);
+        };
+
+        // Get all identities for this user
+        let identities = authn_user_identity::table
+            .select(authn_user_identity::identity)
+            .filter(authn_user_identity::user_id.eq(id))
+            .load::<String>(conn.write().await.deref_mut())
+            .await?;
+
+        Ok(Some(User {
+            id,
+            info: UserInfo {
+                identity: user_identity.clone(), // Primary identity
+                name,
+                all_identities: identities,      // New field
+            },
+        }))
+    }
+
+    async fn get_user_id(
+        &self,
+        user_identity: &UserIdentity
+    ) -> Result<Option<i64>, Self::Error> {
+        let conn = self.pool.get().await?;
+
+        // Query through identity table
+        let id = authn_user_identity::table
+            .select(authn_user_identity::user_id)
+            .filter(authn_user_identity::identity.eq(&user_identity))
+            .first::<i64>(conn.write().await.deref_mut())
+            .await
+            .optional()?;
+        Ok(id)
+    }
+
+    async fn ensure_user(&self, user: &UserInfo) -> Result<User, Self::Error> {
+        let conn = self.pool.get().await?;
+
+        conn.transaction(|conn| {
+            async move {
+                // Check if identity exists
+                let existing = self.get_user_info_by_identity(&user.identity).await?;
+
+                if let Some(existing_user) = existing {
+                    return Ok(existing_user);
+                }
+
+                // Create new user
+                let subject_id: i64 = dsl::insert_into(authn_subject::table)
+                    .default_values()
+                    .returning(authn_subject::id)
+                    .get_result(conn)
+                    .await?;
+
+                // Insert user
+                dsl::insert_into(authn_user::table)
+                    .values((
+                        authn_user::id.eq(subject_id),
+                        authn_user::name.eq(&user.name),
+                    ))
+                    .execute(conn)
+                    .await?;
+
+                // Insert identity
+                dsl::insert_into(authn_user_identity::table)
+                    .values((
+                        authn_user_identity::user_id.eq(subject_id),
+                        authn_user_identity::identity.eq(&user.identity),
+                    ))
+                    .execute(conn)
+                    .await?;
+
+                Ok(User {
+                    id: subject_id,
+                    info: user.clone(),
+                })
+            }
+        }.scope_boxed())
+        .await
+    }
+}
+----
+
+=== Step 4: Implement CLI Command
+
+Add new command in `editoast/src/client/user.rs`:
+
+[source,rust]
+----
+#[derive(Args, Debug)]
+pub struct AddIdentityCommand {
+    /// Existing user (by current identity or user ID)
+    existing: String,
+
+    /// New identities to add
+    #[arg(required = true)]
+    new_identities: Vec<String>,
+}
+
+pub async fn add_identity(
+    db_pool: Arc<DbConnectionPoolV2>,
+    cmd: AddIdentityCommand,
+) -> Result<()> {
+    let conn = &mut db_pool.get().await?;
+
+    // Find user by identity or ID
+    let user_id = if cmd.existing.contains('/') {
+        // It's an identity
+        authn_user_identity::table
+            .select(authn_user_identity::user_id)
+            .filter(authn_user_identity::identity.eq(&cmd.existing))
+            .first::<i64>(conn)
+            .await
+            .map_err(|_| anyhow::anyhow!("User not found: {}", cmd.existing))?
+    } else {
+        // Try parsing as user ID
+        cmd.existing.parse::<i64>()
+            .map_err(|_| anyhow::anyhow!("Invalid user ID or identity: {}", cmd.existing))?
+    };
+
+    // Verify user exists
+    let user_exists = authn_user::table
+        .select(dsl::count(authn_user::id))
+        .filter(authn_user::id.eq(user_id))
+        .first::<i64>(conn)
+        .await? > 0;
+
+    if !user_exists {
+        return Err(anyhow::anyhow!("User with ID {} not found", user_id));
+    }
+
+    // Add new identities
+    for identity in cmd.new_identities {
+        // Check if identity already exists
+        let exists = authn_user_identity::table
+            .select(dsl::count(authn_user_identity::id))
+            .filter(authn_user_identity::identity.eq(&identity))
+            .first::<i64>(conn)
+            .await? > 0;
+
+        if exists {
+            warn!("Identity '{}' already exists, skipping", identity);
+            continue;
+        }
+
+        // Insert new identity
+        dsl::insert_into(authn_user_identity::table)
+            .values((
+                authn_user_identity::user_id.eq(user_id),
+                authn_user_identity::identity.eq(&identity),
+            ))
+            .execute(conn)
+            .await?;
+
+        info!("Added identity '{}' to user {}", identity, user_id);
+    }
+
+    Ok(())
+}
+----
+
+Update CLI router in `editoast/src/client/user.rs`:
+
+[source,rust]
+----
+#[derive(Subcommand, Debug)]
+pub enum UserCommand {
+    /// Add a new user
+    Add(AddUserCommand),
+
+    /// Add identity to existing user
+    AddIdentity(AddIdentityCommand),
+
+    /// List all users
+    List,
+
+    /// Delete a user
+    Delete(DeleteUserCommand),
+}
+
+pub async fn handle_user_command(
+    db_pool: Arc<DbConnectionPoolV2>,
+    command: UserCommand,
+) -> Result<()> {
+    match command {
+        UserCommand::Add(cmd) => add_user(db_pool, cmd).await,
+        UserCommand::AddIdentity(cmd) => add_identity(db_pool, cmd).await,
+        UserCommand::List => list_users(db_pool).await,
+        UserCommand::Delete(cmd) => delete_user(db_pool, cmd).await,
+    }
+}
+----
+
+=== Step 5: Testing
+
+Create comprehensive tests in `editoast/src/models/auth_driver_tests.rs`:
+
+[source,rust]
+----
+#[tokio::test]
+async fn test_multiple_identities_same_user() {
+    let pool = setup_test_db().await;
+    let driver = PgAuthDriver::new(Arc::new(pool));
+
+    // Create user with first identity
+    let user1 = driver.ensure_user(&UserInfo {
+        identity: "oidc/john.doe".into(),
+        name: "John Doe".into(),
+    }).await.unwrap();
+
+    // Add second identity using CLI command
+    add_identity(pool, AddIdentityCommand {
+        existing: user1.id.to_string(),
+        new_identities: vec!["saml/jdoe@company.com".into()],
+    }).await.unwrap();
+
+    // Both identities should resolve to same user
+    let user2 = driver.get_user_info_by_identity(
+        &"saml/jdoe@company.com".into()
+    ).await.unwrap().unwrap();
+
+    assert_eq!(user1.id, user2.id);
+    assert_eq!(user1.info.name, user2.info.name);
+}
+
+#[tokio::test]
+async fn test_duplicate_identity_warning() {
+    let pool = setup_test_db().await;
+
+    // Create user with identity
+    create_test_user(&pool, "oidc/jane.doe", "Jane Doe").await;
+
+    // Try to add same identity - should log warning
+    let result = add_identity(pool, AddIdentityCommand {
+        existing: "oidc/jane.doe".into(),
+        new_identities: vec!["oidc/jane.doe".into()],
+    }).await;
+
+    // Should succeed but log warning
+    assert!(result.is_ok());
+}
+
+#[tokio::test]
+async fn test_user_groups_with_multiple_identities() {
+    // Test that groups work correctly with multiple identities
+    let pool = setup_test_db().await;
+    let driver = PgAuthDriver::new(Arc::new(pool));
+
+    // Create user and group
+    let user = create_test_user(&pool, "oidc/alice", "Alice").await;
+    let group = create_test_group(&pool, "developers").await;
+    add_user_to_group(&pool, user.id, group.id).await;
+
+    // Add second identity
+    add_identity(pool, AddIdentityCommand {
+        existing: user.id.to_string(),
+        new_identities: vec!["saml/alice@corp.com".into()],
+    }).await.unwrap();
+
+    // Check groups work with both identities
+    let groups1 = driver.user_groups(&User(user.id)).await.unwrap();
+
+    let user2 = driver.get_user_info_by_identity(
+        &"saml/alice@corp.com".into()
+    ).await.unwrap().unwrap();
+    let groups2 = driver.user_groups(&User(user2.id)).await.unwrap();
+
+    assert_eq!(groups1, groups2);
+}
+----
+
+== Testing Checklist
+
+=== Unit Tests
+* [ ] Test user creation with identity
+* [ ] Test adding multiple identities
+* [ ] Test duplicate identity handling
+* [ ] Test identity lookup
+* [ ] Test user deletion cascades to identities
+
+=== Integration Tests
+* [ ] Test authentication with different identities
+* [ ] Test authorization works with multiple identities
+* [ ] Test CLI commands
+* [ ] Test existing user/group commands still work
+
+=== Manual Testing
+1. **Create user with identity**:
+```bash
+   editoast user add 'oidc/test.user' 'Test User'
+```
+
+2. **Add additional identity**:
+```bash
+   editoast user add-identity 'oidc/test.user' 'saml/tuser@company.com' 'mock/testuser'
+```
+
+3. **Verify authentication**:
+- Login with original identity
+- Login with new identity
+- Check both resolve to same user
+
+4. **Test with roles**:
+```bash
+   editoast roles add 'oidc/test.user' Admin
+   # Login with saml/tuser@company.com should have Admin role
+```
+
+== Common Pitfalls
+
+1. **Identity Format**: Always use `provider/userid` format
+2. **Cascade Deletes**: Ensure foreign keys have `ON DELETE CASCADE`
+3. **Transaction Safety**: Use database transactions for multi-table operations
+4. **Unique Constraints**: Identity must remain globally unique
+5. **Migration Rollback**: Test down migration doesn't lose data
+
+== Development Workflow
+
+1. **Setup Environment**:
+```bash
+   cd editoast
+   diesel migration run
+   cargo build
+```
+
+2. **Run Tests**:
+```bash
+   cargo test auth_driver
+   cargo test user_command
+```
+
+3. **Test CLI**:
+```bash
+   cargo run -- user add-identity --help
+```
+
+4. **Create PR**:
+- Reference issue #13822
+- Include migration files
+- Update documentation
+- Add comprehensive tests
+
+== API Changes
+
+No REST API changes needed! The authentication happens transparently:
+
+1. Gateway sends identity in header
+2. Editoast looks up user by identity
+3. If found, uses that user (regardless of which identity)
+4. All existing endpoints work unchanged
+
+== Success Criteria
+
+✅ Users can have multiple identities
+✅ CLI command to add identities
+✅ All identities resolve to same user
+✅ Existing functionality unaffected
+✅ Database migrations are reversible
+✅ Comprehensive test coverage
+
+== Questions to Consider
+
+1. **Identity Management UI**: Should we add API endpoints to manage identities?
+2. **Identity Removal**: Should we allow removing identities (keeping at least one)?
+3. **Primary Identity**: Should we track which identity is primary?
+4. **Audit Trail**: Should we log identity additions/removals?
+
+Good luck with the implementation! The key is maintaining backward compatibility while adding the new multi-identity support.
