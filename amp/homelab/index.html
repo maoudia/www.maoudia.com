@@ -1,0 +1,471 @@
+<!doctype html><html class=no-js lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=siteBaseUrl content="https://www.maoudia.com/"><meta name=author content="Moncef AOUDIA"><meta name=description content="Moncef AOUDIA's website"><meta name=keywords content="blog,personal,programming,java,graphql,springboot,quarkus,reactor,camel,apollo,opensource,multilingual"><link href=https://github.com/aoudiamoncef rel=me><link rel=webmention href=https://webmention.io/www.maoudia.com/webmention><link rel=pingback href=https://webmention.io/www.maoudia.com/xmlrpc><meta name=generator content="Hugo 0.152.0"><noscript><meta http-equiv=refresh content="0; url=https://www.maoudia.com/amp/homelab/"></noscript><title>Homelab | Moncef AOUDIA</title><meta name=description content="My personal homelab infrastructure for learning and experimentation"><meta itemprop=name content="Homelab"><meta itemprop=description content="My personal homelab infrastructure for learning and experimentation"><meta name=twitter:card content="summary_large_image"><meta name=twitter:site content="@AoudiaMoncef"><meta name=twitter:title content="Homelab Infrastructure"><meta name=twitter:image content="https://www.maoudia.com/images/page/homelab/featured-image-en.svg"><meta name=twitter:image:src content="https://www.maoudia.com/images/page/homelab/featured-image-en.svg"><meta name=twitter:creator content="@AoudiaMoncef"><meta property="og:title" content="Homelab"><meta property="og:description" content="My personal homelab infrastructure for learning and experimentation"><meta property="og:type" content="article"><meta property="og:url" content="https://www.maoudia.com/amp/homelab/"><meta property="og:image" content="https://www.maoudia.com/images/page/homelab/featured-image-en.svg"><meta property="og:image:secure_url" content="https://www.maoudia.com/images/page/homelab/featured-image-en.svg"><meta property="og:image:type" content="image/png"><meta property="og:image:width" content><meta property="og:image:height" content><meta property="article:section" content="page"><meta property="article:published_time" content="2023-01-01T00:00:00+00:00"><meta property="article:modified_time" content="2025-12-02T16:41:06+01:00"><meta property="og:locale" content="en"><meta property="og:locale:alternate" content="fr"><head><link rel=apple-touch-icon sizes=180x180 href=/images/favicons/apple-touch-icon-180x180.webp><link rel=icon type=image/png sizes=32x32 href=/images/favicons/favicon-32x32.webp><link rel=icon type=image/png sizes=16x16 href=/images/favicons/favicon-16x16.webp><link rel=manifest href=/manifest.json crossorigin=use-credentials><link rel=mask-icon href=/images/favicons/safari-pinned-tab.svg color=#5bbad5><meta name=apple-mobile-web-app-title content="https://www.maoudia.com"><meta name=application-name content="https://www.maoudia.com"><meta name=msapplication-TileColor content="#00a300"><meta name=theme-color media="(prefers-color-scheme: light)" content="white"><meta name=theme-color media="(prefers-color-scheme: dark)" content="black"></head><link rel=preload as=script href=https://www.maoudia.com/js/modernizr-simple.min.js><script src=/js/modernizr-simple.min.js></script><link href=https://www.maoudia.com/index.xml rel=alternate type=application/rss+xml title="Moncef AOUDIA"><link href=https://www.maoudia.com/blog/index.xml rel=feed type=application/rss+xml title="Moncef AOUDIA Blog"><link rel=canonical href=https://www.maoudia.com/amp/homelab/><link rel=preload as=script href=https://www.maoudia.com/js/theme.min.js crossorigin=anonymous><link rel=stylesheet href=https://www.maoudia.com/css/theme.min.css><link rel=stylesheet href=https://www.maoudia.com/css/main.min.css integrity></head><body class=bilberry-hugo-theme><nav class=permanentTopNav><div class=container><ul class=topnav><li><a href=https://www.maoudia.com/amp/homelab/>Homelab</a></li><li><a href=https://www.maoudia.com/amp/uses/>Uses</a></li><li><a href=https://www.maoudia.com/amp/about/>About</a></li></ul><div id=search-box class=search><i class="fas fa-search"></i>
+<input id=search type=text placeholder="Search ..."></div></div></nav><header><div class=container><div class=logo><a href=https://www.maoudia.com/ class=logo><img src=/images/logo.png width=512 height=512 alt="Moncef AOUDIA logo">
+<span class=overlay><i class="fa fa-home"></i></span></a></div><div class=titles><h3 class=title><a href=/about/>Moncef AOUDIA</a></h3></div><div class=languages><a href=https://www.maoudia.com/amp/ class=active>en</a>
+<span>| </span><a href=https://www.maoudia.com/fr/amp/>fr</a></div><div class="toggler permanentTopNav"><i class="fa fa-bars" aria-hidden=true></i></div></div></header><div class="main container"><div class="article-wrapper u-cf single"><article class="default article"><div class="featured-image webfeedsFeaturedVisual"><a href=https://www.maoudia.com/amp/homelab/ alt="article with featured image"><img src=/images/page/homelab/featured-image-en.svg width=1200 height=600 alt="featured image"></a></div><div class=content><h1 class=article-title><a href=https://www.maoudia.com/amp/homelab/>Homelab</a></h1><div class=meta><span>| </span><span>Updated on </span><span class=date>2025-12-02</span>
+<span>| </span><span class=readingTime>14 mins read</span></div><div class="paragraph lead"><p>My personal homelab infrastructure project, running since January 2023. A space for experimentation, learning, and developing IT skills without professional constraints.</p></div><div id=toc class=toc><div id=toctitle class=title>Table of contents</div><ul class=sectlevel1><li><a href=#_overview>1. Overview</a></li><li><a href=#_hardware_infrastructure>2. Hardware Infrastructure</a></li><li><a href=#_network_architecture>3. Network Architecture</a></li><li><a href=#_proxmox_cluster>4. Proxmox Cluster</a></li><li><a href=#_kubernetes_k3s_architecture>5. Kubernetes (K3S) Architecture</a></li><li><a href=#_application_deployment_flow>6. Application Deployment Flow</a></li><li><a href=#_monitoring_observability_stack_plg>7. Monitoring & Observability Stack (PLG)</a></li><li><a href=#_services_applications>8. Services & Applications</a></li><li><a href=#_technology_stack>9. Technology Stack</a></li><li><a href=#_mission_objectives>10. Mission & Objectives</a></li><li><a href=#_project_timeline>11. Project Timeline</a></li><li><a href=#_learning_outcomes>12. Learning Outcomes</a></li><li><a href=#_future_enhancements>13. Future Enhancements</a></li><li><a href=#_conclusion>14. Conclusion</a></li></ul></div><div class=sect1><h2 id=_overview>1. Overview</h2><div class=sectionbody><div class=paragraph><p>The homelab project provides a complete infrastructure for experimenting with enterprise-grade technologies, developing applications, and learning modern DevOps practices.</p></div></div></div><div class=sect1><h2 id=_hardware_infrastructure>2. Hardware Infrastructure</h2><div class=sectionbody><div class=paragraph><p>The foundation of this homelab consists of three physical machines connected through a professional-grade network infrastructure. The setup prioritizes high availability, energy efficiency, and quiet operation suitable for a home environment.</p></div><div class=paragraph><p>The Dell PowerEdge T330 serves as the primary compute node, while two Lenovo ThinkCentre M715Q mini PCs provide additional compute capacity in a compact form factor. All machines are connected through a Ubiquiti UDM PRO SE, which handles network management, VPN services, and advanced firewall capabilities.</p></div><div id=homelab-hardware class=listingblock><div class=content><pre>Failed to generate image: mmdc failed:
+Error: Failed to launch the browser process!
+[1202/155050.122068:FATAL:zygote_host_impl_linux.cc(128)] No usable sandbox! If you are running on Ubuntu 23.10+ or another Linux distro that has disabled unprivileged user namespaces with AppArmor, see https://chromium.googlesource.com/chromium/src/+/main/docs/security/apparmor-userns-restrictions.md. Otherwise see https://chromium.googlesource.com/chromium/src/+/main/docs/linux/suid_sandbox_development.md for more information on developing with the (older) SUID sandbox. If you want to live dangerously and need an immediate workaround, you can try using --no-sandbox.
+
+
+TROUBLESHOOTING: https://pptr.dev/troubleshooting
+
+    at Interface.onClose (file:///home/runner/work/www.maoudia.com/www.maoudia.com/node_modules/@puppeteer/browsers/lib/esm/launch.js:303:24)
+    at Interface.emit (node:events:539:35)
+    at Interface.close (node:readline:586:8)
+    at Socket.onend (node:readline:277:10)
+    at Socket.emit (node:events:539:35)
+    at endReadableNT (node:internal/streams/readable:1345:12)
+    at processTicksAndRejections (node:internal/process/task_queues:83:21)
+
+
+%%{init: {&#39;theme&#39;:&#39;neutral&#39;, &#39;themeVariables&#39;: { &#39;fontSize&#39;:&#39;16px&#39;}}}%%
+graph TB
+    subgraph Internet[&#34;Internet&#34;]
+        ISP[Internet Service Provider]
+    end
+
+    subgraph Network[&#34;Network Layer&#34;]
+        LB[Orange Livebox 6&lt;br/&gt;WAN Gateway]
+        UDM[Ubiquiti UDM PRO SE&lt;br/&gt;Network Manager&lt;br/&gt;VPN Server]
+    end
+
+    subgraph Compute[&#34;Compute Resources&#34;]
+        DELL[Dell PowerEdge T330&lt;br/&gt;Proxmox Host 1&lt;br/&gt;Modified for Silent Operation]
+        LENOVO1[Lenovo ThinkCentre M715Q&lt;br/&gt;Proxmox Host 2]
+        LENOVO2[Lenovo ThinkCentre M715Q&lt;br/&gt;Proxmox Host 3]
+    end
+
+    ISP --&gt; LB
+    LB --&gt; UDM
+    UDM --&gt; DELL
+    UDM --&gt; LENOVO1
+    UDM --&gt; LENOVO2
+
+    classDef internetStyle fill:#FF6B6B,stroke:#C92A2A,color:#fff,stroke-width:2px
+    classDef networkStyle fill:#4ECDC4,stroke:#0D7377,color:#fff,stroke-width:2px
+    classDef computeStyle fill:#95E1D3,stroke:#38A3A5,color:#000,stroke-width:2px
+
+    class ISP internetStyle
+    class LB,UDM networkStyle
+    class DELL,LENOVO1,LENOVO2 computeStyle</pre></div></div><div class=sect2><h3 id=_hardware_specifications>2.1. Hardware Specifications</h3><div class=sect3><h4 id=_dell_poweredge_t330>2.1.1. Dell PowerEdge T330</h4><div class=ulist><ul><li><p>Enterprise-grade server</p></li><li><p>Custom modifications for silent operation</p></li><li><p>Primary compute node</p></li><li><p>Running Proxmox hypervisor</p></li></ul></div></div><div class=sect3><h4 id=_lenovo_thinkcentre_m715q_x2>2.1.2. Lenovo ThinkCentre M715Q (x2)</h4><div class=ulist><ul><li><p>Compact mini PCs</p></li><li><p>Energy-efficient compute nodes</p></li><li><p>Running Proxmox hypervisor</p></li><li><p>Part of HA cluster</p></li></ul></div></div><div class=sect3><h4 id=_network_equipment>2.1.3. Network Equipment</h4><div class=ulist><ul><li><p><strong>Ubiquiti UDM PRO SE</strong>: Professional network management, VPN server, firewall</p></li><li><p><strong>Orange Livebox 6</strong>: ISP gateway with DMZ configuration</p></li></ul></div></div></div></div></div><div class=sect1><h2 id=_network_architecture>3. Network Architecture</h2><div class=sectionbody><div class=paragraph><p>Security and network segmentation are critical components of this homelab. The network architecture implements enterprise best practices with multiple VLANs for isolation, a DMZ for public-facing services, and VPN access for secure remote administration.</p></div><div class=paragraph><p>The design separates management traffic (Proxmox hosts, Dell iDRAC) from service traffic (K3S cluster, TrueNAS, Portainer), ensuring that administrative interfaces are never directly exposed. All external access is filtered through the firewall, and internal access to management systems requires VPN authentication via WireGuard.</p></div><div id=homelab-network class=listingblock><div class=content><pre>Failed to generate image: mmdc failed:
+Error: Failed to launch the browser process!
+[1202/155050.775556:FATAL:zygote_host_impl_linux.cc(128)] No usable sandbox! If you are running on Ubuntu 23.10+ or another Linux distro that has disabled unprivileged user namespaces with AppArmor, see https://chromium.googlesource.com/chromium/src/+/main/docs/security/apparmor-userns-restrictions.md. Otherwise see https://chromium.googlesource.com/chromium/src/+/main/docs/linux/suid_sandbox_development.md for more information on developing with the (older) SUID sandbox. If you want to live dangerously and need an immediate workaround, you can try using --no-sandbox.
+
+
+TROUBLESHOOTING: https://pptr.dev/troubleshooting
+
+    at Interface.onClose (file:///home/runner/work/www.maoudia.com/www.maoudia.com/node_modules/@puppeteer/browsers/lib/esm/launch.js:303:24)
+    at Interface.emit (node:events:539:35)
+    at Interface.close (node:readline:586:8)
+    at Socket.onend (node:readline:277:10)
+    at Socket.emit (node:events:539:35)
+    at endReadableNT (node:internal/streams/readable:1345:12)
+    at processTicksAndRejections (node:internal/process/task_queues:83:21)
+
+
+%%{init: {&#39;theme&#39;:&#39;neutral&#39;, &#39;themeVariables&#39;: { &#39;fontSize&#39;:&#39;14px&#39;}}}%%
+graph LR
+    WAN[Internet/WAN] --&gt; FW{Firewall}
+
+    FW --&gt; DMZ[DMZ&lt;br/&gt;Public Services]
+    FW --&gt; VPN[WireGuard VPN]
+
+    VPN --&gt; MGMT[Management VLAN&lt;br/&gt;iDRAC + Proxmox]
+    VPN --&gt; SVC[Services VLAN&lt;br/&gt;K3S + TrueNAS + Portainer]
+
+    classDef wanStyle fill:#FF6B6B,stroke:#C92A2A,color:#fff,stroke-width:2px
+    classDef fwStyle fill:#F38181,stroke:#D63031,color:#fff,stroke-width:2px
+    classDef dmzStyle fill:#FFA500,stroke:#FF8C00,color:#fff,stroke-width:2px
+    classDef vpnStyle fill:#6C5CE7,stroke:#5849BE,color:#fff,stroke-width:2px
+    classDef mgmtStyle fill:#4ECDC4,stroke:#0D7377,color:#fff,stroke-width:2px
+    classDef serviceStyle fill:#95E1D3,stroke:#38A3A5,color:#000,stroke-width:2px
+
+    class WAN wanStyle
+    class FW fwStyle
+    class DMZ dmzStyle
+    class VPN vpnStyle
+    class MGMT mgmtStyle
+    class SVC serviceStyle</pre></div></div><div class=sect2><h3 id=_network_features>3.1. Network Features</h3><div class=ulist><ul><li><p><strong>VLANs</strong>: Segmented network for security and organization</p></li><li><p><strong>Firewall Rules</strong>: Custom rules for traffic control</p></li><li><p><strong>VPN Server</strong>: WireGuard for secure remote access</p></li><li><p><strong>DMZ</strong>: Isolated zone for publicly exposed services</p></li><li><p><strong>Network Management</strong>: Centralized control via Ubiquiti UDM PRO SE</p></li></ul></div></div></div></div><div class=sect1><h2 id=_proxmox_cluster>4. Proxmox Cluster</h2><div class=sectionbody><div class=paragraph><p>The virtualization layer is built on a 3-node Proxmox VE cluster, providing high availability and resource pooling across all physical hosts. This configuration ensures that if one node fails, virtual machines automatically migrate to healthy nodes without service interruption.</p></div><div class=paragraph><p>Infrastructure as Code principles are applied using Terraform with the Proxmox Provider, allowing VM creation and configuration to be version-controlled and reproducible. Shared storage is provided by a TrueNAS SCALE VM, offering NFS and iSCSI protocols for VM disks and data storage. This architecture enables live migration of VMs between hosts and provides a solid foundation for the Kubernetes cluster running on top.</p></div><div id=homelab-proxmox-cluster class=listingblock><div class=content><pre>Failed to generate image: mmdc failed:
+Error: Failed to launch the browser process!
+[1202/155051.261375:FATAL:zygote_host_impl_linux.cc(128)] No usable sandbox! If you are running on Ubuntu 23.10+ or another Linux distro that has disabled unprivileged user namespaces with AppArmor, see https://chromium.googlesource.com/chromium/src/+/main/docs/security/apparmor-userns-restrictions.md. Otherwise see https://chromium.googlesource.com/chromium/src/+/main/docs/linux/suid_sandbox_development.md for more information on developing with the (older) SUID sandbox. If you want to live dangerously and need an immediate workaround, you can try using --no-sandbox.
+
+
+TROUBLESHOOTING: https://pptr.dev/troubleshooting
+
+    at Interface.onClose (file:///home/runner/work/www.maoudia.com/www.maoudia.com/node_modules/@puppeteer/browsers/lib/esm/launch.js:303:24)
+    at Interface.emit (node:events:539:35)
+    at Interface.close (node:readline:586:8)
+    at Socket.onend (node:readline:277:10)
+    at Socket.emit (node:events:539:35)
+    at endReadableNT (node:internal/streams/readable:1345:12)
+    at processTicksAndRejections (node:internal/process/task_queues:83:21)
+
+
+%%{init: {&#39;theme&#39;:&#39;neutral&#39;, &#39;themeVariables&#39;: { &#39;fontSize&#39;:&#39;16px&#39;}}}%%
+graph TB
+    subgraph Cluster[&#34;Proxmox HA Cluster&#34;]
+        subgraph Node1[&#34;Dell PowerEdge T330&#34;]
+            PVE1[Proxmox VE 1&lt;br/&gt;Cluster Node 1]
+            VM1[VMs]
+            CT1[Containers]
+        end
+
+        subgraph Node2[&#34;Lenovo M715Q #1&#34;]
+            PVE2[Proxmox VE 2&lt;br/&gt;Cluster Node 2]
+            VM2[VMs]
+            CT2[Containers]
+        end
+
+        subgraph Node3[&#34;Lenovo M715Q #2&#34;]
+            PVE3[Proxmox VE 3&lt;br/&gt;Cluster Node 3]
+            VM3[VMs]
+            CT3[Containers]
+        end
+    end
+
+    subgraph Storage[&#34;Network Storage&#34;]
+        TRUENAS[TrueNAS SCALE&lt;br/&gt;NFS/iSCSI]
+    end
+
+    subgraph IaC[&#34;Infrastructure as Code&#34;]
+        TERRAFORM[Terraform&lt;br/&gt;Proxmox Provider]
+    end
+
+    TERRAFORM --&gt; PVE1
+    TERRAFORM --&gt; PVE2
+    TERRAFORM --&gt; PVE3
+
+    PVE1 &lt;-.HA Sync.-&gt; PVE2
+    PVE2 &lt;-.HA Sync.-&gt; PVE3
+    PVE3 &lt;-.HA Sync.-&gt; PVE1
+
+    VM1 --&gt; TRUENAS
+    VM2 --&gt; TRUENAS
+    VM3 --&gt; TRUENAS
+
+    classDef proxmoxStyle fill:#E26D0E,stroke:#C25C0A,color:#fff,stroke-width:2px
+    classDef vmStyle fill:#95E1D3,stroke:#38A3A5,color:#000,stroke-width:2px
+    classDef storageStyle fill:#4ECDC4,stroke:#0D7377,color:#fff,stroke-width:2px
+    classDef iacStyle fill:#6C5CE7,stroke:#5849BE,color:#fff,stroke-width:2px
+
+    class PVE1,PVE2,PVE3 proxmoxStyle
+    class VM1,VM2,VM3,CT1,CT2,CT3 vmStyle
+    class TRUENAS storageStyle
+    class TERRAFORM iacStyle</pre></div></div><div class=sect2><h3 id=_cluster_features>4.1. Cluster Features</h3><div class=ulist><ul><li><p><strong>High Availability</strong>: 3-node cluster with automatic failover</p></li><li><p><strong>Infrastructure as Code</strong>: VM provisioning with Terraform</p></li><li><p><strong>Network Storage</strong>: Shared storage via TrueNAS SCALE</p></li><li><p><strong>Resource Pooling</strong>: Distributed compute resources</p></li><li><p><strong>Live Migration</strong>: Move VMs between nodes without downtime</p></li></ul></div></div></div></div><div class=sect1><h2 id=_kubernetes_k3s_architecture>5. Kubernetes (K3S) Architecture</h2><div class=sectionbody><div class=paragraph><p>K3S, a lightweight Kubernetes distribution, forms the container orchestration layer of this homelab. The cluster features a highly available control plane with three master nodes synchronized through KubeVIP, which provides a virtual IP for seamless failover and load balancing of API server requests.</p></div><div class=paragraph><p>The entire cluster deployment is automated using Ansible playbooks, from initial node provisioning to K3S installation and configuration. Applications are deployed using Helm charts and managed through ArgoCD following GitOps principles—all application configurations are stored in Git repositories, and ArgoCD continuously synchronizes the desired state to the cluster. Longhorn provides distributed block storage for persistent volumes, while MetalLB enables LoadBalancer services on bare-metal, and Traefik handles ingress traffic and TLS termination.</p></div><div id=homelab-k3s-architecture class=listingblock><div class=content><pre>Failed to generate image: mmdc failed:
+Error: Failed to launch the browser process!
+[1202/155051.749575:FATAL:zygote_host_impl_linux.cc(128)] No usable sandbox! If you are running on Ubuntu 23.10+ or another Linux distro that has disabled unprivileged user namespaces with AppArmor, see https://chromium.googlesource.com/chromium/src/+/main/docs/security/apparmor-userns-restrictions.md. Otherwise see https://chromium.googlesource.com/chromium/src/+/main/docs/linux/suid_sandbox_development.md for more information on developing with the (older) SUID sandbox. If you want to live dangerously and need an immediate workaround, you can try using --no-sandbox.
+
+
+TROUBLESHOOTING: https://pptr.dev/troubleshooting
+
+    at Interface.onClose (file:///home/runner/work/www.maoudia.com/www.maoudia.com/node_modules/@puppeteer/browsers/lib/esm/launch.js:303:24)
+    at Interface.emit (node:events:539:35)
+    at Interface.close (node:readline:586:8)
+    at Socket.onend (node:readline:277:10)
+    at Socket.emit (node:events:539:35)
+    at endReadableNT (node:internal/streams/readable:1345:12)
+    at processTicksAndRejections (node:internal/process/task_queues:83:21)
+
+
+%%{init: {&#39;theme&#39;:&#39;neutral&#39;, &#39;themeVariables&#39;: { &#39;fontSize&#39;:&#39;16px&#39;}}}%%
+graph TB
+    subgraph K3S[&#34;K3S Cluster - High Availability&#34;]
+        subgraph Control[&#34;Control Plane&#34;]
+            MASTER1[Master Node 1]
+            MASTER2[Master Node 2]
+            MASTER3[Master Node 3]
+            KUBEVIP[KubeVIP&lt;br/&gt;VIP Management]
+        end
+
+        subgraph Workers[&#34;Worker Nodes&#34;]
+            WORKER1[Worker 1]
+            WORKER2[Worker 2]
+            WORKER3[Worker 3]
+        end
+    end
+
+    subgraph Storage[&#34;Storage Layer&#34;]
+        LONGHORN[Longhorn&lt;br/&gt;Distributed Storage]
+    end
+
+    subgraph Ingress[&#34;Ingress &amp; Load Balancing&#34;]
+        TRAEFIK[Traefik&lt;br/&gt;Ingress Controller]
+        METALLB[MetalLB&lt;br/&gt;Load Balancer]
+    end
+
+    subgraph Deployment[&#34;Deployment Tools&#34;]
+        ANSIBLE[Ansible&lt;br/&gt;Cluster Provisioning]
+        ARGOCD[ArgoCD&lt;br/&gt;GitOps CD]
+        HELM[Helm Charts]
+    end
+
+    ANSIBLE --&gt; Control
+    ANSIBLE --&gt; Workers
+
+    MASTER1 &lt;-.Cluster Sync.-&gt; MASTER2
+    MASTER2 &lt;-.Cluster Sync.-&gt; MASTER3
+    MASTER3 &lt;-.Cluster Sync.-&gt; MASTER1
+
+    KUBEVIP --&gt; MASTER1
+    KUBEVIP --&gt; MASTER2
+    KUBEVIP --&gt; MASTER3
+
+    Control --&gt; Workers
+    Workers --&gt; LONGHORN
+    Workers --&gt; TRAEFIK
+    Workers --&gt; METALLB
+
+    ARGOCD --&gt; Workers
+    HELM --&gt; ARGOCD
+
+    classDef controlStyle fill:#326CE5,stroke:#1E4FA3,color:#fff,stroke-width:2px
+    classDef workerStyle fill:#95E1D3,stroke:#38A3A5,color:#000,stroke-width:2px
+    classDef storageStyle fill:#FF9F1C,stroke:#E07A00,color:#fff,stroke-width:2px
+    classDef ingressStyle fill:#4ECDC4,stroke:#0D7377,color:#fff,stroke-width:2px
+    classDef deployStyle fill:#6C5CE7,stroke:#5849BE,color:#fff,stroke-width:2px
+
+    class MASTER1,MASTER2,MASTER3,KUBEVIP controlStyle
+    class WORKER1,WORKER2,WORKER3 workerStyle
+    class LONGHORN storageStyle
+    class TRAEFIK,METALLB ingressStyle
+    class ANSIBLE,ARGOCD,HELM deployStyle</pre></div></div><div class=sect2><h3 id=_kubernetes_components>5.1. Kubernetes Components</h3><div class=sect3><h4 id=_core_infrastructure>5.1.1. Core Infrastructure</h4><div class=ulist><ul><li><p><strong>K3S</strong>: Lightweight Kubernetes distribution</p></li><li><p><strong>KubeVIP</strong>: Virtual IP for HA control plane</p></li><li><p><strong>MetalLB</strong>: Bare-metal load balancer</p></li><li><p><strong>Traefik</strong>: Ingress controller and reverse proxy</p></li></ul></div></div><div class=sect3><h4 id=_storage>5.1.2. Storage</h4><div class=ulist><ul><li><p><strong>Longhorn</strong>: Distributed block storage for persistent volumes</p></li></ul></div></div><div class=sect3><h4 id=_deployment_management>5.1.3. Deployment & Management</h4><div class=ulist><ul><li><p><strong>Ansible</strong>: Automated cluster provisioning and configuration</p></li><li><p><strong>ArgoCD</strong>: GitOps continuous delivery</p></li><li><p><strong>Helm</strong>: Application package management</p></li><li><p><strong>Sealed Secrets</strong>: Encrypted secrets management</p></li></ul></div></div><div class=sect3><h4 id=_networking>5.1.4. Networking</h4><div class=ulist><ul><li><p><strong>Reflector</strong>: ConfigMap and Secret replication</p></li><li><p><strong>Cert-Manager</strong>: Automated TLS certificate management</p></li></ul></div></div></div></div></div><div class=sect1><h2 id=_application_deployment_flow>6. Application Deployment Flow</h2><div class=sectionbody><div class=paragraph><p>The homelab implements modern CI/CD practices using GitOps methodology. Developed applications follow a structured pipeline from code commit to production deployment. This workflow ensures consistency, traceability, and enables rapid iteration while maintaining deployment standards.</p></div><div class=paragraph><p>Code changes pushed to Git repositories trigger CI pipelines that build container images and push them to a container registry. ArgoCD monitors Git repositories containing Helm chart configurations and automatically synchronizes any changes to the K3S cluster. This declarative approach means the cluster state always matches what’s defined in Git, providing a single source of truth. All deployments are automatically integrated with the observability stack, sending logs to Loki and metrics to Prometheus for comprehensive monitoring via Grafana dashboards.</p></div><div id=homelab-deployment-flow class=listingblock><div class=content><pre>Failed to generate image: mmdc failed:
+Error: Failed to launch the browser process!
+[1202/155052.247290:FATAL:zygote_host_impl_linux.cc(128)] No usable sandbox! If you are running on Ubuntu 23.10+ or another Linux distro that has disabled unprivileged user namespaces with AppArmor, see https://chromium.googlesource.com/chromium/src/+/main/docs/security/apparmor-userns-restrictions.md. Otherwise see https://chromium.googlesource.com/chromium/src/+/main/docs/linux/suid_sandbox_development.md for more information on developing with the (older) SUID sandbox. If you want to live dangerously and need an immediate workaround, you can try using --no-sandbox.
+
+
+TROUBLESHOOTING: https://pptr.dev/troubleshooting
+
+    at Interface.onClose (file:///home/runner/work/www.maoudia.com/www.maoudia.com/node_modules/@puppeteer/browsers/lib/esm/launch.js:303:24)
+    at Interface.emit (node:events:539:35)
+    at Interface.close (node:readline:586:8)
+    at Socket.onend (node:readline:277:10)
+    at Socket.emit (node:events:539:35)
+    at endReadableNT (node:internal/streams/readable:1345:12)
+    at processTicksAndRejections (node:internal/process/task_queues:83:21)
+
+
+%%{init: {&#39;theme&#39;:&#39;neutral&#39;, &#39;themeVariables&#39;: { &#39;fontSize&#39;:&#39;16px&#39;}}}%%
+graph LR
+    subgraph Development[&#34;Development&#34;]
+        DEV[Developer]
+        GIT[Git Repository]
+    end
+
+    subgraph CI[&#34;CI Pipeline&#34;]
+        BUILD[Build &amp; Test]
+        IMAGE[Container Image]
+        REGISTRY[Container Registry]
+    end
+
+    subgraph CD[&#34;Continuous Deployment&#34;]
+        ARGOCD[ArgoCD&lt;br/&gt;GitOps]
+        HELM[Helm Charts]
+    end
+
+    subgraph K8S[&#34;K3S Cluster&#34;]
+        DEPLOY[Deployment]
+        SERVICE[Service]
+        INGRESS[Traefik Ingress]
+    end
+
+    subgraph Monitoring[&#34;Observability&#34;]
+        LOGS[Logs - Loki]
+        METRICS[Metrics - Prometheus]
+        VIZ[Visualization - Grafana]
+    end
+
+    DEV --&gt; GIT
+    GIT --&gt; BUILD
+    BUILD --&gt; IMAGE
+    IMAGE --&gt; REGISTRY
+    REGISTRY --&gt; ARGOCD
+    HELM --&gt; ARGOCD
+    ARGOCD --&gt; DEPLOY
+    DEPLOY --&gt; SERVICE
+    SERVICE --&gt; INGRESS
+
+    DEPLOY --&gt; LOGS
+    DEPLOY --&gt; METRICS
+    LOGS --&gt; VIZ
+    METRICS --&gt; VIZ
+
+    classDef devStyle fill:#95E1D3,stroke:#38A3A5,color:#000,stroke-width:2px
+    classDef ciStyle fill:#6C5CE7,stroke:#5849BE,color:#fff,stroke-width:2px
+    classDef cdStyle fill:#FF6B6B,stroke:#C92A2A,color:#fff,stroke-width:2px
+    classDef k8sStyle fill:#326CE5,stroke:#1E4FA3,color:#fff,stroke-width:2px
+    classDef monStyle fill:#FFA500,stroke:#FF8C00,color:#fff,stroke-width:2px
+
+    class DEV,GIT devStyle
+    class BUILD,IMAGE,REGISTRY ciStyle
+    class ARGOCD,HELM cdStyle
+    class DEPLOY,SERVICE,INGRESS k8sStyle
+    class LOGS,METRICS,VIZ monStyle</pre></div></div></div></div><div class=sect1><h2 id=_monitoring_observability_stack_plg>7. Monitoring & Observability Stack (PLG)</h2><div class=sectionbody><div class=paragraph><p>Comprehensive observability is crucial for maintaining a complex infrastructure. The PLG stack (Prometheus, Loki, Grafana) provides end-to-end visibility into the entire homelab, from physical Proxmox hosts to containerized applications running in the K3S cluster.</p></div><div class=paragraph><p>Promtail agents collect logs from all sources and forward them to Loki for aggregation, while Prometheus scrapes metrics from exporters on every component. Grafana serves as the unified interface, combining logs and metrics in cohesive dashboards that provide real-time insights into system health and performance. UptimeKuma monitors service availability and provides status pages, while Rancher and OpenLens offer specialized Kubernetes cluster management interfaces for operational tasks.</p></div><div id=homelab-monitoring-stack class=listingblock><div class=content><pre>Failed to generate image: mmdc failed:
+Error: Failed to launch the browser process!
+[1202/155052.742883:FATAL:zygote_host_impl_linux.cc(128)] No usable sandbox! If you are running on Ubuntu 23.10+ or another Linux distro that has disabled unprivileged user namespaces with AppArmor, see https://chromium.googlesource.com/chromium/src/+/main/docs/security/apparmor-userns-restrictions.md. Otherwise see https://chromium.googlesource.com/chromium/src/+/main/docs/linux/suid_sandbox_development.md for more information on developing with the (older) SUID sandbox. If you want to live dangerously and need an immediate workaround, you can try using --no-sandbox.
+
+
+TROUBLESHOOTING: https://pptr.dev/troubleshooting
+
+    at Interface.onClose (file:///home/runner/work/www.maoudia.com/www.maoudia.com/node_modules/@puppeteer/browsers/lib/esm/launch.js:303:24)
+    at Interface.emit (node:events:539:35)
+    at Interface.close (node:readline:586:8)
+    at Socket.onend (node:readline:277:10)
+    at Socket.emit (node:events:539:35)
+    at endReadableNT (node:internal/streams/readable:1345:12)
+    at processTicksAndRejections (node:internal/process/task_queues:83:21)
+
+
+%%{init: {&#39;theme&#39;:&#39;neutral&#39;, &#39;themeVariables&#39;: { &#39;fontSize&#39;:&#39;16px&#39;}}}%%
+graph TB
+    subgraph Sources[&#34;Data Sources&#34;]
+        K3S[K3S Cluster&lt;br/&gt;Applications]
+        PROXMOX[Proxmox Hosts]
+        SERVICES[Services &amp; VMs]
+    end
+
+    subgraph Collection[&#34;Collection Layer&#34;]
+        PROMTAIL[Promtail&lt;br/&gt;Log Collector]
+        PROM[Prometheus&lt;br/&gt;Metrics Collector]
+    end
+
+    subgraph Storage[&#34;Storage Layer&#34;]
+        LOKI[Loki&lt;br/&gt;Log Aggregation]
+        PROMDB[(Prometheus DB&lt;br/&gt;Time Series)]
+    end
+
+    subgraph Visualization[&#34;Visualization &amp; Alerting&#34;]
+        GRAFANA[Grafana&lt;br/&gt;Dashboards]
+        UPTIME[UptimeKuma&lt;br/&gt;Service Monitoring]
+    end
+
+    subgraph Management[&#34;Management Tools&#34;]
+        RANCHER[Rancher&lt;br/&gt;K8S Management]
+        OPENLENS[OpenLens&lt;br/&gt;K8S IDE]
+    end
+
+    K3S --&gt; PROMTAIL
+    PROXMOX --&gt; PROMTAIL
+    SERVICES --&gt; PROMTAIL
+
+    K3S --&gt; PROM
+    PROXMOX --&gt; PROM
+    SERVICES --&gt; PROM
+
+    PROMTAIL --&gt; LOKI
+    PROM --&gt; PROMDB
+
+    LOKI --&gt; GRAFANA
+    PROMDB --&gt; GRAFANA
+
+    K3S --&gt; UPTIME
+    SERVICES --&gt; UPTIME
+
+    K3S --&gt; RANCHER
+    K3S --&gt; OPENLENS
+
+    classDef sourceStyle fill:#95E1D3,stroke:#38A3A5,color:#000,stroke-width:2px
+    classDef collectStyle fill:#4ECDC4,stroke:#0D7377,color:#fff,stroke-width:2px
+    classDef storageStyle fill:#6C5CE7,stroke:#5849BE,color:#fff,stroke-width:2px
+    classDef vizStyle fill:#FFA500,stroke:#FF8C00,color:#fff,stroke-width:2px
+    classDef mgmtStyle fill:#326CE5,stroke:#1E4FA3,color:#fff,stroke-width:2px
+
+    class K3S,PROXMOX,SERVICES sourceStyle
+    class PROMTAIL,PROM collectStyle
+    class LOKI,PROMDB storageStyle
+    class GRAFANA,UPTIME vizStyle
+    class RANCHER,OPENLENS mgmtStyle</pre></div></div><div class=sect2><h3 id=_monitoring_components>7.1. Monitoring Components</h3><div class=sect3><h4 id=_plg_stack_prometheus_loki_grafana>7.1.1. PLG Stack (Prometheus, Loki, Grafana)</h4><div class=ulist><ul><li><p><strong>Prometheus</strong>: Metrics collection and time-series database</p></li><li><p><strong>Loki</strong>: Log aggregation and querying</p></li><li><p><strong>Grafana</strong>: Unified visualization and dashboards</p></li></ul></div></div><div class=sect3><h4 id=_additional_tools>7.1.2. Additional Tools</h4><div class=ulist><ul><li><p><strong>UptimeKuma</strong>: Service uptime monitoring and status pages</p></li><li><p><strong>Rancher</strong>: Kubernetes cluster management interface</p></li><li><p><strong>OpenLens</strong>: Kubernetes IDE for cluster inspection</p></li></ul></div></div></div></div></div><div class=sect1><h2 id=_services_applications>8. Services & Applications</h2><div class=sectionbody><div class=paragraph><p>The homelab hosts a diverse collection of self-hosted applications spanning authentication, media, productivity, databases, and network services. Each service is carefully selected to provide practical functionality while offering learning opportunities in system administration and cloud-native deployment.</p></div><div class=paragraph><p>Authentik serves as the central identity provider, enabling Single Sign-On (SSO) across all applications for streamlined authentication. High-availability database clusters (PostgreSQL and Redis) provide robust data persistence, while media services like Plex and PhotoPrism deliver personal streaming and photo management. Pi-hole offers network-wide ad blocking and DNS management, and management dashboards like Heimdall and Portainer simplify day-to-day operations across the entire infrastructure.</p></div><div id=homelab-services class=listingblock><div class=content><pre>Failed to generate image: mmdc failed:
+Error: Failed to launch the browser process!
+[1202/155053.219783:FATAL:zygote_host_impl_linux.cc(128)] No usable sandbox! If you are running on Ubuntu 23.10+ or another Linux distro that has disabled unprivileged user namespaces with AppArmor, see https://chromium.googlesource.com/chromium/src/+/main/docs/security/apparmor-userns-restrictions.md. Otherwise see https://chromium.googlesource.com/chromium/src/+/main/docs/linux/suid_sandbox_development.md for more information on developing with the (older) SUID sandbox. If you want to live dangerously and need an immediate workaround, you can try using --no-sandbox.
+
+
+TROUBLESHOOTING: https://pptr.dev/troubleshooting
+
+    at Interface.onClose (file:///home/runner/work/www.maoudia.com/www.maoudia.com/node_modules/@puppeteer/browsers/lib/esm/launch.js:303:24)
+    at Interface.emit (node:events:539:35)
+    at Interface.close (node:readline:586:8)
+    at Socket.onend (node:readline:277:10)
+    at Socket.emit (node:events:539:35)
+    at endReadableNT (node:internal/streams/readable:1345:12)
+    at processTicksAndRejections (node:internal/process/task_queues:83:21)
+
+
+%%{init: {&#39;theme&#39;:&#39;neutral&#39;, &#39;themeVariables&#39;: { &#39;fontSize&#39;:&#39;16px&#39;}}}%%
+graph TB
+    subgraph Auth[&#34;Authentication &amp; Security&#34;]
+        AUTHENTIK[Authentik&lt;br/&gt;SSO/Identity Provider]
+        PIHOLE[Pi-hole&lt;br/&gt;DNS &amp; Ad Blocking]
+    end
+
+    subgraph Media[&#34;Media Services&#34;]
+        PLEX[Plex&lt;br/&gt;Media Server]
+        PHOTOPRISM[PhotoPrism&lt;br/&gt;Photo Management]
+    end
+
+    subgraph Productivity[&#34;Productivity&#34;]
+        NEXTCLOUD[Nextcloud&lt;br/&gt;File Sync &amp; Share]
+        SYNCTHING[Syncthing&lt;br/&gt;P2P File Sync]
+    end
+
+    subgraph Data[&#34;Data Services&#34;]
+        POSTGRES[PostgreSQL HA&lt;br/&gt;Database Cluster]
+        REDIS[Redis HA&lt;br/&gt;Cache Cluster]
+        SUPABASE[Supabase&lt;br/&gt;Backend as a Service]
+    end
+
+    subgraph Network[&#34;Network Services&#34;]
+        UNIFI[Unifi Network&lt;br/&gt;Controller]
+        WIREGUARD[WireGuard&lt;br/&gt;VPN]
+    end
+
+    subgraph Management[&#34;Management Dashboards&#34;]
+        HEIMDAL[Heimdall&lt;br/&gt;Application Dashboard]
+        PORTAINER[Portainer&lt;br/&gt;Docker Management]
+    end
+
+    AUTHENTIK --&gt; Media
+    AUTHENTIK --&gt; Productivity
+    AUTHENTIK --&gt; Data
+
+    PIHOLE --&gt; Network
+
+    classDef authStyle fill:#F38181,stroke:#D63031,color:#fff,stroke-width:2px
+    classDef mediaStyle fill:#95E1D3,stroke:#38A3A5,color:#000,stroke-width:2px
+    classDef prodStyle fill:#4ECDC4,stroke:#0D7377,color:#fff,stroke-width:2px
+    classDef dataStyle fill:#6C5CE7,stroke:#5849BE,color:#fff,stroke-width:2px
+    classDef netStyle fill:#FFA500,stroke:#FF8C00,color:#fff,stroke-width:2px
+    classDef mgmtStyle fill:#326CE5,stroke:#1E4FA3,color:#fff,stroke-width:2px
+
+    class AUTHENTIK,PIHOLE authStyle
+    class PLEX,PHOTOPRISM mediaStyle
+    class NEXTCLOUD,SYNCTHING prodStyle
+    class POSTGRES,REDIS,SUPABASE dataStyle
+    class UNIFI,WIREGUARD netStyle
+    class HEIMDAL,PORTAINER mgmtStyle</pre></div></div><div class=sect2><h3 id=_service_categories>8.1. Service Categories</h3><div class=sect3><h4 id=_authentication_security>8.1.1. Authentication & Security</h4><div class=ulist><ul><li><p><strong>Authentik</strong>: Single Sign-On and identity management</p></li><li><p><strong>Pi-hole</strong>: Network-wide ad blocking and DNS</p></li></ul></div></div><div class=sect3><h4 id=_media_services>8.1.2. Media Services</h4><div class=ulist><ul><li><p><strong>Plex</strong>: Personal media streaming server</p></li><li><p><strong>PhotoPrism</strong>: AI-powered photo management</p></li></ul></div></div><div class=sect3><h4 id=_productivity_collaboration>8.1.3. Productivity & Collaboration</h4><div class=ulist><ul><li><p><strong>Nextcloud</strong>: Self-hosted cloud storage and collaboration</p></li><li><p><strong>Syncthing</strong>: Decentralized file synchronization</p></li></ul></div></div><div class=sect3><h4 id=_data_services>8.1.4. Data Services</h4><div class=ulist><ul><li><p><strong>PostgreSQL HA</strong>: High-availability database cluster</p></li><li><p><strong>Redis HA</strong>: Distributed caching solution</p></li><li><p><strong>Supabase</strong>: Open-source Firebase alternative</p></li></ul></div></div><div class=sect3><h4 id=_network_services>8.1.5. Network Services</h4><div class=ulist><ul><li><p><strong>Unifi Network</strong>: Network controller for Ubiquiti equipment</p></li><li><p><strong>WireGuard</strong>: Modern VPN solution</p></li></ul></div></div><div class=sect3><h4 id=_management>8.1.6. Management</h4><div class=ulist><ul><li><p><strong>Heimdall</strong>: Application dashboard and launcher</p></li><li><p><strong>Portainer</strong>: Docker container management interface</p></li></ul></div></div></div></div></div><div class=sect1><h2 id=_technology_stack>9. Technology Stack</h2><div class=sectionbody><div class=sect2><h3 id=_infrastructure_layer>9.1. Infrastructure Layer</h3><table class="tableblock frame-all grid-all stretch"><col style=width:40%><col style=width:60%><thead><tr><th class="tableblock halign-left valign-top">Category</th><th class="tableblock halign-left valign-top">Technologies</th></tr></thead><tbody><tr><td class="tableblock halign-left valign-top"><p class=tableblock>Hypervisor</p></td><td class="tableblock halign-left valign-top"><p class=tableblock>Proxmox VE</p></td></tr><tr><td class="tableblock halign-left valign-top"><p class=tableblock>Container Orchestration</p></td><td class="tableblock halign-left valign-top"><p class=tableblock>K3S (Kubernetes)</p></td></tr><tr><td class="tableblock halign-left valign-top"><p class=tableblock>Infrastructure as Code</p></td><td class="tableblock halign-left valign-top"><p class=tableblock>Terraform, Ansible</p></td></tr><tr><td class="tableblock halign-left valign-top"><p class=tableblock>Network Management</p></td><td class="tableblock halign-left valign-top"><p class=tableblock>Ubiquiti UDM PRO SE, VLANs</p></td></tr><tr><td class="tableblock halign-left valign-top"><p class=tableblock>Storage</p></td><td class="tableblock halign-left valign-top"><p class=tableblock>TrueNAS SCALE, Longhorn</p></td></tr></tbody></table></div><div class=sect2><h3 id=_platform_layer>9.2. Platform Layer</h3><table class="tableblock frame-all grid-all stretch"><col style=width:40%><col style=width:60%><thead><tr><th class="tableblock halign-left valign-top">Category</th><th class="tableblock halign-left valign-top">Technologies</th></tr></thead><tbody><tr><td class="tableblock halign-left valign-top"><p class=tableblock>GitOps & CD</p></td><td class="tableblock halign-left valign-top"><p class=tableblock>ArgoCD</p></td></tr><tr><td class="tableblock halign-left valign-top"><p class=tableblock>Package Management</p></td><td class="tableblock halign-left valign-top"><p class=tableblock>Helm</p></td></tr><tr><td class="tableblock halign-left valign-top"><p class=tableblock>Ingress & Load Balancing</p></td><td class="tableblock halign-left valign-top"><p class=tableblock>Traefik, MetalLB, KubeVIP</p></td></tr><tr><td class="tableblock halign-left valign-top"><p class=tableblock>Service Mesh</p></td><td class="tableblock halign-left valign-top"><p class=tableblock>Traefik</p></td></tr><tr><td class="tableblock halign-left valign-top"><p class=tableblock>Secrets Management</p></td><td class="tableblock halign-left valign-top"><p class=tableblock>Sealed Secrets</p></td></tr><tr><td class="tableblock halign-left valign-top"><p class=tableblock>Certificate Management</p></td><td class="tableblock halign-left valign-top"><p class=tableblock>Cert-Manager</p></td></tr></tbody></table></div><div class=sect2><h3 id=_observability_layer>9.3. Observability Layer</h3><table class="tableblock frame-all grid-all stretch"><col style=width:40%><col style=width:60%><thead><tr><th class="tableblock halign-left valign-top">Category</th><th class="tableblock halign-left valign-top">Technologies</th></tr></thead><tbody><tr><td class="tableblock halign-left valign-top"><p class=tableblock>Metrics</p></td><td class="tableblock halign-left valign-top"><p class=tableblock>Prometheus</p></td></tr><tr><td class="tableblock halign-left valign-top"><p class=tableblock>Logs</p></td><td class="tableblock halign-left valign-top"><p class=tableblock>Loki, Promtail</p></td></tr><tr><td class="tableblock halign-left valign-top"><p class=tableblock>Visualization</p></td><td class="tableblock halign-left valign-top"><p class=tableblock>Grafana</p></td></tr><tr><td class="tableblock halign-left valign-top"><p class=tableblock>Uptime Monitoring</p></td><td class="tableblock halign-left valign-top"><p class=tableblock>UptimeKuma</p></td></tr><tr><td class="tableblock halign-left valign-top"><p class=tableblock>Cluster Management</p></td><td class="tableblock halign-left valign-top"><p class=tableblock>Rancher, OpenLens</p></td></tr></tbody></table></div><div class=sect2><h3 id=_application_layer>9.4. Application Layer</h3><table class="tableblock frame-all grid-all stretch"><col style=width:40%><col style=width:60%><thead><tr><th class="tableblock halign-left valign-top">Category</th><th class="tableblock halign-left valign-top">Technologies</th></tr></thead><tbody><tr><td class="tableblock halign-left valign-top"><p class=tableblock>Authentication</p></td><td class="tableblock halign-left valign-top"><p class=tableblock>Authentik</p></td></tr><tr><td class="tableblock halign-left valign-top"><p class=tableblock>Databases</p></td><td class="tableblock halign-left valign-top"><p class=tableblock>PostgreSQL HA, Redis HA</p></td></tr><tr><td class="tableblock halign-left valign-top"><p class=tableblock>Backend Services</p></td><td class="tableblock halign-left valign-top"><p class=tableblock>Supabase</p></td></tr><tr><td class="tableblock halign-left valign-top"><p class=tableblock>Media</p></td><td class="tableblock halign-left valign-top"><p class=tableblock>Plex, PhotoPrism</p></td></tr><tr><td class="tableblock halign-left valign-top"><p class=tableblock>Productivity</p></td><td class="tableblock halign-left valign-top"><p class=tableblock>Nextcloud, Syncthing</p></td></tr><tr><td class="tableblock halign-left valign-top"><p class=tableblock>Network Services</p></td><td class="tableblock halign-left valign-top"><p class=tableblock>Pi-hole, WireGuard, Unifi Network</p></td></tr><tr><td class="tableblock halign-left valign-top"><p class=tableblock>Container Management</p></td><td class="tableblock halign-left valign-top"><p class=tableblock>Portainer</p></td></tr><tr><td class="tableblock halign-left valign-top"><p class=tableblock>Application Dashboard</p></td><td class="tableblock halign-left valign-top"><p class=tableblock>Heimdall</p></td></tr></tbody></table></div></div></div><div class=sect1><h2 id=_mission_objectives>10. Mission & Objectives</h2><div class=sectionbody><div class=sect2><h3 id=_core_missions>10.1. Core Missions</h3><div class=sect3><h4 id=_network_infrastructure>10.1.1. Network Infrastructure</h4><div class=ulist><ul><li><p>Configure VLANs for network segmentation</p></li><li><p>Implement firewall rules for security</p></li><li><p>Deploy VPN server for secure remote access</p></li><li><p>Setup DMZ on ISP gateway for public services</p></li></ul></div></div><div class=sect3><h4 id=_hardware_customization>10.1.2. Hardware Customization</h4><div class=ulist><ul><li><p>Modify Dell PowerEdge T330 for silent operation</p></li><li><p>Optimize cooling and acoustics for home environment</p></li></ul></div></div><div class=sect3><h4 id=_virtualization_platform>10.1.3. Virtualization Platform</h4><div class=ulist><ul><li><p>Install Proxmox hypervisor on all 3 machines</p></li><li><p>Configure high-availability cluster</p></li><li><p>Implement automated failover mechanisms</p></li></ul></div></div><div class=sect3><h4 id=_infrastructure_as_code>10.1.4. Infrastructure as Code</h4><div class=ulist><ul><li><p>Provision VMs using Terraform with Proxmox Provider</p></li><li><p>Automate infrastructure deployment and management</p></li></ul></div></div><div class=sect3><h4 id=_kubernetes_deployment>10.1.5. Kubernetes Deployment</h4><div class=ulist><ul><li><p>Install K3S high-availability cluster using Ansible</p></li><li><p>Configure master and worker nodes</p></li><li><p>Implement distributed storage with Longhorn</p></li></ul></div></div><div class=sect3><h4 id=_application_deployment>10.1.6. Application Deployment</h4><div class=ulist><ul><li><p>Deploy all services using Helm charts</p></li><li><p>Implement GitOps with ArgoCD for continuous delivery</p></li><li><p>Automate application lifecycle management</p></li></ul></div></div><div class=sect3><h4 id=_storage_management>10.1.7. Storage Management</h4><div class=ulist><ul><li><p>Deploy TrueNAS SCALE VM for network storage</p></li><li><p>Configure NFS and iSCSI for shared storage</p></li><li><p>Implement backup strategies</p></li></ul></div></div><div class=sect3><h4 id=_observability_monitoring>10.1.8. Observability & Monitoring</h4><div class=ulist><ul><li><p>Deploy PLG stack (Prometheus, Loki, Grafana)</p></li><li><p>Collect logs and metrics from all services</p></li><li><p>Create dashboards for system visibility</p></li></ul></div></div><div class=sect3><h4 id=_container_management>10.1.9. Container Management</h4><div class=ulist><ul><li><p>Setup Portainer VM for Docker Compose stacks</p></li><li><p>Manage containerized applications outside Kubernetes</p></li></ul></div></div></div></div></div><div class=sect1><h2 id=_project_timeline>11. Project Timeline</h2><div class=sectionbody><div class=ulist><ul><li><p><strong>January 2023</strong>: Project inception</p></li><li><p><strong>Ongoing</strong>: Continuous learning and experimentation</p></li><li><p><strong>Location</strong>: Lille, Hauts-de-France, France</p></li></ul></div></div></div><div class=sect1><h2 id=_learning_outcomes>12. Learning Outcomes</h2><div class=sectionbody><div class=paragraph><p>This homelab project provides hands-on experience with:</p></div><div class=ulist><ul><li><p>Enterprise-grade virtualization and clustering</p></li><li><p>Kubernetes orchestration and management</p></li><li><p>Infrastructure as Code practices</p></li><li><p>GitOps methodology</p></li><li><p>Network security and segmentation</p></li><li><p>Monitoring and observability</p></li><li><p>High availability and fault tolerance</p></li><li><p>Storage management and backup strategies</p></li><li><p>CI/CD pipelines and automation</p></li></ul></div></div></div><div class=sect1><h2 id=_future_enhancements>13. Future Enhancements</h2><div class=sectionbody><div class=paragraph><p>Potential areas for expansion:</p></div><div class=ulist><ul><li><p>Implement service mesh (Istio/Linkerd)</p></li><li><p>Add more observability tools (Jaeger for tracing)</p></li><li><p>Explore edge computing scenarios</p></li><li><p>Implement disaster recovery procedures</p></li><li><p>Add GPU passthrough for AI/ML workloads</p></li><li><p>Expand multi-cluster management</p></li><li><p>Implement backup and restore automation</p></li></ul></div></div></div><div class=sect1><h2 id=_conclusion>14. Conclusion</h2><div class=sectionbody><div class=paragraph><p>This homelab serves as a comprehensive platform for learning modern infrastructure technologies, developing practical DevOps skills, and hosting personal applications in a professional-grade environment. The project demonstrates proficiency in virtualization, containerization, automation, and cloud-native technologies.</p></div></div></div></div><div class="footer no-tags"></div></article></div></div><footer><div class=container><div class=categories><a href=/categories/ alt=Categories><strong>Categories</strong></a><ul><li><a href=/categories/tutorial alt=Tutorial>Tutorial
+(5)</a></li><li><a href=/categories/reactive-programming alt="Reactive programming">Reactive programming
+(3)</a></li></ul></div><div class=series><a href=/series/><strong>Series</strong></a><ul><li><a href=/series/mongodb-reactive-cli>Mongodb reactive CLI
+(1)</a></li></ul></div><div class=right><div class=external-profiles><strong>Find me on</strong>
+<a href=https://twitter.com/aoudiamoncef title="Moncef AOUDIA Twitter" target=_blank rel="noopener noreferrer"><i class="fab fa-twitter"></i></a>
+<a href=https://github.com/aoudiamoncef title="Moncef AOUDIA Github" target=_blank rel="noopener noreferrer"><i class="fab fa-github"></i></a>
+<a href=https://gitlab.com/aoudiamoncef title="Moncef AOUDIA Gitlab" target=_blank rel="noopener noreferrer"><i class="fab fa-gitlab"></i></a>
+<a href=https://www.linkedin.com/in/moncef-aoudia-7723b311b title="Moncef AOUDIA Linkedin" target=_blank rel="noopener noreferrer"><i class="fab fa-linkedin"></i></a>
+<a href=mailto:mf.aoudia@gmail.com title="Moncef AOUDIA Gmail" target=_blank rel="noopener noreferrer"><i class="fas fa-envelope"></i></a>
+<a href=https://www.clubhouse.com/@aoudiamoncef title="Moncef AOUDIA Clubhouse" target=_blank rel="noopener noreferrer"><i class="far fa-copyright"></i></a>
+<a href=https://discordapp.com/users/365160200900182026 title="Moncef AOUDIA Discord" target=_blank rel="noopener noreferrer"><i class="fab fa-discord"></i></a>
+<a href=https://getpocket.com/@701dbpd1T08b8g7f59Ab790A73g1T0G2725K38yf75eym1w2di86eN27V2dIJ51a title="Moncef AOUDIA Pocket" target=_blank rel="noopener noreferrer"><i class="fab fa-get-pocket"></i></a>
+<a href=https://dev.to/aoudiamoncef title="Moncef AOUDIA DEV.TO" target=_blank rel="noopener noreferrer"><i class="fab fa-dev"></i></a>
+<a href=https://medium.com/@aoudiamoncef title="Moncef AOUDIA Medium" target=_blank rel="noopener noreferrer"><i class="fab fa-medium-m"></i></a>
+<a href=https://aoudiamoncef.hashnode.dev title="Moncef AOUDIA Hashnode" target=_blank rel="noopener noreferrer"><i class="fas fa-h-square"></i></a>
+<a href=https://stackoverflow.com/users/8126192/moncef-aoudia title="Moncef AOUDIA Stackoverflow" target=_blank rel="noopener noreferrer"><i class="fab fa-stack-overflow"></i></a>
+<a href=https://www.quora.com/profile/Moncef-AOUDIA title="Moncef AOUDIA Quora" target=_blank rel="noopener noreferrer"><i class="fab fa-quora"></i></a>
+<a href=https://www.reddit.com/user/aoudiamoncef title="Moncef AOUDIA Reddit" target=_blank rel="noopener noreferrer"><i class="fab fa-reddit"></i></a>
+<a href=https://slides.com/aoudiamoncef title="Moncef AOUDIA Slides" target=_blank rel="noopener noreferrer"><i class="fas fa-sliders-h"></i></a>
+<a href=https://speakerdeck.com/aoudiamoncef title="Moncef AOUDIA SpeakerDeck" target=_blank rel="noopener noreferrer"><i class="fab fa-speaker-deck"></i></a>
+<a href=/index.xml title="Moncef AOUDIA RSS" target=_blank rel="noopener noreferrer"><i class="fas fa-rss"></i></a></div><div class=languages><strong>Other languages</strong>
+<a href=https://www.maoudia.com/amp/ class=active>en</a>
+<span>| </span><a href=https://www.maoudia.com/fr/amp/>fr</a></div></div></div></footer><div class=credits><div class=container><div class=copyright><a href=https://creativecommons.org/licenses/by-sa/4.0 target=_blank rel=noopener>&copy;
+2025
+Moncef AOUDIA</a></div><div class=author><a href=https://github.com/Lednerb/bilberry-hugo-theme target=_blank rel=noopener>Bilberry Hugo Theme</a></div></div></div><script type=text/javascript src=https://www.maoudia.com/js/theme.min.js crossorigin=anonymous defer></script><div id=activate-algolia-search class=hidden><input type=hidden id=algolia-search-appId>
+<input type=hidden id=algolia-search-apiKey>
+<input type=hidden id=algolia-search-indexName>
+<input type=hidden id=algolia-search-noSearchResults value="Nothing found.">
+<input type=hidden id=algolia-search-currentLanguageOnly></div><script src=https://www.maoudia.com/js/vanilla-back-to-top.min.js integrity=sha384-vPjvei7c1a3IpCr0kkDEOMRmlCHcv8REJw1B2eKJM55swier62xiYRVistfMKEUj crossorigin=anonymous></script><script>addBackToTop({diameter:48,backgroundColor:"transparent",textColor:"rgb(45, 54, 66)"})</script></body></html>
